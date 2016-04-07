@@ -49,7 +49,7 @@ void ofxTLEmptyKeyframes::draw(){
 	ofFill();
 	//show the current color as background based on the playhead position
 	ofSetColor(getCurrentColor(), 100);
-	ofRect(bounds);
+	ofDrawRectangle(bounds);
 
 	for(int i = 0; i < keyframes.size(); i++){
 		//make sure it's on screen

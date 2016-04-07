@@ -1550,7 +1550,7 @@ void ofxTimeline::draw(){
 		ofEnableAlphaBlending();
 
         ofSetColor(colors.guiBackgroundColor);
-		ofRect(totalDrawRect);
+		ofDrawRectangle(totalDrawRect);
 
 		ofSetColor(255);
 

@@ -61,7 +61,7 @@ void ofxTLColorTrack::draw(){
 		ofPushStyle();
 		ofSetColor(defaultColor);
 		ofFill();
-		ofRect(bounds);
+		ofDrawRectangle(bounds);
 		ofPopStyle();
 	}
 	else if(keyframes.size() == 1){
@@ -69,7 +69,7 @@ void ofxTLColorTrack::draw(){
 		ofxTLColorSample* s = (ofxTLColorSample*)keyframes[0];
 		ofSetColor(s->color);
 		ofFill();
-		ofRect(bounds);
+		ofDrawRectangle(bounds);
 		ofPopStyle();
 	}
 	else{
@@ -183,13 +183,13 @@ void ofxTLColorTrack::drawModalContent(){
 		newColorRect = ofRectangle(colorWindow.x+colorWindow.width/2, colorWindow.getMaxY(), colorWindow.width/2, 25);
 
 		ofSetColor(colorAtClickTime);
-		ofRect(previousColorRect);
+		ofDrawRectangle(previousColorRect);
 		ofSetColor(selectedSample->color);
-		ofRect(newColorRect);
+		ofDrawRectangle(newColorRect);
 		ofSetColor(timeline->getColors().keyColor);
 		ofNoFill();
 		ofSetLineWidth(2);
-		ofRect(colorWindow);
+		ofDrawRectangle(colorWindow);
 		ofPopStyle();
 	}
 }
