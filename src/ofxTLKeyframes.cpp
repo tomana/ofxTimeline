@@ -913,7 +913,7 @@ void ofxTLKeyframes::simplifySelectedKeyframes( float tolerance ){
 
     if ( selectedKeyframes.size() > 2 )
     {
-         vector<ofPoint> pts;
+		vector<ofDefaultVec3> pts;
         float startTime = (float)selectedKeyframes[0]->time;
         float timeNormalizationFactor = 1.0 / (float)selectedKeyframes.size();
         for(int k = 0; k < selectedKeyframes.size(); k++){
