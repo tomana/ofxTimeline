@@ -111,7 +111,7 @@ void ofxTLKeyframes::draw(){
 	//float currentPercent = sampleAtTime(timeline->getCurrentTimeMillis());
 	float currentPercent = sampleAtTime(currentTrackTime());
 	ofFill();
-	ofRect(bounds.x, bounds.getMaxY(), bounds.width, -bounds.height*currentPercent);
+	ofDrawRectangle(bounds.x, bounds.getMaxY(), bounds.width, -bounds.height*currentPercent);
 
 	//***** DRAW KEYFRAME LINES
 	ofSetColor(timeline->getColors().keyColor);
@@ -127,7 +127,7 @@ void ofxTLKeyframes::draw(){
 		ofFill();
 		ofSetColor(timeline->getColors().highlightColor);
 		ofVec2f hoverKeyPoint = screenPositionForKeyframe( hoverKeyframe );
-		ofCircle(hoverKeyPoint.x, hoverKeyPoint.y, 6);
+		ofDrawCircle(hoverKeyPoint.x, hoverKeyPoint.y, 6);
 		ofPopStyle();
 	}
 
@@ -135,7 +135,7 @@ void ofxTLKeyframes::draw(){
 	ofSetColor(timeline->getColors().textColor);
 	ofNoFill();
 	for(int i = 0; i < keyPoints.size(); i++){
-		ofRect(keyPoints[i].x-1, keyPoints[i].y-1, 3, 3);
+		ofDrawRectangle(keyPoints[i].x-1, keyPoints[i].y-1, 3, 3);
 	}
 
 	//**** SELECTED KEYS
@@ -149,7 +149,7 @@ void ofxTLKeyframes::draw(){
 				string frameString = timeline->formatTime(selectedKeyframes[i]->time);
 				timeline->getFont().drawString(ofToString(keysValue, 4), screenpoint.x+5, screenpoint.y-5);
 			}
-			ofCircle(screenpoint.x, screenpoint.y, 4);
+			ofDrawCircle(screenpoint.x, screenpoint.y, 4);
 		}
 	}
 
@@ -356,7 +356,7 @@ bool ofxTLKeyframes::mousePressed(ofMouseEventArgs& args, long millis){
 	ofVec2f screenpoint = ofVec2f(args.x, args.y);
 	keysAreStretchable = ofGetModifierShiftPressed() && ofGetModifierControlPressed();
 
-	constrainVerticalDrag = ofGetModifierAltPressed() ? args.y : NULL;
+	constrainVerticalDrag = ofGetModifierAltPressed() ? args.y : 0.f;
 
 
     keysDidDrag = false;
@@ -462,7 +462,7 @@ void ofxTLKeyframes::mouseMoved(ofMouseEventArgs& args, long millis){
 void ofxTLKeyframes::mouseDragged(ofMouseEventArgs& args, long millis){
 
 
-    if ( ofGetModifierAltPressed() && constrainVerticalDrag != NULL ) args.y = constrainVerticalDrag;
+	if ( ofGetModifierAltPressed() && constrainVerticalDrag != 0.f ) args.y = constrainVerticalDrag;
 
 	if(keysAreStretchable){
 		//cast the stretch anchor to long so that it can be signed

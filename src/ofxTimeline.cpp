@@ -324,7 +324,7 @@ void ofxTimeline::setShowZoomer(bool shouldShowZoomer){
 }
 
 void ofxTimeline::setupFont(){
-	font.loadFont(fontPath, fontSize);
+	font.load(fontPath, fontSize);
 }
 
 void ofxTimeline::setupFont(string newFontPath, int newFontSize){
@@ -1550,7 +1550,7 @@ void ofxTimeline::draw(){
 		ofEnableAlphaBlending();
 
         ofSetColor(colors.guiBackgroundColor);
-		ofRect(totalDrawRect);
+		ofDrawRectangle(totalDrawRect);
 
 		ofSetColor(255);
 
