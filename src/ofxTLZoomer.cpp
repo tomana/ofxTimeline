@@ -74,7 +74,7 @@ void ofxTLZoomer::draw(){
 	else{
 		ofNoFill();
 	}
-	ofCircle(minScreenX, screenY, 5);
+	ofDrawCircle(minScreenX, screenY, 5);
 
 	if(maxSelected){
 		ofFill();
