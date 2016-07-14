@@ -73,7 +73,7 @@ void ofxTLEmptyTrack::draw(){
 	ofFill();
 	if(isHovering()){
 		ofSetColor(timeline->getColors().backgroundColor);
-		ofRect(bounds);
+		ofDrawRectangle(bounds);
 	}
 	
 	ofNoFill();
