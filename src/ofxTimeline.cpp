@@ -116,7 +116,7 @@ ofxTimeline::~ofxTimeline(){
 	}
 }
 
-void ofxTimeline::setup(){
+void ofxTimeline::setup(const string& dataPathRoot){
 
     //TODO: error if isSetup...
 
@@ -154,7 +154,11 @@ void ofxTimeline::setup(){
 	zoomer->setTimeline(this);
 	zoomer->setDrawRect(ofRectangle(offset.y, ticker->getBottomEdge(), width, ZOOMER_HEIGHT));
 
-	colors.load();
+	//Update the data paths
+	defaultPalettePath = dataPathRoot + "defaultColorPalette.png";
+	fontPath = dataPathRoot + "NewMedia Fett.ttf";
+
+	colors.load(dataPathRoot + "defaultColors.xml");
 
 	enable();
 

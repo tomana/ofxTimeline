@@ -93,8 +93,8 @@ class ofxTimeline : ofThread {
 	
 	ofxTimeline();
 	virtual ~ofxTimeline();
-
-	virtual void setup();
+	
+	virtual void setup(const string& dataPathRoot = ofToDataPath("GUI/"));
 	
 	//Optionally run ofxTimeline on the background thread
 	//this isn't necessary most of the time but
