@@ -84,9 +84,9 @@ void ofxTLColorTrack::draw(){
 
 		float screenX = millisToScreenX(keyframes[i]->time);
 
-		ofPoint a = ofPoint(screenX-10,bounds.y);
-		ofPoint b = ofPoint(screenX+10,bounds.y);
-		ofPoint c = ofPoint(screenX,bounds.y+10);
+		ofVec2f a = ofVec2f(screenX-10,bounds.y);
+		ofVec2f b = ofVec2f(screenX+10,bounds.y);
+		ofVec2f c = ofVec2f(screenX,bounds.y+10);
 
 		ofPushStyle();
 		ofFill();
@@ -109,7 +109,7 @@ void ofxTLColorTrack::draw(){
 		else{
 			ofSetColor(s->color.getInverted());
 		}
-		ofDrawLine(c, ofPoint(screenX, bounds.getMaxY()));
+		ofDrawLine(c, ofVec2f(screenX, bounds.getMaxY()));
 		ofPopStyle();
 	}
 }
@@ -173,8 +173,8 @@ void ofxTLColorTrack::drawModalContent(){
 			ofVec2f direction = (nextSamplePoint - selectionPoint).getNormalized();
 			ofVec2f backStep = nextSamplePoint-direction*5;
 			ofDrawTriangle(nextSamplePoint,
-					   backStep + direction.getRotated(90)*3,
-					   backStep - direction.getRotated(90)*3);
+						   backStep + direction.getRotated(90)*3,
+						   backStep - direction.getRotated(90)*3);
 			ofDrawLine(nextSamplePoint,selectionPoint);
 		}
 		ofPopStyle();

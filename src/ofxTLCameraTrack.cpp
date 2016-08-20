@@ -195,13 +195,13 @@ void ofxTLCameraTrack::draweEase(CameraTrackEase ease, ofPoint screenPoint, bool
         case OFXTL_CAMERA_EASE_LINEAR:
             if(easeIn){
 				ofDrawTriangle(screenPoint.x-bounds.height, screenPoint.y,
-                           screenPoint.x, screenPoint.y,
-                           screenPoint.x, screenPoint.y+bounds.height);
+							   screenPoint.x, screenPoint.y,
+							   screenPoint.x, screenPoint.y+bounds.height);
             }
             else{
 				ofDrawTriangle(screenPoint.x, screenPoint.y,
-                           screenPoint.x, screenPoint.y+bounds.height,
-                           screenPoint.x+bounds.height, screenPoint.y+bounds.height);
+                               screenPoint.x, screenPoint.y+bounds.height,
+                               screenPoint.x+bounds.height, screenPoint.y+bounds.height);
             }
             break;
         case OFXTL_CAMERA_EASE_SMOOTH:
@@ -211,9 +211,9 @@ void ofxTLCameraTrack::draweEase(CameraTrackEase ease, ofPoint screenPoint, bool
                          screenPoint.x, screenPoint.y+bounds.height/2,
                          screenPoint.x, screenPoint.y+bounds.height);
 				ofDrawLine(screenPoint.x-bounds.height, screenPoint.y,
-                       screenPoint.x, screenPoint.y);
+						   screenPoint.x, screenPoint.y);
 				ofDrawLine(screenPoint.x, screenPoint.y,
-                       screenPoint.x, screenPoint.y+bounds.height);
+                           screenPoint.x, screenPoint.y+bounds.height);
             }
             else {
 				ofDrawBezier(screenPoint.x, screenPoint.y,
@@ -221,19 +221,19 @@ void ofxTLCameraTrack::draweEase(CameraTrackEase ease, ofPoint screenPoint, bool
                          screenPoint.x+bounds.height/2, screenPoint.y+bounds.height,
                          screenPoint.x+bounds.height, screenPoint.y+bounds.height);
 				ofDrawLine(screenPoint.x, screenPoint.y,
-                       screenPoint.x, screenPoint.y+bounds.height);
+                           screenPoint.x, screenPoint.y+bounds.height);
 				ofDrawLine(screenPoint.x, screenPoint.y+bounds.height,
-                       screenPoint.x+bounds.height, screenPoint.y+bounds.height);
+                           screenPoint.x+bounds.height, screenPoint.y+bounds.height);
             }
             break;
         case OFXTL_CAMERA_EASE_CUT:
             if(easeIn){
 				ofDrawRectangle(screenPoint.x-bounds.height/2, screenPoint.y,
-                       bounds.height/2, bounds.height/2);
+								bounds.height/2, bounds.height/2);
             }
             else{
 				ofDrawRectangle(screenPoint.x, screenPoint.y+bounds.height/2,
-                       bounds.height/2, bounds.height/2);
+								bounds.height/2, bounds.height/2);
             }
             break;
         default:

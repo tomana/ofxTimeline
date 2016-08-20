@@ -87,7 +87,7 @@ void ofxTLZoomer::draw(){
 //	cout << "zoomer bounds width " << bounds.width << endl;
 	//draw playhead reference
 	ofDrawLine(bounds.x+bounds.width*timeline->getPercentComplete(), bounds.y,
-		   bounds.x+bounds.width*timeline->getPercentComplete(), bounds.y+bounds.height);
+			   bounds.x+bounds.width*timeline->getPercentComplete(), bounds.y+bounds.height);
 	//draw zoom region reference
 	ofSetColor(timeline->getColors().backgroundColor);
 	ofRange actualZoom = getViewRange();

@@ -127,7 +127,7 @@ void ofxTLKeyframes::draw(){
 		ofFill();
 		ofSetColor(timeline->getColors().highlightColor);
 		ofVec2f hoverKeyPoint = screenPositionForKeyframe( hoverKeyframe );
-		ofDrawCircle(hoverKeyPoint.x, hoverKeyPoint.y, 6);
+		ofDrawCircle(hoverKeyPoint, 6);
 		ofPopStyle();
 	}
 
@@ -149,7 +149,7 @@ void ofxTLKeyframes::draw(){
 				string frameString = timeline->formatTime(selectedKeyframes[i]->time);
 				timeline->getFont().drawString(ofToString(keysValue, 4), screenpoint.x+5, screenpoint.y-5);
 			}
-			ofDrawCircle(screenpoint.x, screenpoint.y, 4);
+			ofDrawCircle(screenpoint, 4);
 		}
 	}
 

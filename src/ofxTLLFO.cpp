@@ -61,7 +61,7 @@ void ofxTLLFO::drawModalContent(){
 	ofDrawRectangle(sineTypeRect);
 	ofDrawRectangle(noiseTypeRect);
 	ofDrawRectangle(phaseShiftRect);
-//    ofRect(phaseMatchRect);
+//    ofDrawRectangle(phaseMatchRect);
 	ofDrawRectangle(amplitudeRect);
 	ofDrawRectangle(frequencyRect);
 	ofDrawRectangle(seedRect);
@@ -75,7 +75,7 @@ void ofxTLLFO::drawModalContent(){
 	ofDrawRectangle(sineTypeRect);
 	ofDrawRectangle(noiseTypeRect);
 	ofDrawRectangle(phaseShiftRect);
-//    ofRect(phaseMatchRect);
+//    ofDrawRectangle(phaseMatchRect);
 	ofDrawRectangle(amplitudeRect);
 	ofDrawRectangle(frequencyRect);
 	ofDrawRectangle(seedRect);
@@ -94,7 +94,7 @@ void ofxTLLFO::drawModalContent(){
 	}
 			//TODO: Phase match
 //    if(lfokey->phaseMatch){
-//		ofRect(phaseMatchRect);
+//		ofDrawRectangle(phaseMatchRect);
 //	}
     
 	if(lfokey->interpolate){

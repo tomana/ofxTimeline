@@ -87,7 +87,7 @@ void ofxTLCurves::drawModalContent(){
         }
         ofFill();
 		ofDrawRectangle(easingWindowPosition.x + easingTypes[i]->bounds.x, easingWindowPosition.y + easingTypes[i]->bounds.y,
-               easingTypes[i]->bounds.width, easingTypes[i]->bounds.height);
+						easingTypes[i]->bounds.width, easingTypes[i]->bounds.height);
         ofSetColor(200, 200, 200);
         timeline->getFont().drawString(easingTypes[i]->name,
 									   easingWindowPosition.x + easingTypes[i]->bounds.x+11,
@@ -95,8 +95,8 @@ void ofxTLCurves::drawModalContent(){
         ofNoFill();
         ofSetColor(40, 40, 40);
 		ofDrawRectangle(easingWindowPosition.x + easingTypes[i]->bounds.x,
-               easingWindowPosition.y + easingTypes[i]->bounds.y,
-               easingTypes[i]->bounds.width, easingTypes[i]->bounds.height);
+						easingWindowPosition.y + easingTypes[i]->bounds.y,
+						easingTypes[i]->bounds.width, easingTypes[i]->bounds.height);
     }
 
     for(int i = 0; i < easingFunctions.size(); i++){
@@ -109,7 +109,7 @@ void ofxTLCurves::drawModalContent(){
         }
         ofFill();
 		ofDrawRectangle(easingWindowPosition.x + easingFunctions[i]->bounds.x, easingWindowPosition.y +easingFunctions[i]->bounds.y,
-               easingFunctions[i]->bounds.width, easingFunctions[i]->bounds.height);
+						easingFunctions[i]->bounds.width, easingFunctions[i]->bounds.height);
         ofSetColor(200, 200, 200);
 //        timeline->getFont().drawString(easingFunctions[i]->name,
 //                           easingWindowPosition.x + easingFunctions[i]->bounds.x+10,
@@ -131,7 +131,7 @@ void ofxTLCurves::drawModalContent(){
         ofNoFill();
         ofSetColor(40, 40, 40);
 		ofDrawRectangle(easingWindowPosition.x + easingFunctions[i]->bounds.x, easingWindowPosition.y +easingFunctions[i]->bounds.y,
-               easingFunctions[i]->bounds.width, easingFunctions[i]->bounds.height);
+						easingFunctions[i]->bounds.width, easingFunctions[i]->bounds.height);
     }
 
 }

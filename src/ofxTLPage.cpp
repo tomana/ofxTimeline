@@ -132,7 +132,7 @@ void ofxTLPage::draw(){
 //		for(int i = 0; i < snapPoints.size(); i++){
 		for(it = snapPoints.begin(); it != snapPoints.end(); it++){
 			ofDrawLine(timeline->millisToScreenX(*it), trackContainerRect.y,
-                   timeline->millisToScreenX(*it), trackContainerRect.y+trackContainerRect.height);
+					   timeline->millisToScreenX(*it), trackContainerRect.y+trackContainerRect.height);
 		}
 		ofPopStyle();
 	}

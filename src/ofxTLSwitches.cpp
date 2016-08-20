@@ -114,7 +114,7 @@ void ofxTLSwitches::draw(){
         }
 
 		ofDrawLine(switchKey->display.x, bounds.y,
-               switchKey->display.x, bounds.y+bounds.height);
+				   switchKey->display.x, bounds.y+bounds.height);
 
         if(keyIsSelected || switchKey->endSelected){
 	        ofSetColor(timeline->getColors().textColor);                
@@ -123,7 +123,7 @@ void ofxTLSwitches::draw(){
 	        ofSetColor(timeline->getColors().keyColor);    
         }        
 		ofDrawLine(switchKey->display.x+switchKey->display.width, bounds.y,
-               switchKey->display.x+switchKey->display.width, bounds.y+bounds.height);
+				   switchKey->display.x+switchKey->display.width, bounds.y+bounds.height);
 
         //draw region
         if(keyIsSelected){
