@@ -58,7 +58,7 @@ ofxTLCameraTrack::ofxTLCameraTrack(){
 }
 
 ofxTLCameraTrack::~ofxTLCameraTrack(){
-	
+	disable();
 }
 
 void ofxTLCameraTrack::enable(){
@@ -69,10 +69,10 @@ void ofxTLCameraTrack::enable(){
 }
 
 void ofxTLCameraTrack::disable(){
-	ofxTLKeyframes::disable();
-	if(!enabled){
+	if (enabled) {
 		ofRemoveListener(ofEvents().update, this, &ofxTLCameraTrack::update);
 	}
+	ofxTLKeyframes::disable();
 }
 
 void ofxTLCameraTrack::setCamera(ofCamera& cam){
