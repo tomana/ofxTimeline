@@ -86,8 +86,10 @@ void ofxTLPageTabs::addPage(string name){
 void ofxTLPageTabs::removePage(string name){
 	int found = -1;
 	for (int i = 0; i < pages.size(); i++) {
-		found = i;
-		break;
+		if (pages[i].name == name) {
+			found = i;
+			break;
+		}
 	}
 
 	if (found >= 0) {
