@@ -1851,7 +1851,7 @@ ofxTLTrack* ofxTimeline::getTrack(string trackName){
 
 ofxTLPage* ofxTimeline::getPage(string pageName){
 
-	for(vector<ofxTLPage*>::iterator it =  pages.begin(); it != pages.end(); it++){
+	for(vector<ofxTLPage*>::iterator it =  pages.begin(); it != pages.end(); ++it){
         if((*it)->getName() == pageName){
             return (*it);
         }
