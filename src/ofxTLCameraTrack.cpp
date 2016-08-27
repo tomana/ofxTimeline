@@ -389,7 +389,7 @@ ofxTLKeyframe* ofxTLCameraTrack::keyframeAtScreenpoint(ofVec2f p){
 
 void ofxTLCameraTrack::moveCameraToTime(unsigned long long millis){
 	if(camera == NULL){
-		ofLogError("ofxCameraTrack -- can't modify a null camera!");
+		ofLogError(__FUNCTION__) << "Can't modify a null camera!";
 		return;
 	}
 	

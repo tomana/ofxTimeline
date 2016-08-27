@@ -1583,19 +1583,19 @@ void ofxTimeline::draw(){
 #pragma mark ELEMENT CREATORS/GETTERS/SETTERS
 void ofxTimeline::addPage(string pageName, bool makeCurrent){
 	if(pageName == ""){
-		ofLogError("ofxTimeline -- Cannot add page with an empty name.");
+		ofLogError(__FUNCTION__) << "Cannot add page with an empty name";
 		return;
 	}
 
 	for(int i = 0; i < pages.size(); i++){
 		if(pageName == pages[i]->getName()){
-			ofLogError("ofxTimeline -- Page " + pageName + " already exists");
+			ofLogError(__FUNCTION__) << "Page " << pageName << " already exists";
 			return;
 		}
 	}
 
 	ofxTLPage* newPage = new ofxTLPage();
-    newPage->timeline = this;
+	newPage->timeline = this;
 	newPage->setName(pageName);
 	newPage->setup();
 	newPage->setZoomBounds(zoomer->getViewRange());
