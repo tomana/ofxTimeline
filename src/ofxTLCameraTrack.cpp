@@ -237,7 +237,7 @@ void ofxTLCameraTrack::draweEase(CameraTrackEase ease, ofPoint screenPoint, bool
             }
             break;
         default:
-            ofLogError("ofxTLCameraTrack::draweEase -- invalid ease");
+            ofLogError(__FUNCTION__) << "Invalid ease value " << ease;
             break;
     }
 }
