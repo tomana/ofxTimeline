@@ -167,19 +167,25 @@ void ofxTLFlags::mouseReleased(ofMouseEventArgs& args, long millis){
 
 void ofxTLFlags::keyPressed(ofKeyEventArgs& args){
 	
-	if(enteringText){
-        //enter key submits the values
-        //This could be done be responding to the event from the text field itself...
-        if(args.key == OF_KEY_RETURN){
-            enteringText = false;
-            timeline->dismissedModalContent();
-            timeline->flagTrackModified(this);
-        }
-    }
-    //normal behavior for nudging and deleting and stuff
-	else{
-        ofxTLBangs::keyPressed(args);
-    }    
+	if (enteringText) {
+		//enter key submits the values
+		//This could be done be responding to the event from the text field itself...
+		if (args.key == OF_KEY_RETURN) {
+			enteringText = false;
+			for (int i = 0; i < selectedKeyframes.size(); i++) {
+				((ofxTLFlag*)selectedKeyframes[i])->textField.endEditing();
+			}
+			timeline->dismissedModalContent();
+			timeline->flagTrackModified(this);
+		}
+		else {
+			clickedTextField->textField.keyPressed(args);
+		}
+	}
+	//normal behavior for nudging and deleting and stuff
+	else {
+		ofxTLBangs::keyPressed(args);
+	}
 }
 
 ofxTLKeyframe* ofxTLFlags::newKeyframe(){
