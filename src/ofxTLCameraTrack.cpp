@@ -349,13 +349,13 @@ ofxTLKeyframe* ofxTLCameraTrack::newKeyframe(){
 
 void ofxTLCameraTrack::restoreKeyframe(ofxTLKeyframe* key, ofxXmlSettings& xmlStore){
 	ofxTLCameraFrame* cameraFrame = (ofxTLCameraFrame*)key;
-	cameraFrame->position = ofVec3f(xmlStore.getValue("px", 0.),
-						 			xmlStore.getValue("py", 0.),
-									xmlStore.getValue("pz", 0.));
-	cameraFrame->orientation.set(xmlStore.getValue("ox", 0.),
-								  xmlStore.getValue("oy", 0.),
-								  xmlStore.getValue("oz", 0.),
-								  xmlStore.getValue("ow", 1.));
+	cameraFrame->position = glm::vec3(xmlStore.getValue("px", 0.f),
+						 			  xmlStore.getValue("py", 0.f),
+									  xmlStore.getValue("pz", 0.f));
+	cameraFrame->orientation = glm::quat(xmlStore.getValue("ow", 1.),
+										 xmlStore.getValue("ox", 0.),
+										 xmlStore.getValue("oy", 0.),
+										 xmlStore.getValue("oz", 0.));
 	cameraFrame->easeIn  = (CameraTrackEase)xmlStore.getValue("easein", (int)OFXTL_CAMERA_EASE_LINEAR);
 	cameraFrame->easeOut = (CameraTrackEase)xmlStore.getValue("easeout", (int)OFXTL_CAMERA_EASE_LINEAR);
 }
@@ -366,10 +366,10 @@ void ofxTLCameraTrack::storeKeyframe(ofxTLKeyframe* key, ofxXmlSettings& xmlStor
 	xmlStore.addValue("py", cameraFrame->position.y);
 	xmlStore.addValue("pz", cameraFrame->position.z);
 	
-	xmlStore.addValue("ox", cameraFrame->orientation._v.x);
-	xmlStore.addValue("oy", cameraFrame->orientation._v.y);
-	xmlStore.addValue("oz", cameraFrame->orientation._v.z);
-	xmlStore.addValue("ow", cameraFrame->orientation._v.w);
+	xmlStore.addValue("ow", cameraFrame->orientation.w);
+	xmlStore.addValue("ox", cameraFrame->orientation.x);
+	xmlStore.addValue("oy", cameraFrame->orientation.y);
+	xmlStore.addValue("oz", cameraFrame->orientation.z);
 	
 	xmlStore.addValue("easein",  (int)cameraFrame->easeIn);
 	xmlStore.addValue("easeout", (int)cameraFrame->easeOut);
@@ -436,9 +436,10 @@ void ofxTLCameraTrack::setCameraFrameToTime(ofxTLCameraFrame* target, unsigned l
 }
 
 void ofxTLCameraTrack::moveCameraToPosition(ofxTLCameraFrame* target){
-	camera->setPosition(glm::lerp(camera->getPosition(), target->position, dampening) );
-	ofQuaternion q;
-	q.slerp(dampening, camera->getOrientationQuat(), target->orientation);
+	const glm::vec3 p = glm::lerp(camera->getPosition(), target->position, dampening);
+	camera->setPosition(p); 
+	
+	const glm::quat q = glm::slerp(camera->getOrientationQuat(), target->orientation, dampening);
 	camera->setOrientation(q);
 }
 
@@ -495,7 +496,7 @@ void ofxTLCameraTrack::interpolateBetween(ofxTLCameraFrame* target,
 	target->time = millis;
 	target->position = ofHermiteInterpolate(prev->position,sample1->position,sample2->position,next->position,alpha,0,0);
 	//	interp.position = sample1.position.getInterpolated(sample2.position, alpha);
-	target->orientation.slerp(alpha, sample1->orientation, sample2->orientation);
+	target->orientation = glm::slerp(sample1->orientation, sample2->orientation, alpha);
 	//cout << "interpolating between " << sample1.position << " and " << sample2.position << " with alpha " << alpha << endl;
 }
 
