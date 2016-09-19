@@ -506,16 +506,16 @@ vector<ofxTLTrack*>& ofxTLPage::getTracks(){
 
 ofxTLTrack* ofxTLPage::getTrack(string trackName){
 	if(tracks.find(trackName) == tracks.end()){
-		ofLogError("ofxTLPage -- Couldn't find element named " + trackName + " on page " + name);
-		return NULL;
+		ofLogError(__FUNCTION__) << "Couldn't find track " << trackName << " on page " << name;
+		return nullptr;
 	}
 	return tracks[trackName];
 }
 
 ofxTLTrackHeader* ofxTLPage::getTrackHeader(ofxTLTrack* track){
-    if(track == NULL){
-        ofLogError() << "ofxTLPage::getTrackHeader -- Attempting to get header for a null track";
-        return NULL;
+    if(track == nullptr){
+        ofLogError(__FUNCTION__) << "Attempting to get header for a null track";
+        return nullptr;
     }
     
     for(int i = 0; i < headers.size(); i++){
@@ -524,8 +524,8 @@ ofxTLTrackHeader* ofxTLPage::getTrackHeader(ofxTLTrack* track){
         }
     }
     
-    ofLogError() << "ofxTLPage::getTrackHeader header for track " << track->getDisplayName() << " Couldn't be found";
-    return NULL;
+    ofLogError(__FUNCTION__) << "Header for track " << track->getDisplayName() << " not found";
+    return nullptr;
 }
 
 void ofxTLPage::setMinimalHeaders(bool minimal){

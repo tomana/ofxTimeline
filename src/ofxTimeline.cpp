@@ -1799,7 +1799,7 @@ ofxTLCurves* ofxTimeline::addCurves(string trackName, string xmlFileName, ofRang
 
 float ofxTimeline::getValueAtPercent(string trackName, float atPercent){
 	if(!hasTrack(trackName)){
-		ofLogError("ofxTimeline -- Couldn't find track " + trackName);
+		ofLogError(__FUNCTION__) << "Couldn't find track " << trackName;
 		return 0.0;
 	}
 	ofxTLCurves* curves = (ofxTLCurves*)trackNameToPage[trackName]->getTrack(trackName);
@@ -1808,7 +1808,7 @@ float ofxTimeline::getValueAtPercent(string trackName, float atPercent){
 
 float ofxTimeline::getValue(string trackName, float atTime){
 	if(!hasTrack(trackName)){
-		ofLogError("ofxTimeline -- Couldn't find track " + trackName);
+		ofLogError(__FUNCTION__) << "Couldn't find track " << trackName;
 		return 0.0;
 	}
 	ofxTLCurves* curves = (ofxTLCurves*)trackNameToPage[trackName]->getTrack(trackName);
@@ -1817,7 +1817,7 @@ float ofxTimeline::getValue(string trackName, float atTime){
 
 float ofxTimeline::getValue(string trackName){
 	if(!hasTrack(trackName)){
-		ofLogError("ofxTimeline -- Couldn't find track " + trackName);
+		ofLogError(__FUNCTION__) << "Couldn't find track " << trackName;
 		return 0.0;
 	}
 	ofxTLCurves* curves = (ofxTLCurves*)trackNameToPage[trackName]->getTrack(trackName);
@@ -1843,8 +1843,8 @@ bool ofxTimeline::hasPage(string pageName){
 
 ofxTLTrack* ofxTimeline::getTrack(string trackName){
 	if(!hasTrack(trackName)){
-		ofLogError("ofxTimeline -- Couldn't find track " + trackName);
-		return NULL;
+		ofLogError(__FUNCTION__) << "Couldn't find track " << trackName;
+		return nullptr;
 	}
 	return trackNameToPage[trackName]->getTrack(trackName);
 }
@@ -1857,8 +1857,8 @@ ofxTLPage* ofxTimeline::getPage(string pageName){
         }
     }
 
-    ofLogError("ofxTimeline -- Couldn't find page " + pageName);
-    return NULL;
+	ofLogError(__FUNCTION__) << "Couldn't find page " << pageName;
+    return nullptr;
 }
 
 
