@@ -525,11 +525,18 @@ void ofxTLSwitches::keyPressed(ofKeyEventArgs& args){
 	if(enteringText){
         //enter key submits the values
         //This could be done be responding to the event from the text field itself...
-        if(args.key == OF_KEY_RETURN){
-            enteringText = false;
-            timeline->dismissedModalContent();
-            timeline->flagTrackModified(this);
-        }
+		if (args.key == OF_KEY_RETURN) {
+			enteringText = false;
+			for (int i = 0; i < selectedKeyframes.size(); i++) {
+				((ofxTLSwitch*)selectedKeyframes[i])->textField.endEditing();
+			}
+			timeline->dismissedModalContent();
+			timeline->flagTrackModified(this);
+		}
+		else {
+			clickedTextField->textField.keyPressed(args);
+		}
+
     } else {
         ofxTLKeyframes::keyPressed(args);
     }
