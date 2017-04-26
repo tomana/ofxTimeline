@@ -94,12 +94,16 @@ class ofxTLSwitchEventArgs : public ofEventArgs {
 	bool on;
 };
 
+class ofxTLKeyframe;
+
 class ofxTLEvents {
   public:
 	ofEvent<ofxTLPlaybackEventArgs> playbackStarted;
 	ofEvent<ofxTLPlaybackEventArgs> playbackEnded;
 	ofEvent<ofxTLPlaybackEventArgs> playbackLooped;
 	ofEvent<ofxTLPlaybackEventArgs> playheadScrubbed;
+	ofEvent<ofxTLPlaybackEventArgs> playheadTimeChanged;
+	ofEvent<ofxTLKeyframe> keyFrameChanged;
 
     ofEvent<ofxTLInOutEventArgs> inOutChanged;
 

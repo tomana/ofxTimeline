@@ -11,7 +11,6 @@ common:
 	ADDON_DEPENDENCIES = ofxXmlSettings
 	ADDON_DEPENDENCIES += ofxTween
 	ADDON_DEPENDENCIES += ofxRange
-	ADDON_DEPENDENCIES += ofxMSATimer
 	ADDON_DEPENDENCIES += ofxTimecode
 	ADDON_DEPENDENCIES += ofxTextInputField
 	
@@ -48,14 +47,23 @@ common:
 	# some addons need resources to be copied to the bin/data folder of the project
 	# specify here any files that need to be copied, you can use wildcards like * and ?
 	ADDON_DATA = copy_to_data_GUI/*
+
+    ADDON_DEFINES = OFX_TIMELINE=1
 	
 linux64:
 	# when parsing the file system looking for libraries exclude this for all or 
 	# a specific platform
-	ADDON_LIBS_EXCLUDE = libs/kiss
-	ADDON_LIBS_EXCLUDE = libs/ofOpenALSoundPlayer_TimelineAdditions
+	ADDON_LIBS_EXCLUDE = libs/kiss/%
+	ADDON_LIBS_EXCLUDE += libs/ofOpenALSoundPlayer_TimelineAdditions/%
+	ADDON_LIBS_EXCLUDE += libs/sndfile
 	ADDON_SOURCES_EXCLUDE = libs/ofOpenALSoundPlayer_TimelineAdditions/%
+	ADDON_SOURCES_EXCLUDE += libs/kiss/%
+	ADDON_SOURCES_EXCLUDE += libs/openal/%
+	ADDON_SOURCES_EXCLUDE += libs/sndfile/%
 	ADDON_INCLUDES_EXCLUDE = libs/ofOpenALSoundPlayer_TimelineAdditions/%
+	ADDON_INCLUDES_EXCLUDE += libs/kiss/%
+	ADDON_INCLUDES_EXCLUDE += libs/openal/%
+	ADDON_INCLUDES_EXCLUDE += libs/sndfile/%
 	
 linux:
 	ADDON_LIBS_EXCLUDE = libs/kiss

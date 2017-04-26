@@ -50,8 +50,12 @@ float ofxTLCurves::interpolateValueForKeys(ofxTLKeyframe* start,ofxTLKeyframe* e
 						 false, *tweenKeyStart->easeFunc->easing, tweenKeyStart->easeType->type);
 }
 
-string ofxTLCurves::getTrackType(){
-	return "Curves";
+string ofxTLCurves::getTrackType() const{
+	return TRACK_TYPE;
+}
+
+ofJson ofxTLCurves::getStructure() const{
+	return {{"name", name}, {"type", TRACK_TYPE}, {"min", valueRange.min}, {"max", valueRange.max}};
 }
 
 ofxTLKeyframe* ofxTLCurves::newKeyframe(){
@@ -145,13 +149,15 @@ bool ofxTLCurves::mousePressed(ofMouseEventArgs& args, long millis){
 	}
 }
 
-void ofxTLCurves::mouseDragged(ofMouseEventArgs& args, long millis){
+bool ofxTLCurves::mouseDragged(ofMouseEventArgs& args, long millis){
 	if(!drawingEasingWindow){
-        ofxTLKeyframes::mouseDragged(args, millis);
-    }
+		return ofxTLKeyframes::mouseDragged(args, millis);
+	}else{
+		return false;
+	}
 }
 
-void ofxTLCurves::mouseReleased(ofMouseEventArgs& args, long millis){
+bool ofxTLCurves::mouseReleased(ofMouseEventArgs& args, long millis){
 	if(drawingEasingWindow && (args.button == 0 && !ofGetModifierControlPressed()) ){
 		drawingEasingWindow = false;
 		timeline->dismissedModalContent();
@@ -163,7 +169,7 @@ void ofxTLCurves::mouseReleased(ofMouseEventArgs& args, long millis){
 				}
 				timeline->flagTrackModified(this);
 				shouldRecomputePreviews = true;
-				return;
+				return true;
 			}
 		}
 
@@ -174,16 +180,18 @@ void ofxTLCurves::mouseReleased(ofMouseEventArgs& args, long millis){
 				}
 				timeline->flagTrackModified(this);
 				shouldRecomputePreviews = true;
-				return;
+				return true;
 			}
 		}
+		return false;
 	}
 	else{
-		ofxTLKeyframes::mouseReleased(args, millis);
+		return ofxTLKeyframes::mouseReleased(args, millis);
 	}
 }
 
-void ofxTLCurves::keyPressed(ofKeyEventArgs& args){
+bool ofxTLCurves::keyPressed(ofKeyEventArgs& args){
+	auto ret = false;
     if ( args.key == 'e')
     {
         if ( selectedKeyframes.size() > 0 )
@@ -197,9 +205,10 @@ void ofxTLCurves::keyPressed(ofKeyEventArgs& args){
             timeline->flagTrackModified(this);
             shouldRecomputePreviews = true;
         }
+		ret = true;
     }
 
-	ofxTLKeyframes::keyPressed( args );
+	return ret | ofxTLKeyframes::keyPressed( args );
 
 
 }

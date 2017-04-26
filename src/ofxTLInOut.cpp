@@ -102,17 +102,18 @@ void ofxTLInOut::setPageRectangle(ofRectangle pageRectangle){
     pageRect = pageRectangle;
 }
 
-void ofxTLInOut::mouseMoved(ofMouseEventArgs& args){
+bool ofxTLInOut::mouseMoved(ofMouseEventArgs& args){
 
-    if(!bounds.inside(args.x,args.y)) return;
+	if(!bounds.inside(args.x,args.y)) return false;
     
     hoveringIn  = abs( normalizedXtoScreenX( timeline->getInOutRange().min ) - args.x) < 7;
 	hoveringOut = abs( normalizedXtoScreenX( timeline->getInOutRange().max ) - args.x) < 7;
+	return true;
 }
 
-void ofxTLInOut::mousePressed(ofMouseEventArgs& args){
+bool ofxTLInOut::mousePressed(ofMouseEventArgs& args){
     
-    if(!bounds.inside(args.x,args.y)) return;
+	if(!bounds.inside(args.x,args.y)) return false;
        
     
 	float distToIn = normalizedXtoScreenX( timeline->getInOutRange().min ) - args.x;
@@ -140,23 +141,26 @@ void ofxTLInOut::mousePressed(ofMouseEventArgs& args){
         }
     }
     
+	return true;
     //cout << "dist to in " << abs(distToIn) << " out " << abs(distToOut) << " " << draggingIn << " " << draggingOut << endl;
 }
 
-void ofxTLInOut::mouseDragged(ofMouseEventArgs& args){
+bool ofxTLInOut::mouseDragged(ofMouseEventArgs& args){
     if(draggingIn){
         timeline->setInPointAtPercent(screenXtoNormalizedX(args.x - dragOffset));
     }
     if(draggingOut){
         timeline->setOutPointAtPercent(screenXtoNormalizedX(args.x - dragOffset));
     }
+	return draggingIn || draggingOut;
 }
 
-void ofxTLInOut::mouseReleased(ofMouseEventArgs& args){
+bool ofxTLInOut::mouseReleased(ofMouseEventArgs& args){
     if(draggingIn || draggingOut){
 	    draggingIn = draggingOut = false;
         save();
     }
+	return false;
 }
 
 void ofxTLInOut::load(){

@@ -52,10 +52,10 @@ class ofxTLTicker : public ofxTLTrack
 	//set the draw rect for the whole keyframer interface
 	virtual void setTotalDrawRect(ofRectangle drawRect);
 	
-	virtual void mousePressed(ofMouseEventArgs& args);
-	virtual void mouseMoved(ofMouseEventArgs& args);
-	virtual void mouseDragged(ofMouseEventArgs& args);
-	virtual void mouseReleased(ofMouseEventArgs& args);
+	virtual bool mousePressed(ofMouseEventArgs& args);
+	virtual bool mouseMoved(ofMouseEventArgs& args);
+	virtual bool mouseDragged(ofMouseEventArgs& args);
+	virtual bool mouseReleased(ofMouseEventArgs& args);
 
 	virtual float getBPM();
 	virtual void setBPM(float bpm);

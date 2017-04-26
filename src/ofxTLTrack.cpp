@@ -106,7 +106,7 @@ string ofxTLTrack::getDisplayName(){
     return displayName == "" ? name : displayName;
 }
 
-string ofxTLTrack::getTrackType(){
+string ofxTLTrack::getTrackType() const{
 	return "Track";    
 }
 
@@ -151,7 +151,7 @@ void ofxTLTrack::_draw(){
 
 unsigned long long ofxTLTrack::currentTrackTime(){
 	if(isPlaying){
-		currentTime = timeline->getTimer().getAppTimeMillis() - playbackStartTime;
+		currentTime = ofGetElapsedTimeMillis() - playbackStartTime;
 		checkLoop();
 		return currentTime;
 		//return timeline->getInTimeInMillis() + (timeline->getTimer().getAppTimeMillis() - playbackStartTime) % timeline->getInOutRangeMillis().span() ;
@@ -164,7 +164,7 @@ unsigned long long ofxTLTrack::currentTrackTime(){
 void ofxTLTrack::checkLoop(){
 	if(currentTime < timeline->getInTimeInMillis()){
         currentTime = timeline->getInTimeInMillis();
-        playbackStartTime = timeline->getTimer().getAppTimeSeconds() - currentTime;
+		playbackStartTime = ofGetElapsedTimef() - currentTime;
 //        playbackStartFrame = ofGetFrameNum() - timecode.frameForSeconds(currentTime);
     }
     
@@ -193,7 +193,7 @@ void ofxTLTrack::play(){
 	if(!isPlaying && !timeline->getIsPlaying()){
 		isPlaying = true;
 		currentTime = ofClamp(timeline->getCurrentTimeMillis(), timeline->getInTimeInMillis(), timeline->getOutTimeInMillis());
-		playbackStartTime = timeline->getTimer().getAppTimeMillis() - currentTime;
+		playbackStartTime = ofGetElapsedTimeMillis() - currentTime;
 		checkLoop();
 	}
 }
@@ -219,28 +219,36 @@ bool ofxTLTrack::_mousePressed(ofMouseEventArgs& args, long millis){
     if(enabled){
 	    active = bounds.inside(args.x, args.y);
     	return mousePressed(args, millis);
-    }
-	return false;
+	}else{
+		return false;
+	}
 }
 
-void ofxTLTrack::_mouseMoved(ofMouseEventArgs& args, long millis){
+bool ofxTLTrack::_mouseMoved(ofMouseEventArgs& args, long millis){
     if(enabled){
     	hover = bounds.inside(args.x, args.y);
-		mouseMoved(args, millis);
-    }
+		return mouseMoved(args, millis);
+	}else{
+		return false;
+	}
 }
 
-void ofxTLTrack::_mouseDragged(ofMouseEventArgs& args, long millis){
+bool ofxTLTrack::_mouseDragged(ofMouseEventArgs& args, long millis){
     if(enabled){
-    	mouseDragged(args, millis);
-    }
+		return mouseDragged(args, millis);
+	}else{
+		return false;
+	}
 }
 
-void ofxTLTrack::_mouseReleased(ofMouseEventArgs& args, long millis){
+bool ofxTLTrack::_mouseReleased(ofMouseEventArgs& args, long millis){
     if(enabled){
-        mouseReleased(args, millis);
+		auto ret = mouseReleased(args, millis);
 	    active = false;
-    }
+		return ret;
+	}else{
+		return false;
+	}
 }
 
 void ofxTLTrack::gainedFocus(){
@@ -400,4 +408,8 @@ float ofxTLTrack::timeForScreenX(float screenX, float durationInSeconds){
 
 bool ofxTLTrack::isOnScreen(float screenX){
 	return screenX > bounds.x && screenX < bounds.x+bounds.width;
+}
+
+ofJson ofxTLTrack::getStructure() const{
+	return {{"name", name}, {"type", getTrackType()}};
 }

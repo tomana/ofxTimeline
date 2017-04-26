@@ -101,14 +101,14 @@ class ofxTLPage {
 	//this will swap out the xml file names that have been set to default based on the timeline name
 	void timelineChangedName(string newName, string oldName);
 	
-	virtual void mousePressed(ofMouseEventArgs& args, long millis);
-	virtual void mouseMoved(ofMouseEventArgs& args, long millis);
-	virtual void mouseDragged(ofMouseEventArgs& args, long millis);
-	virtual void mouseReleased(ofMouseEventArgs& args, long millis);
+	virtual bool mousePressed(ofMouseEventArgs& args, long millis);
+	virtual bool mouseMoved(ofMouseEventArgs& args, long millis);
+	virtual bool mouseDragged(ofMouseEventArgs& args, long millis);
+	virtual bool mouseReleased(ofMouseEventArgs& args, long millis);
 		
 	virtual void nudgeBy(ofVec2f nudgePercent);
 	
-	virtual void keyPressed(ofKeyEventArgs& args);
+	virtual bool keyPressed(ofKeyEventArgs& args);
 	
 	virtual void saveTrackPositions();
 	virtual void loadTrackPositions();
@@ -131,6 +131,8 @@ class ofxTLPage {
 	
 	virtual void setDragOffsetTime(long offsetMillis);
     virtual void setSnappingEnabled(bool enabled);
+
+	virtual ofJson getStructure() const;
     
     ofxTimeline* timeline;
     

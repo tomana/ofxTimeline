@@ -49,7 +49,8 @@ class ofxTLImageTrack : public ofxTLTrack {
 
     virtual void drawRectChanged();
     
-    virtual string getTrackType();
+	virtual string getTrackType() const;
+	static constexpr const char* TRACK_TYPE = "ImageTrack";
     
   protected:
     

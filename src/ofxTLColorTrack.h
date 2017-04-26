@@ -51,11 +51,13 @@ class ofxTLColorTrack : public ofxTLKeyframes {
 	//For selecting keyframe type only,
     //the superclass controls keyframe placement
 	virtual bool mousePressed(ofMouseEventArgs& args, long millis);
-    virtual void mouseDragged(ofMouseEventArgs& args, long millis);
-	virtual void mouseReleased(ofMouseEventArgs& args, long millis);
-	virtual void keyPressed(ofKeyEventArgs& args);
+	virtual bool mouseDragged(ofMouseEventArgs& args, long millis);
+	virtual bool mouseReleased(ofMouseEventArgs& args, long millis);
+	virtual bool keyPressed(ofKeyEventArgs& args);
 
-    virtual string getTrackType();
+	virtual string getTrackType() const;
+	static constexpr const char* TRACK_TYPE = "Colors";
+	virtual ofJson getStructure() const;
 	
 	virtual void loadColorPalette(ofBaseHasPixels& image);
 	virtual bool loadColorPalette(string imagePath);
@@ -69,13 +71,21 @@ class ofxTLColorTrack : public ofxTLKeyframes {
 	virtual void setDefaultColor(ofColor color);
 	virtual ofColor getDefaultColor();
 	virtual void regionSelected(ofLongRange timeRange, ofRange valueRange);
+
+	virtual void updatePreviewPalette();
+
+	virtual void addKeyframe();
+	virtual void addKeyframe(ofVec2f value);
+	virtual void addKeyframe(ofColor value);
+	virtual void addKeyframeAtMillis(unsigned long long millis);
+	virtual void addKeyframeAtMillis(ofVec2f value, unsigned long long millis);
+	virtual void addKeyframeAtMillis(ofColor value, unsigned long long millis);
 	
   protected:
 	ofImage colorPallete;
 	ofImage previewPalette;
 	string palettePath;
-	
-	virtual void updatePreviewPalette();
+
 	virtual ofxTLKeyframe* newKeyframe();
     virtual ofxTLKeyframe* keyframeAtScreenpoint(ofVec2f p);
 	

@@ -85,7 +85,7 @@ void ofxTLPage::setup(){
 //given a folder the page will look for xml files to load within that
 void ofxTLPage::loadTracksFromFolder(string folderPath){
     for(int i = 0; i < headers.size(); i++){
-		string filename = folderPath + tracks[headers[i]->name]->getXMLFileName();
+		string filename = ofFilePath::join(folderPath, tracks[headers[i]->name]->getXMLFileName());
         tracks[headers[i]->name]->setXMLFileName(filename);
         tracks[headers[i]->name]->load();
     }
@@ -94,7 +94,7 @@ void ofxTLPage::loadTracksFromFolder(string folderPath){
 //given a folder the page will look for xml files to load within that
 void ofxTLPage::saveTracksToFolder(string folderPath){
     for(int i = 0; i < headers.size(); i++){
-		string filename = folderPath + tracks[headers[i]->name]->getXMLFileName();
+		string filename = ofFilePath::join(folderPath, tracks[headers[i]->name]->getXMLFileName());
         tracks[headers[i]->name]->setXMLFileName(filename);
 		tracks[headers[i]->name]->save();
     }
@@ -165,7 +165,7 @@ void ofxTLPage::timelineLostFocus(){
 }
 
 #pragma mark events
-void ofxTLPage::mousePressed(ofMouseEventArgs& args, long millis){
+bool ofxTLPage::mousePressed(ofMouseEventArgs& args, long millis){
 	draggingInside = trackContainerRect.inside(args.x, args.y);
     draggingSelectionRectangle = false;
 	ofxTLTrack* newFocus = NULL;
@@ -203,6 +203,7 @@ void ofxTLPage::mousePressed(ofMouseEventArgs& args, long millis){
     if(newFocus != NULL && newFocus != focusedTrack){
         setFocusedTrack(newFocus);
     }
+	return draggingInside;
 }
 
 void ofxTLPage::setFocusedTrack(ofxTLTrack* track){
@@ -217,20 +218,22 @@ ofxTLTrack* ofxTLPage::getFocusedTrack(){
 	return focusedTrack;
 }
 
-void ofxTLPage::mouseMoved(ofMouseEventArgs& args, long millis){
+bool ofxTLPage::mouseMoved(ofMouseEventArgs& args, long millis){
+	auto ret = false;
 	for(int i = 0; i < headers.size(); i++){
-		headers[i]->mouseMoved(args);
-        tracks[headers[i]->name]->_mouseMoved(args, millis);
+		ret |= headers[i]->mouseMoved(args);
+		ret |= tracks[headers[i]->name]->_mouseMoved(args, millis);
 	}
     
     if(!draggingInside){
         timeline->setHoverTime(millis);
     }
+	return ret;
 }
 
-void ofxTLPage::mouseDragged(ofMouseEventArgs& args, long millis){
+bool ofxTLPage::mouseDragged(ofMouseEventArgs& args, long millis){
 	if(!draggingInside){
-    	return;
+		return false;
     }
 	
     if(draggingSelectionRectangle){
@@ -301,9 +304,11 @@ void ofxTLPage::mouseDragged(ofMouseEventArgs& args, long millis){
 			tracks[headers[i]->name]->_mouseDragged(args, millis);
 		}
 	}
+
+	return draggingInside;
 }
 
-void ofxTLPage::mouseReleased(ofMouseEventArgs& args, long millis){
+bool ofxTLPage::mouseReleased(ofMouseEventArgs& args, long millis){
 	if(draggingInside){
 		for(int i = 0; i < headers.size(); i++){
 			headers[i]->mouseReleased(args);
@@ -344,6 +349,7 @@ void ofxTLPage::mouseReleased(ofMouseEventArgs& args, long millis){
 		}		        
     }
 	draggingSelectionRectangle = false;
+	return false;
 }
 
 void ofxTLPage::setDragOffsetTime(long offsetMillis){
@@ -445,10 +451,12 @@ void ofxTLPage::selectAll(){
 	}
 }
 
-void ofxTLPage::keyPressed(ofKeyEventArgs& args){
+bool ofxTLPage::keyPressed(ofKeyEventArgs& args){
+	auto ret = false;
 	for(int i = 0; i < headers.size(); i++){
-		tracks[headers[i]->name]->keyPressed(args);
+		ret |= tracks[headers[i]->name]->keyPressed(args);
 	}
+	return ret;
 }
 
 void ofxTLPage::nudgeBy(ofVec2f nudgePercent){
@@ -849,3 +857,12 @@ void ofxTLPage::setDefaultTrackHeight(float newDefaultTrackHeight){
 	defaultTrackHeight = newDefaultTrackHeight;
 }
 
+ofJson ofxTLPage::getStructure() const{
+	ofJson pageStructure;
+	pageStructure["name"] = name;
+	for(auto name_track: tracks){
+		auto track = name_track.second;
+		pageStructure["tracks"].push_back(track->getStructure());
+	}
+	return pageStructure;
+}

@@ -87,24 +87,24 @@ class ofxTLTrack
 
     //parent wrappers that call virtual versions implemented by subclasses
     bool _mousePressed(ofMouseEventArgs& args, long millis);
-    void _mouseMoved(ofMouseEventArgs& args, long millis);
-    void _mouseDragged(ofMouseEventArgs& args, long millis);
-    void _mouseReleased(ofMouseEventArgs& args, long millis);
+	bool _mouseMoved(ofMouseEventArgs& args, long millis);
+	bool _mouseDragged(ofMouseEventArgs& args, long millis);
+	bool _mouseReleased(ofMouseEventArgs& args, long millis);
 
 	//standard events to be implement in subclasses
 	//mousePressed returns true if the click activated the track in a way that should maintain attention
 	//for instance, selecting a keyframe
-    virtual bool mousePressed(ofMouseEventArgs& args, long millis){return false;}
-	virtual void mouseMoved(ofMouseEventArgs& args, long millis){}
-    virtual void mouseDragged(ofMouseEventArgs& args, long millis){};
-	virtual void mouseReleased(ofMouseEventArgs& args, long mllis){};
+	virtual bool mousePressed(ofMouseEventArgs& args, long millis){return inBounds = bounds.inside(args);}
+	virtual bool mouseMoved(ofMouseEventArgs& args, long millis){return false;}
+	virtual bool mouseDragged(ofMouseEventArgs& args, long millis){return inBounds;};
+	virtual bool mouseReleased(ofMouseEventArgs& args, long mllis){return false;};
 
 	//if you override playbackStarted() you have to call super ofxTLTrack's method as well
     virtual void playbackStarted(ofxTLPlaybackEventArgs& args);
 	virtual void playbackLooped(ofxTLPlaybackEventArgs& args){};
 	virtual void playbackEnded(ofxTLPlaybackEventArgs& args){};
 
-	virtual void keyPressed(ofKeyEventArgs& args){};
+	virtual bool keyPressed(ofKeyEventArgs& args){ return false; };
 	virtual void nudgeBy(ofVec2f nudgePercent){};
 
     //Triggered by the page object based on user interaction, Only calls when the focus actually changes
@@ -167,14 +167,15 @@ class ofxTLTrack
     //optional display name that track headers will use
     virtual void setDisplayName(string name);
     virtual string getDisplayName();
-    virtual string getTrackType();
+	virtual string getTrackType() const;
 
 	bool getCreatedByTimeline();
 	void setCreatedByTimeline(bool created);
 	ofxTLEvents& events(); //convenience wrapper for timeline events;
 
+	virtual ofJson getStructure() const;
   protected:
-
+	friend class ofxTimeline;
 	ofxTimeline* timeline;
 	bool enabled;
 	//responsability of subclass to react to this on draw, is cleared by super class each frame
@@ -220,4 +221,5 @@ class ofxTLTrack
 	string xmlFileName;
 	ofRectangle bounds;
 	ofRange zoomBounds;
+	bool inBounds = false;
 };

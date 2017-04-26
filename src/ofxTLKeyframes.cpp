@@ -454,12 +454,13 @@ void ofxTLKeyframes::updateDragOffsets(ofVec2f screenpoint, long grabMillis){
 	}
 }
 
-void ofxTLKeyframes::mouseMoved(ofMouseEventArgs& args, long millis){
-	ofxTLTrack::mouseMoved(args, millis);
+bool ofxTLKeyframes::mouseMoved(ofMouseEventArgs& args, long millis){
+	auto ret = ofxTLTrack::mouseMoved(args, millis);
 	hoverKeyframe = keyframeAtScreenpoint( ofVec2f(args.x, args.y));
+	return ret;
 }
 
-void ofxTLKeyframes::mouseDragged(ofMouseEventArgs& args, long millis){
+bool ofxTLKeyframes::mouseDragged(ofMouseEventArgs& args, long millis){
 
 
 	if ( ofGetModifierAltPressed() && constrainVerticalDrag != 0.f ) args.y = constrainVerticalDrag;
@@ -472,6 +473,7 @@ void ofxTLKeyframes::mouseDragged(ofMouseEventArgs& args, long millis){
             setKeyframeTime(selectedKeyframes[k], ofClamp(stretchAnchor + (selectedKeyframes[k]->grabTimeOffset * stretchRatio),
 														  0, timeline->getDurationInMilliseconds()));
             selectedKeyframes[k]->screenPosition = screenPositionForKeyframe(selectedKeyframes[k]);
+			events().keyFrameChanged.notify(this, *selectedKeyframes[k]);
 		}
         timeline->flagUserChangedValue();
         keysDidDrag = true;
@@ -486,6 +488,7 @@ void ofxTLKeyframes::mouseDragged(ofMouseEventArgs& args, long millis){
 														  screenXToMillis(bounds.getMinX()), screenXToMillis(bounds.getMaxX())));
             selectedKeyframes[k]->value = screenYToValue(args.y - selectedKeyframes[k]->grabValueOffset);
             selectedKeyframes[k]->screenPosition = screenPositionForKeyframe(selectedKeyframes[k]);
+			events().keyFrameChanged.notify(this, *selectedKeyframes[k]);
         }
         if(selectedKeyframe != NULL && timeline->getMovePlayheadOnDrag()){
             timeline->setCurrentTimeMillis(selectedKeyframe->time);
@@ -495,6 +498,7 @@ void ofxTLKeyframes::mouseDragged(ofMouseEventArgs& args, long millis){
         updateKeyframeSort();
     }
 	createNewOnMouseup = false;
+	return selectedKeyframe != nullptr;
 }
 
 void ofxTLKeyframes::updateKeyframeSort(){
@@ -529,7 +533,7 @@ void ofxTLKeyframes::updateKeyframeSort(){
 	}
 }
 
-void ofxTLKeyframes::mouseReleased(ofMouseEventArgs& args, long millis){
+bool ofxTLKeyframes::mouseReleased(ofMouseEventArgs& args, long millis){
 	keysAreDraggable = false;
     if(keysDidDrag){
 		//reset these caches because they may no longer be valid
@@ -549,6 +553,7 @@ void ofxTLKeyframes::mouseReleased(ofMouseEventArgs& args, long millis){
 		timeline->flagTrackModified(this);
 	}
 	createNewOnMouseup = false;
+	return false;
 }
 
 void ofxTLKeyframes::setKeyframeTime(ofxTLKeyframe* key, unsigned long long newTime){
@@ -566,6 +571,34 @@ void ofxTLKeyframes::getSnappingPoints(set<unsigned long long>& points){
 
 vector<ofxTLKeyframe*>& ofxTLKeyframes::getKeyframes(){
     return keyframes;
+}
+
+const vector<ofxTLKeyframe*>& ofxTLKeyframes::getSelectedKeyframes(){
+	return selectedKeyframes;
+}
+
+ofxTLKeyframe * ofxTLKeyframes::getNearestKeyframe(float time){
+	auto nearest = std::min_element(keyframes.begin(),keyframes.end(),
+		[&](const ofxTLKeyframe * kf1, const ofxTLKeyframe * kf2){
+			return abs(kf1->time - time * 1000) < abs(kf2->time - time * 1000);
+		});
+	if(nearest != keyframes.end()){
+		return *nearest;
+	}else{
+		return nullptr;
+	}
+}
+
+const ofxTLKeyframe * ofxTLKeyframes::getNearestKeyframe(float time) const{
+	auto nearest = std::min_element(keyframes.begin(),keyframes.end(),
+		[&](const ofxTLKeyframe * kf1, const ofxTLKeyframe * kf2){
+			return abs(kf1->time - time) < abs(kf2->time - time);
+		});
+	if(nearest != keyframes.end()){
+		return *nearest;
+	}else{
+		return nullptr;
+	}
 }
 
 string ofxTLKeyframes::copyRequest(){
@@ -638,7 +671,7 @@ void ofxTLKeyframes::addKeyframeAtMillis(float value, unsigned long long millis)
     ofxTLKeyframe* key = getKeyframeAtMillis(millis);
     if ( key == NULL)
     {
-        ofxTLKeyframe* key = newKeyframe();
+		key = newKeyframe();
         key->time = key->previousTime = millis;
         key->value = ofMap(value, valueRange.min, valueRange.max, 0, 1.0, true);
         keyframes.push_back(key);
@@ -652,6 +685,7 @@ void ofxTLKeyframes::addKeyframeAtMillis(float value, unsigned long long millis)
     }
 	timeline->flagTrackModified(this);
 	shouldRecomputePreviews = true;
+	selectedKeyframe = key;
 }
 
 void ofxTLKeyframes::selectAll(){
@@ -769,18 +803,22 @@ void ofxTLKeyframes::loadFromBinaryFile(){
 	shouldRecomputePreviews = true;
 }
 
-void ofxTLKeyframes::keyPressed(ofKeyEventArgs& args){
+bool ofxTLKeyframes::keyPressed(ofKeyEventArgs& args){
 	if(args.key == OF_KEY_DEL || args.key == OF_KEY_BACKSPACE){
 		deleteSelectedKeyframes();
+		return true;
 	}
 	if ( args.key == 's')
     {
         simplifySelectedKeyframes();
+		return true;
     }
     if ( args.key == 'k')
     {
         addKeyframe( getValue() );
+		return true;
     }
+	return false;
 }
 
 void ofxTLKeyframes::nudgeBy(ofVec2f nudgePercent){
@@ -905,7 +943,7 @@ ofxTLKeyframe* ofxTLKeyframes::newKeyframe(){
 	return k;
 }
 
-string ofxTLKeyframes::getTrackType(){
+string ofxTLKeyframes::getTrackType() const{
     return "Keyframes";
 }
 

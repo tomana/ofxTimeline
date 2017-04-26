@@ -56,10 +56,10 @@ class ofxTLPageTabs : public ofxTLTrack {
 	
 	virtual void clear();
 	
-	virtual void mousePressed(ofMouseEventArgs& args);
-	virtual void mouseReleased(ofMouseEventArgs& args);
+	virtual bool mousePressed(ofMouseEventArgs& args);
+	virtual bool mouseReleased(ofMouseEventArgs& args);
 	
-	virtual void keyPressed(ofKeyEventArgs& args);
+	virtual bool keyPressed(ofKeyEventArgs& args);
     
     virtual int getSelectedPageIndex();
     virtual string getSelectedPageName();

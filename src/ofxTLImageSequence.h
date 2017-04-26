@@ -36,11 +36,12 @@
 #include "ofxTLTrack.h"
 #include "ofxTLImageSequenceFrame.h"
 
-static GLint glTypeForImageType(int imageType){
-	if(imageType == OF_IMAGE_GRAYSCALE) return GL_LUMINANCE;
-	if(imageType == OF_IMAGE_COLOR) return GL_RGB;
-	if(imageType == OF_IMAGE_COLOR_ALPHA) return GL_RGBA;
-}
+//static GLint glTypeForImageType(int imageType){
+//	if(imageType == OF_IMAGE_GRAYSCALE) return GL_LUMINANCE;
+//	if(imageType == OF_IMAGE_COLOR) return GL_RGB;
+//	if(imageType == OF_IMAGE_COLOR_ALPHA) return GL_RGBA;
+//	return GL_RGB;
+//}
 
 typedef struct
 {
@@ -71,12 +72,6 @@ class ofxTLImageSequence : public ofxTLTrack {
 	ofImage* getImageAtTime(float time);
 	ofImage* getImageAtFrame(int frame);
 
-	virtual void mousePressed(ofMouseEventArgs& args);
-	virtual void mouseMoved(ofMouseEventArgs& args);
-	virtual void mouseDragged(ofMouseEventArgs& args, bool snapped);
-	virtual void mouseReleased(ofMouseEventArgs& args);
-	
-	virtual void keyPressed(ofKeyEventArgs& args);
 	
 	virtual void save();
 	virtual void load();
@@ -89,7 +84,8 @@ class ofxTLImageSequence : public ofxTLTrack {
 		
 	void purgeFrames();
 	
-    virtual string getTrackType();
+	virtual string getTrackType() const;
+	static constexpr const char* TRACK_TYPE = "ImageSequence";
     
   protected:
     

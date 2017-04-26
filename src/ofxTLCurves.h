@@ -45,7 +45,7 @@ typedef struct {
 	ofPolyline easeOutPreview;
 	ofPolyline easeInOutPreview;
 
-	ofxEasing* easing;
+	ofxBaseEasing* easing;
 } EasingFunction;
 
 typedef struct {
@@ -92,17 +92,19 @@ class ofxTLCurves : public ofxTLKeyframes {
 	//For selecting keyframe type only,
     //the superclass controls keyframe placement
 	virtual bool mousePressed(ofMouseEventArgs& args, long millis);
-    virtual void mouseDragged(ofMouseEventArgs& args, long millis);
-	virtual void mouseReleased(ofMouseEventArgs& args, long millis);
+	virtual bool mouseDragged(ofMouseEventArgs& args, long millis);
+	virtual bool mouseReleased(ofMouseEventArgs& args, long millis);
 
-	virtual void keyPressed(ofKeyEventArgs& args);
+	virtual bool keyPressed(ofKeyEventArgs& args);
 
 	virtual void setDefaultEasingType( int index );
     virtual int getDefaultEasingType();
     virtual void setDefaultEasingFunction( int index );
     virtual int getDefaultEasingFunction();
 
-    virtual string getTrackType();
+	virtual string getTrackType() const;
+	static constexpr const char* TRACK_TYPE = "Curves";
+	virtual ofJson getStructure() const;
 
   protected:
 

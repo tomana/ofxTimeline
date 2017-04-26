@@ -49,24 +49,43 @@ void ofxTLSwitches::update(){
     long thisTimelinePoint = currentTrackTime();
     for(int i = 0; i < keyframes.size(); i++){
         ofxTLSwitch* switchKey = (ofxTLSwitch*)keyframes[i];
-        
-        // switch turns on
-        if(timeline->getInOutRangeMillis().contains(switchKey->time) &&
-           lastTimelinePoint <= switchKey->time &&
-           thisTimelinePoint >= switchKey->time &&
-           thisTimelinePoint != lastTimelinePoint)
-        {
-            switchStateChanged(keyframes[i]);
-        }
-        
-        // switch turns off
-        if(timeline->getInOutRangeMillis().contains(switchKey->timeRange.max) &&
-           lastTimelinePoint <= switchKey->timeRange.max &&
-           thisTimelinePoint >= switchKey->timeRange.max &&
-           thisTimelinePoint != lastTimelinePoint)
-        {
-            switchStateChanged(keyframes[i]);
-        }
+		if(thisTimelinePoint>lastTimelinePoint){
+			// switch turns on
+			if(timeline->getInOutRangeMillis().contains(switchKey->time) &&
+			   lastTimelinePoint <= switchKey->time &&
+			   thisTimelinePoint >= switchKey->time &&
+			   thisTimelinePoint != lastTimelinePoint)
+			{
+				switchStateChanged(keyframes[i]);
+			}
+
+			// switch turns off
+			if(timeline->getInOutRangeMillis().contains(switchKey->timeRange.max) &&
+			   lastTimelinePoint <= switchKey->timeRange.max &&
+			   thisTimelinePoint >= switchKey->timeRange.max &&
+			   thisTimelinePoint != lastTimelinePoint)
+			{
+				switchStateChanged(keyframes[i]);
+			}
+		}else{
+			// switch turns on
+			if(timeline->getInOutRangeMillis().contains(switchKey->time) &&
+			   thisTimelinePoint <= switchKey->time &&
+			   lastTimelinePoint >= switchKey->time &&
+			   thisTimelinePoint != lastTimelinePoint)
+			{
+				switchStateChanged(keyframes[i]);
+			}
+
+			// switch turns off
+			if(timeline->getInOutRangeMillis().contains(switchKey->timeRange.max) &&
+			   thisTimelinePoint <= switchKey->timeRange.max &&
+			   lastTimelinePoint >= switchKey->timeRange.max &&
+			   thisTimelinePoint != lastTimelinePoint)
+			{
+				switchStateChanged(keyframes[i]);
+			}
+		}
     }
     lastTimelinePoint = thisTimelinePoint;
 }
@@ -227,7 +246,7 @@ ofxTLSwitch* ofxTLSwitches::getActiveSwitchAtMillis(long millis){
 }
 
 bool ofxTLSwitches::mousePressed(ofMouseEventArgs& args, long millis){
-    
+	inBounds = bounds.inside(args);
     clickedTextField = NULL;
     //look at each element to see if a text field was clicked
     for(int i = 0; i < keyframes.size(); i++){
@@ -275,6 +294,9 @@ bool ofxTLSwitches::mousePressed(ofMouseEventArgs& args, long millis){
     if(placingSwitch != NULL){
 		if(isActive() && args.button == 0){
 			placingSwitch->timeRange.max = millis;
+			if(placingSwitch->timeRange.contains(currentTrackTime())){
+				switchStateChanged(placingSwitch);
+			}
 			updateTimeRanges();
 		}
 		else {
@@ -387,19 +409,20 @@ void ofxTLSwitches::updateEdgeDragOffsets(long clickMillis){
     }
 }
 
-void ofxTLSwitches::mouseDragged(ofMouseEventArgs& args, long millis){
+bool ofxTLSwitches::mouseDragged(ofMouseEventArgs& args, long millis){
     if(enteringText)
-        return;
+		return false;
     
     //do the normal dragging behavior for selected keyframes
-    ofxTLKeyframes::mouseDragged(args, millis);
-	
+	ofxTLKeyframes::mouseDragged(args, millis);
+
 	if(keysAreDraggable){
 		//look for any keys with just beginning and ends selected
 		//becaues of the logical in the mousePressed, there will never
 		//be a selected keyframe with an end selected
 		for(int i = 0; i < keyframes.size(); i++){
 			ofxTLSwitch* switchKey = (ofxTLSwitch*)keyframes[i];
+			auto contained = switchKey->timeRange.contains(currentTrackTime());
 			if(switchKey->startSelected){
 				switchKey->timeRange.min = millis - switchKey->edgeDragOffset;
 				switchKey->time = switchKey->timeRange.min;
@@ -407,17 +430,28 @@ void ofxTLSwitches::mouseDragged(ofMouseEventArgs& args, long millis){
 			else if(switchKey->endSelected){
 				switchKey->timeRange.max = millis - switchKey->edgeDragOffset;
 			}
+
+			if(contained != switchKey->timeRange.contains(currentTrackTime())){
+				switchStateChanged(switchKey);
+			}
 		}
 		
 		updateTimeRanges();
 	}
+	return ofxTLTrack::mouseDragged(args, millis);
 }
 
-void ofxTLSwitches::mouseMoved(ofMouseEventArgs& args, long millis){
+bool ofxTLSwitches::mouseMoved(ofMouseEventArgs& args, long millis){
     endHover = startHover = false;
     if(hover && placingSwitch != NULL){
+		auto contained = placingSwitch->timeRange.contains(currentTrackTime());
+
 		placingSwitch->timeRange.max = millis;
-		return;
+
+		if(contained != placingSwitch->timeRange.contains(currentTrackTime())){
+			switchStateChanged(placingSwitch);
+		}
+		return true;
 	}
 	
     for(int i = 0; i < keyframes.size(); i++){
@@ -425,16 +459,16 @@ void ofxTLSwitches::mouseMoved(ofMouseEventArgs& args, long millis){
         if(abs(switchKey->display.x - args.x) < 10.0 && bounds.inside(args.x,args.y)){
             hoverKeyframe = switchKey;
             startHover = true;
-            return; //return cancels call to parent
+			return true; //return cancels call to parent
         }
         float endEdge = switchKey->display.x+switchKey->display.width;
         if(abs(endEdge - args.x) < 10.0 && bounds.inside(args.x,args.y)){
             hoverKeyframe = switchKey;
             endHover = true;
-            return; //cancels call to parent
+			return true; //cancels call to parent
         }
     }
-    ofxTLKeyframes::mouseMoved(args, millis);
+	return ofxTLKeyframes::mouseMoved(args, millis);
 }
 
 void ofxTLSwitches::nudgeBy(ofVec2f nudgePercent){
@@ -468,17 +502,25 @@ void ofxTLSwitches::updateTimeRanges(){
     //so we look at the selected keyframes values and see if their changed
     //if so update both the min and the max time so the control moves as a block
 	for(int i = 0; i < selectedKeyframes.size(); i++){
-        ofxTLSwitch* switchKey = (ofxTLSwitch*)selectedKeyframes[i];
+		ofxTLSwitch* switchKey = (ofxTLSwitch*)selectedKeyframes[i];
+		auto contained = switchKey->timeRange.contains(currentTrackTime());
+
         long dif = switchKey->time - switchKey->timeRange.min;
         switchKey->timeRange.min = switchKey->time;
         switchKey->timeRange.max += dif;
+
+		if(contained != switchKey->timeRange.contains(currentTrackTime())){
+			switchStateChanged(switchKey);
+		}
     }
     
 	//we also want ot make sure that any nudges or drags that happened to only edge values
 	//reversed the min/max relationship value and swap them really quick
     for(int i = 0; i < keyframes.size(); i++){
         //check to see if the user reversed the value and swap them really quick
-        ofxTLSwitch* switchKey = (ofxTLSwitch*)keyframes[i];
+		ofxTLSwitch* switchKey = (ofxTLSwitch*)keyframes[i];
+		auto contained = switchKey->timeRange.contains(currentTrackTime());
+
 		if(switchKey->timeRange.min > switchKey->timeRange.max){
             float tempPos = switchKey->timeRange.max;
             switchKey->timeRange.max = switchKey->timeRange.min;
@@ -487,12 +529,16 @@ void ofxTLSwitches::updateTimeRanges(){
             switchKey->startSelected = switchKey->endSelected;
             switchKey->endSelected = tempSelect;
         }
+
+		if(contained != switchKey->timeRange.contains(currentTrackTime())){
+			switchStateChanged(switchKey);
+		}
     }
 	
     //TODO: no overlaps!!
 }
 
-void ofxTLSwitches::mouseReleased(ofMouseEventArgs& args, long millis){
+bool ofxTLSwitches::mouseReleased(ofMouseEventArgs& args, long millis){
     //if we didn't click on a text field and we are entering txt
     //take off the typing mode. Hitting enter will also do this
     if(enteringText){
@@ -515,12 +561,13 @@ void ofxTLSwitches::mouseReleased(ofMouseEventArgs& args, long millis){
 			timeline->dismissedModalContent();
 			timeline->flagTrackModified(this);
 		}
+		return false;
 	} else {
-        ofxTLKeyframes::mouseReleased(args, millis);
+		return ofxTLKeyframes::mouseReleased(args, millis);
     }
 }
 
-void ofxTLSwitches::keyPressed(ofKeyEventArgs& args){
+bool ofxTLSwitches::keyPressed(ofKeyEventArgs& args){
 	
 	if(enteringText){
         //enter key submits the values
@@ -536,9 +583,10 @@ void ofxTLSwitches::keyPressed(ofKeyEventArgs& args){
 		else {
 			clickedTextField->textField.keyPressed(args);
 		}
+		return false;
 
     } else {
-        ofxTLKeyframes::keyPressed(args);
+		return ofxTLKeyframes::keyPressed(args);
     }
 }
 
@@ -585,6 +633,9 @@ ofxTLKeyframe* ofxTLSwitches::newKeyframe(){
 	
 	//for just placing a switch we'll be able to decide the end position
 	placingSwitch = switchKey;
+	if(placingSwitch->timeRange.contains(currentTrackTime())){
+		switchStateChanged(placingSwitch);
+	}
 	
     return switchKey;
 }
@@ -637,6 +688,6 @@ ofxTLKeyframe* ofxTLSwitches::keyframeAtScreenpoint(ofVec2f p){
     return NULL;
 }
 
-string ofxTLSwitches::getTrackType(){
-    return "Switches";
+string ofxTLSwitches::getTrackType() const{
+	return TRACK_TYPE;
 }

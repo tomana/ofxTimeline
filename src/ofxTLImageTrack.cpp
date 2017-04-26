@@ -99,7 +99,6 @@ void ofxTLImageTrack::calculateFramePositions(){
 	framePositionsUpdated(newThumbs);
 }
 
-string ofxTLImageTrack::getTrackType(){
-    return "ImageTrack";
+string ofxTLImageTrack::getTrackType() const{
+	return TRACK_TYPE;
 }
-

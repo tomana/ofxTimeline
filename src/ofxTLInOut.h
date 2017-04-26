@@ -39,10 +39,10 @@ class ofxTLInOut : public ofxTLTrack {
     ofxTLInOut();
     
     virtual void draw();
-	virtual void mousePressed(ofMouseEventArgs& args);
-	virtual void mouseMoved(ofMouseEventArgs& args);
-	virtual void mouseDragged(ofMouseEventArgs& args);
-	virtual void mouseReleased(ofMouseEventArgs& args);
+	virtual bool mousePressed(ofMouseEventArgs& args);
+	virtual bool mouseMoved(ofMouseEventArgs& args);
+	virtual bool mouseDragged(ofMouseEventArgs& args);
+	virtual bool mouseReleased(ofMouseEventArgs& args);
     
     virtual void load();
 	virtual void save();

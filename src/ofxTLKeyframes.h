@@ -56,13 +56,13 @@ class ofxTLKeyframes : public ofxTLTrack
 	virtual void draw();
 
 	virtual bool mousePressed(ofMouseEventArgs& args, long millis);
-	virtual void mouseMoved(ofMouseEventArgs& args, long millis);
-	virtual void mouseDragged(ofMouseEventArgs& args, long millis);
-	virtual void mouseReleased(ofMouseEventArgs& args, long millis);
+	virtual bool mouseMoved(ofMouseEventArgs& args, long millis);
+	virtual bool mouseDragged(ofMouseEventArgs& args, long millis);
+	virtual bool mouseReleased(ofMouseEventArgs& args, long millis);
 
 	virtual void nudgeBy(ofVec2f nudgePercent);
 
-	virtual void keyPressed(ofKeyEventArgs& args);
+	virtual bool keyPressed(ofKeyEventArgs& args);
 
 	virtual void getSnappingPoints(set<unsigned long long>& points);
 
@@ -78,7 +78,10 @@ class ofxTLKeyframes : public ofxTLTrack
 	virtual void simplifySelectedKeyframes( float tolerance = 0.01f);
     ofxTLKeyframe* getKeyframeAtMillis( unsigned long long millis);
 
-    vector<ofxTLKeyframe*>& getKeyframes();
+	vector<ofxTLKeyframe*>& getKeyframes();
+	const vector<ofxTLKeyframe*>& getSelectedKeyframes();
+	ofxTLKeyframe * getNearestKeyframe(float time);
+	const ofxTLKeyframe * getNearestKeyframe(float time) const;
 
 	//copy paste
 	virtual string copyRequest();
@@ -100,7 +103,7 @@ class ofxTLKeyframes : public ofxTLTrack
 
     virtual void regionSelected(ofLongRange timeRange, ofRange valueRange);
 
-    virtual string getTrackType();
+	virtual string getTrackType() const;
 
 	//sampling
 	virtual float getValue();
@@ -115,6 +118,7 @@ class ofxTLKeyframes : public ofxTLTrack
 	virtual void quantizeKeys(int step);
 
     virtual ofRange getValueRange();
+	virtual void recomputePreviews();
 
 	//experimental binary saving. does not work with subclasses yet
 	void saveToBinaryFile();
@@ -129,7 +133,6 @@ class ofxTLKeyframes : public ofxTLTrack
 	ofPolyline preview;
 	vector<ofVec2f> keyPoints;
 
-	virtual void recomputePreviews();
 	bool shouldRecomputePreviews;
 
 	virtual float sampleAtPercent(float percent); //less accurate than millis

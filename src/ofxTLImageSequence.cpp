@@ -124,7 +124,7 @@ bool ofxTLImageSequence::loadSequence(string directory){
     recomputePreview();
 	
     cout << "DONE CREATING FRAMES " << numFiles << " img " << imageWidth << "x" << imageHeight << " thumb " << thumbWidth << "x" << thumbHeight << endl;
-	
+	return loaded;
 }
 
 float ofxTLImageSequence::getImageWidth(){
@@ -149,7 +149,7 @@ ofImage* ofxTLImageSequence::getImageAtTime(float time){
 
 ofImage* ofxTLImageSequence::getImageAtFrame(int frame){
 	if(frame >= frames.size()){
-		ofLog(OF_LOG_ERROR, "THISSequence -- accessing index %d when we only have %d frames. Returning last frame instead.", frame, frames.size());
+		ofLog(OF_LOG_ERROR, "THISSequence -- accessing index %d when we only have %lu frames. Returning last frame instead.", frame, frames.size());
 		frame = frames.size()-1;
 	}
 //	if(thumb){
@@ -166,22 +166,6 @@ void ofxTLImageSequence::drawRectChanged(){
 void ofxTLImageSequence::setZoomBounds(ofRange zoomBoundsPercent){
 	ofxTLTrack::setZoomBounds(zoomBoundsPercent);
 	recomputePreview();
-}
-
-void ofxTLImageSequence::mousePressed(ofMouseEventArgs& args){
-	
-}
-
-void ofxTLImageSequence::mouseMoved(ofMouseEventArgs& args){
-}
-
-void ofxTLImageSequence::mouseDragged(ofMouseEventArgs& args, bool snapped){
-}
-
-void ofxTLImageSequence::mouseReleased(ofMouseEventArgs& args){
-}
-
-void ofxTLImageSequence::keyPressed(ofKeyEventArgs& args){
 }
 
 void ofxTLImageSequence::save(){
@@ -278,8 +262,8 @@ void ofxTLImageSequence::purgeFrames()
     }
 }
 
-string ofxTLImageSequence::getTrackType(){
-    return "ImageSequence";
+string ofxTLImageSequence::getTrackType() const{
+	return TRACK_TYPE;
 }
 //void ofxTLImageSequence::purgeThumbs()
 //{

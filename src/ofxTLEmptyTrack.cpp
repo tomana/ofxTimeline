@@ -94,30 +94,35 @@ bool ofxTLEmptyTrack::mousePressed(ofMouseEventArgs& args, long millis){
 	return createNewPoint; //signals that the click made a selection
 }
 
-void ofxTLEmptyTrack::mouseMoved(ofMouseEventArgs& args, long millis){
-	
+bool ofxTLEmptyTrack::mouseMoved(ofMouseEventArgs& args, long millis){
+	return false;
 }
-void ofxTLEmptyTrack::mouseDragged(ofMouseEventArgs& args, long millis){
-	
+bool ofxTLEmptyTrack::mouseDragged(ofMouseEventArgs& args, long millis){
+	return createNewPoint;
 }
-void ofxTLEmptyTrack::mouseReleased(ofMouseEventArgs& args, long millis){
+bool ofxTLEmptyTrack::mouseReleased(ofMouseEventArgs& args, long millis){
 	
 	//need to create clicks on mouse up if the mouse hasn't moved in order to work
 	//well with the click-drag rectangle thing
-	if(createNewPoint && clickPoint.distance(ofVec2f(args.x, args.y)) < 4){
-		ClickPoint newpoint;
-		newpoint.value = ofMap(args.y, bounds.getMinY(), bounds.getMaxY(), 0, 1.0);
-		newpoint.time = millis;
-		clickPoints.push_back(newpoint);
-		//call this on mouseup or keypressed after a click 
-		//will trigger save and needed for undo
-		timeline->flagTrackModified(this);
+	if(createNewPoint){
+		createNewPoint = false;
+		if(clickPoint.distance(ofVec2f(args.x, args.y)) < 4){
+			ClickPoint newpoint;
+			newpoint.value = ofMap(args.y, bounds.getMinY(), bounds.getMaxY(), 0, 1.0);
+			newpoint.time = millis;
+			clickPoints.push_back(newpoint);
+			//call this on mouseup or keypressed after a click
+			//will trigger save and needed for undo
+			timeline->flagTrackModified(this);
+			return  true;
+		}
 	}
+	return false;
 }
 
 //keys pressed events, and nuding from arrow keys with normalized nudge amount 0 - 1.0
-void ofxTLEmptyTrack::keyPressed(ofKeyEventArgs& args){
-	
+bool ofxTLEmptyTrack::keyPressed(ofKeyEventArgs& args){
+	return false;
 }
 void ofxTLEmptyTrack::nudgeBy(ofVec2f nudgePercent){
 	
@@ -139,9 +144,10 @@ void ofxTLEmptyTrack::selectAll(){
 }
 
 //return a unique name for your track
-string ofxTLEmptyTrack::getTrackType(){
-	return "EmptyTrack";
+string ofxTLEmptyTrack::getTrackType() const{
+	return TRACK_TYPE;
 }
+
 
 //for copy+paste you can optionaly implement ways
 //of creating XML strings that represent your selected tracks

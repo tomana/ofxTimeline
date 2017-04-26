@@ -60,12 +60,12 @@ class ofxTLEmptyKeyframes : public ofxTLKeyframes {
 	//see some of the other tracks for interesting patterns on how to
 	//extend default interaction behavior
 	virtual bool mousePressed(ofMouseEventArgs& args, long millis);
-	virtual void mouseMoved(ofMouseEventArgs& args, long millis);
-	virtual void mouseDragged(ofMouseEventArgs& args, long millis);
-	virtual void mouseReleased(ofMouseEventArgs& args, long millis);
+	virtual bool mouseMoved(ofMouseEventArgs& args, long millis);
+	virtual bool mouseDragged(ofMouseEventArgs& args, long millis);
+	virtual bool mouseReleased(ofMouseEventArgs& args, long millis);
 	
 	//keys pressed events, and nuding from arrow keys with normalized nudge amount 0 - 1.0
-	virtual void keyPressed(ofKeyEventArgs& args);
+	virtual bool keyPressed(ofKeyEventArgs& args);
 
 	//how to get colors from our example, linearly interpolated RGB
 	ofColor getCurrentColor();

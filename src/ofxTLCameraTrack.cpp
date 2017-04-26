@@ -278,20 +278,20 @@ bool ofxTLCameraTrack::mousePressed(ofMouseEventArgs& args, long millis){
 
 }
 
-void ofxTLCameraTrack::mouseMoved(ofMouseEventArgs& args, long millis){
-	ofxTLKeyframes::mouseMoved(args, millis);
+bool ofxTLCameraTrack::mouseMoved(ofMouseEventArgs& args, long millis){
+	return ofxTLKeyframes::mouseMoved(args, millis);
 }
 
-void ofxTLCameraTrack::mouseDragged(ofMouseEventArgs& args, long millis){
-	ofxTLKeyframes::mouseDragged(args, millis);
+bool ofxTLCameraTrack::mouseDragged(ofMouseEventArgs& args, long millis){
+	return ofxTLKeyframes::mouseDragged(args, millis);
 }
 
-void ofxTLCameraTrack::mouseReleased(ofMouseEventArgs& args, long millis){
-	ofxTLKeyframes::mouseReleased(args, millis);
+bool ofxTLCameraTrack::mouseReleased(ofMouseEventArgs& args, long millis){
+	return ofxTLKeyframes::mouseReleased(args, millis);
 }
 
 //keys pressed events, and nuding from arrow keys with normalized nudge amount 0 - 1.0
-void ofxTLCameraTrack::keyPressed(ofKeyEventArgs& args){
+bool ofxTLCameraTrack::keyPressed(ofKeyEventArgs& args){
 	ofxTLKeyframes::keyPressed(args);
 	
 	bool modified = false;
@@ -320,6 +320,7 @@ void ofxTLCameraTrack::keyPressed(ofKeyEventArgs& args){
 	if(modified){
 		timeline->flagTrackModified(this);
 	}
+	return modified;
 	
 }
 
@@ -331,8 +332,8 @@ void ofxTLCameraTrack::regionSelected(ofLongRange timeRange, ofRange valueRange)
 	}
 }
 
-string ofxTLCameraTrack::getTrackType(){
-	return "CameraTrack";
+string ofxTLCameraTrack::getTrackType() const{
+	return TRACK_TYPE;
 }
 
 ofxTLKeyframe* ofxTLCameraTrack::newKeyframe(){
@@ -522,6 +523,8 @@ CameraTrackEase ofxTLCameraTrack::getNextEase(CameraTrackEase ease){
             return OFXTL_CAMERA_EASE_SMOOTH;
         case OFXTL_CAMERA_EASE_SMOOTH:
             return OFXTL_CAMERA_EASE_CUT;
+		default:
+			return OFXTL_CAMERA_EASE_LINEAR;
     }
 }
 
@@ -533,5 +536,7 @@ CameraTrackEase ofxTLCameraTrack::getPreviousEase(CameraTrackEase ease){
             return OFXTL_CAMERA_EASE_CUT;
         case OFXTL_CAMERA_EASE_SMOOTH:
             return OFXTL_CAMERA_EASE_LINEAR;
+		default:
+			return OFXTL_CAMERA_EASE_SMOOTH;
     }
 }

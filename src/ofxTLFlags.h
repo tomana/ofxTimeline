@@ -49,13 +49,14 @@ class ofxTLFlags : public ofxTLBangs {
 	virtual void draw();
 	
 	virtual bool mousePressed(ofMouseEventArgs& args, long millis);
-    virtual void mouseDragged(ofMouseEventArgs& args, long millis);
-	virtual void mouseReleased(ofMouseEventArgs& args, long millis);
+	virtual bool mouseDragged(ofMouseEventArgs& args, long millis);
+	virtual bool mouseReleased(ofMouseEventArgs& args, long millis);
 	
-	virtual void keyPressed(ofKeyEventArgs& args);
+	virtual bool keyPressed(ofKeyEventArgs& args);
 	virtual void unselectAll();
     
-    virtual string getTrackType();
+	virtual string getTrackType() const;
+	static constexpr const char* TRACK_TYPE = "Flags";
 	
 	virtual void addFlag(string key);
 	virtual void addFlagAtTime(string key, unsigned long long time);

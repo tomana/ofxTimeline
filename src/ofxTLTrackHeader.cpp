@@ -172,24 +172,27 @@ void ofxTLTrackHeader::recalculateFooterStripes(){
 	footerStripeWidth = footerRect.width;
 }
 
-void ofxTLTrackHeader::mousePressed(ofMouseEventArgs& args){
+bool ofxTLTrackHeader::mousePressed(ofMouseEventArgs& args){
 	if(footerHeight > 0 && footerRect.inside(ofPoint(args.x,args.y))){
 		dragOffset = args.y - footerRect.y;
 		draggingSize = true;
 	}
+	return draggingSize;
 }
 
-void ofxTLTrackHeader::mouseMoved(ofMouseEventArgs& args){
+bool ofxTLTrackHeader::mouseMoved(ofMouseEventArgs& args){
 	hoveringFooter = footerRect.inside(args.x, args.y);
+	return  hoveringFooter;
 }
 
-void ofxTLTrackHeader::mouseDragged(ofMouseEventArgs& args){
+bool ofxTLTrackHeader::mouseDragged(ofMouseEventArgs& args){
 	if(draggingSize){
 		ofRectangle trackRect = track->getDrawRect();
 		trackRect.height = MAX(0, args.y - trackRect.y - dragOffset);
 		track->setDrawRect(trackRect);
 		recalculateFooter();
 	}
+	return draggingSize;
 }
 
 void ofxTLTrackHeader::collapseTrack(){
@@ -215,8 +218,9 @@ void ofxTLTrackHeader::recalculateFooter(){
 	ofNotifyEvent(track->events().viewWasResized, a);
 }
 
-void ofxTLTrackHeader::mouseReleased(ofMouseEventArgs& args){
+bool ofxTLTrackHeader::mouseReleased(ofMouseEventArgs& args){
 	draggingSize = false;
+	return false;
 }
 
 ofRectangle ofxTLTrackHeader::getFooterRect(){

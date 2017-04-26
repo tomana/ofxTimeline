@@ -64,18 +64,19 @@ class ofxTLSwitches : public ofxTLKeyframes {
     ofxTLSwitch* getActiveSwitchAtMillis(long millis);
     
     virtual bool mousePressed(ofMouseEventArgs& args, long millis);
-    virtual void mouseDragged(ofMouseEventArgs& args, long millis);
-    virtual void mouseReleased(ofMouseEventArgs& args, long millis);
-    virtual void mouseMoved(ofMouseEventArgs& args, long millis);
+	virtual bool mouseDragged(ofMouseEventArgs& args, long millis);
+	virtual bool mouseReleased(ofMouseEventArgs& args, long millis);
+	virtual bool mouseMoved(ofMouseEventArgs& args, long millis);
     
-    virtual void keyPressed(ofKeyEventArgs& args);
+	virtual bool keyPressed(ofKeyEventArgs& args);
     
     virtual void getSnappingPoints(set<unsigned long long>& points);
     virtual void regionSelected(ofLongRange timeRange, ofRange valueRange);
 
     virtual void unselectAll();
     
-    virtual string getTrackType();
+	virtual string getTrackType() const;
+	static constexpr const char* TRACK_TYPE = "Switches";
     virtual void pasteSent(string pasteboard);
 	
   protected:
@@ -100,6 +101,6 @@ class ofxTLSwitches : public ofxTLKeyframes {
     ofxTLSwitch* placingSwitch;
     
     ofxTLSwitch* clickedTextField;
-    bool enteringText;
+	bool enteringText;
     
 };

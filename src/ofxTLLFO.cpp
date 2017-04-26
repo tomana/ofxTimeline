@@ -311,22 +311,23 @@ bool ofxTLLFO::mousePressed(ofMouseEventArgs& args, long millis){
 		if(editingParam != NULL){
 			editingStartValue = *editingParam;
 		}
+		return true;
 	}
 	else{
 		return ofxTLKeyframes::mousePressed(args, millis);
 	}
 }
 
-void ofxTLLFO::mouseMoved(ofMouseEventArgs& args, long millis){
+bool ofxTLLFO::mouseMoved(ofMouseEventArgs& args, long millis){
 	if(drawingLFORect){
-
+		return false;
 	}
 	else{
-		ofxTLKeyframes::mouseMoved(args, millis);
+		return ofxTLKeyframes::mouseMoved(args, millis);
 	}
 }
 
-void ofxTLLFO::mouseDragged(ofMouseEventArgs& args, long millis){
+bool ofxTLLFO::mouseDragged(ofMouseEventArgs& args, long millis){
 	if(drawingLFORect){
 		if(mouseDownRect != NULL && editingParam != NULL){
 			float delta = (args.x-editingClickX)*editingSensitivity;
@@ -334,14 +335,16 @@ void ofxTLLFO::mouseDragged(ofMouseEventArgs& args, long millis){
 			shouldRecomputePreviews = true;
 			draggedValue = true;
 			timeline->flagUserChangedValue();
+			return true;
 		}
+		return false;
 	}
 	else{
-		ofxTLKeyframes::mouseDragged(args, millis);
+		return ofxTLKeyframes::mouseDragged(args, millis);
 	}
 }
 
-void ofxTLLFO::mouseReleased(ofMouseEventArgs& args, long millis){
+bool ofxTLLFO::mouseReleased(ofMouseEventArgs& args, long millis){
 	if(drawingLFORect){
 		if(mouseDownRect != NULL && mouseDownRect->inside(args.x, args.y)){
 			ofxTLLFOKey* lfokey = (ofxTLLFOKey*)selectedKeyframe;
@@ -387,20 +390,22 @@ void ofxTLLFO::mouseReleased(ofMouseEventArgs& args, long millis){
 			timeline->dismissedModalContent();
 			drawingLFORect = false;
 		}
+		return false;
 	}
 	else{
-		ofxTLKeyframes::mouseReleased(args, millis);
+		return ofxTLKeyframes::mouseReleased(args, millis);
 	}
 }
 
 //keys pressed events, and nuding from arrow keys with normalized nudge amount 0 - 1.0
-void ofxTLLFO::keyPressed(ofKeyEventArgs& args){
-	ofxTLKeyframes::keyPressed(args);
+bool ofxTLLFO::keyPressed(ofKeyEventArgs& args){
+	return ofxTLKeyframes::keyPressed(args);
 }
 
-string ofxTLLFO::getTrackType(){
-	return "LFO";
+string ofxTLLFO::getTrackType() const{
+	return TRACK_TYPE;
 }
+
 
 ofxTLKeyframe* ofxTLLFO::newKeyframe(){
 	//return our type of keyframe, stored in the parent class

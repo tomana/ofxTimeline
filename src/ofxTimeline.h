@@ -50,7 +50,6 @@
 
 //external addons
 #include "ofRange.h"
-#include "ofxMSATimer.h"
 #include "ofxTimecode.h"
 
 //internal types
@@ -85,13 +84,28 @@ typedef struct {
 } UndoItem;
 
 class ofxTimeline : ofThread {
+	class Listener{
+	public:
+		template<typename T>
+		Listener(ofParameter<T> p, ofxTimeline * timeline, ofxTLCurves * curves);
+		template<typename T>
+		Listener(ofParameter<ofColor_<T>> p, ofxTimeline * timeline, ofxTLColorTrack * colorTrack);
+		Listener(ofParameter<bool> p, ofxTimeline * timeline, ofxTLSwitches * tlSwitch);
+		Listener(ofParameter<void> p, ofxTimeline * timeline, ofxTLBangs * tlBangs);
+		Listener(const Listener&) = delete;
+		Listener(const Listener&&) = delete;
+	private:
+		std::vector<ofEventListener> timelineListeners;
+		ofEventListener valueListener;
+		bool settingFromTimeline = false;
+	};
+
   public:
 	
 	//needed for hotkeys to work
 	//optionally pass in an "app name" for Quit.
 	static void removeCocoaMenusFromGlut(string appName);
-	
-	ofxTimeline();
+
 	virtual ~ofxTimeline();
 	
 	virtual void setup(const string& dataPathRoot = ofToDataPath("GUI/"));
@@ -100,7 +114,7 @@ class ofxTimeline : ofThread {
 	//this isn't necessary most of the time but
 	//for precise timing apps and input recording it'll greatly
 	//improve performance
-	virtual void moveToThread();
+	virtual void moveToThread(float fps);
     virtual void removeFromThread();
 	
 	bool toggleEnabled();
@@ -142,14 +156,14 @@ class ofxTimeline : ofThread {
 	virtual bool getIsShowing();
 	virtual void draw();
     
-	virtual void mousePressed(ofMouseEventArgs& args);
-	virtual void mouseMoved(ofMouseEventArgs& args);
-	virtual void mouseDragged(ofMouseEventArgs& args);
-	virtual void mouseReleased(ofMouseEventArgs& args);
-	virtual void keyPressed(ofKeyEventArgs& args);
-	virtual void keyReleased(ofKeyEventArgs& args);
+	virtual bool mousePressed(ofMouseEventArgs& args);
+	virtual bool mouseMoved(ofMouseEventArgs& args);
+	virtual bool mouseDragged(ofMouseEventArgs& args);
+	virtual bool mouseReleased(ofMouseEventArgs& args);
+	virtual bool mouseScrolled(ofMouseEventArgs& args);
+	virtual bool keyPressed(ofKeyEventArgs& args);
+	virtual bool keyReleased(ofKeyEventArgs& args);
 	virtual void windowResized(ofResizeEventArgs& args);
-	virtual void exit(ofEventArgs& args);
 	
     //show/hide ticker,zoomer,inout all at once
     virtual void setShowTimeControls(bool shouldShowTimeControls);
@@ -352,6 +366,58 @@ class ofxTimeline : ofThread {
 	//adding tracks always adds to the current page
     ofxTLCurves* addCurves(string name, ofRange valueRange = ofRange(0,1.0), float defaultValue = 0);
 	ofxTLCurves* addCurves(string name, string xmlFileName, ofRange valueRange = ofRange(0,1.0), float defaultValue = 0);
+
+	template<typename T>
+	typename std::enable_if<std::is_arithmetic<T>::value, ofxTLCurves*>::type  addCurves(ofParameter<T> p){
+		ofxTLCurves* newCurves = new ofxTLCurves();
+		newCurves->useBinarySave = curvesUseBinary;
+		newCurves->setCreatedByTimeline(true);
+		ofRange valueRange(p.getMin(), p.getMax());
+		newCurves->setValueRange(valueRange, p.get());
+		auto uniqueName = confirmedUniqueName(p.getHierarchicName());
+		newCurves->setXMLFileName(nameToXMLName(uniqueName));
+		addTrack(uniqueName, newCurves);
+		if(newCurves->getKeyframes().empty()){
+			newCurves->addKeyframeAtMillis(p.get(), getCurrentTimeMillis());
+		}
+		p = getValue(uniqueName);
+		listeners.emplace(
+			std::piecewise_construct,
+			std::forward_as_tuple(uniqueName),
+			std::forward_as_tuple(p, this, newCurves));
+		return newCurves;
+	}
+	template<typename T>
+	typename std::enable_if<std::is_arithmetic<T>::value, ofxTLCurves*>::type  linkCurves(ofParameter<T> p){
+		ofxTLCurves* newCurves = getTrack(p);
+		auto controlName = p.getHierarchicName();
+		if(newCurves->getKeyframes().empty()){
+			newCurves->addKeyframeAtMillis(p.get(), getCurrentTimeMillis());
+		}
+		newCurves->setValueRangeMin(p.getMin());
+		newCurves->setValueRangeMax(p.getMax());
+		p = getValue(controlName);
+		listeners.emplace(
+			std::piecewise_construct,
+			std::forward_as_tuple(controlName),
+			std::forward_as_tuple(p, this, newCurves));
+		return newCurves;
+	}
+
+	template<typename T>
+	void remove(ofParameter<T> & p){
+		removeTrack(p.getHierarchicName());
+		auto l = listeners.find(p.getHierarchicName());
+		if(l!=listeners.end()){
+			listeners.erase(l);
+		}
+	}
+
+	template<typename T>
+	typename std::enable_if<std::is_arithmetic<T>::value, ofxTLCurves*>::type getTrack(ofParameter<T> p){
+		return (ofxTLCurves*)getTrack(p.getHierarchicName());
+	}
+
 	float getValue(string name);
 	float getValueAtPercent(string name, float atPercent);
 	float getValue(string name, float atTime);
@@ -363,12 +429,60 @@ class ofxTimeline : ofThread {
 
     ofxTLSwitches* addSwitches(string name);
 	ofxTLSwitches* addSwitches(string name, string xmlFileName);
+	ofxTLSwitches* addSwitches(ofParameter<bool> p){
+		string uniqueName = confirmedUniqueName(p.getHierarchicName());
+		auto sw = addSwitches(uniqueName, nameToXMLName(uniqueName));
+		p = isSwitchOn(p.getHierarchicName());
+		listeners.emplace(
+			std::piecewise_construct,
+			std::forward_as_tuple(uniqueName),
+			std::forward_as_tuple(p, this, sw));
+		return sw;
+	}
+
+	ofxTLSwitches* linkSwitches(ofParameter<bool> p){
+		string controlName = p.getHierarchicName();
+		auto track = getTrack(p);
+		p = isSwitchOn(p.getHierarchicName());
+		listeners.emplace(
+			std::piecewise_construct,
+			std::forward_as_tuple(controlName),
+			std::forward_as_tuple(p, this, track));
+		return track;
+	}
+
+	ofxTLSwitches* getTrack(ofParameter<bool> p){
+		return (ofxTLSwitches*)getTrack(p.getHierarchicName());
+	}
 	bool isSwitchOn(string name);
 	bool isSwitchOn(string name, float atTime);
 	bool isSwitchOn(string name, int atFrame);
 	
     ofxTLBangs* addBangs(string name);
 	ofxTLBangs* addBangs(string name, string xmlFileName);
+	ofxTLBangs* addBangs(ofParameter<void> p){
+		string uniqueName = confirmedUniqueName(p.getHierarchicName());
+		auto b = addBangs(uniqueName, nameToXMLName(uniqueName));
+		listeners.emplace(
+			std::piecewise_construct,
+			std::forward_as_tuple(uniqueName),
+			std::forward_as_tuple(p, this, b));
+		return b;
+	}
+
+	ofxTLBangs* linkBangs(ofParameter<void> p){
+		string controlName = p.getHierarchicName();
+		auto track = getTrack(p);
+		listeners.emplace(
+			std::piecewise_construct,
+			std::forward_as_tuple(controlName),
+			std::forward_as_tuple(p, this, track));
+		return track;
+	}
+
+	ofxTLBangs* getTrack(ofParameter<void> p){
+		return (ofxTLBangs*)getTrack(p.getHierarchicName());
+	}
     
     ofxTLFlags* addFlags(string name);
     ofxTLFlags* addFlags(string name, string xmlFileName);
@@ -379,6 +493,39 @@ class ofxTimeline : ofThread {
 	ofxTLColorTrack* addColorsWithPalette(string name, string palettePath);
 	ofxTLColorTrack* addColorsWithPalette(string name, string xmlFileName, ofImage& palette);
 	ofxTLColorTrack* addColorsWithPalette(string name, string xmlFileName, string palettePath);
+
+	template<typename T>
+	ofxTLColorTrack* addColors(ofParameter<ofColor_<T>> p){
+		auto trackName = p.getHierarchicName();
+		string uniqueName = confirmedUniqueName(trackName);
+		auto track = addColorsWithPalette(uniqueName, nameToXMLName(uniqueName), defaultPalettePath);
+		if(track->getKeyframes().empty()){
+			track->addKeyframeAtMillis(p.get(), getCurrentTimeMillis());
+		}
+		p = getColor(p.getHierarchicName());
+		listeners.emplace(
+			std::piecewise_construct,
+			std::forward_as_tuple(uniqueName),
+			std::forward_as_tuple(p, this, track));
+		return track;
+	}
+
+	template<typename T>
+	ofxTLColorTrack* linkColors(ofParameter<ofColor_<T>> p){
+		string controlName = p.getHierarchicName();
+		auto track = getTrack(p);
+		p = getColor(p.getHierarchicName());
+		listeners.emplace(
+			std::piecewise_construct,
+			std::forward_as_tuple(controlName),
+			std::forward_as_tuple(p, this, track));
+		return track;
+	}
+
+	template<typename T>
+	ofxTLColorTrack* getTrack(ofParameter<ofColor_<T>> p){
+		return (ofxTLColorTrack*)getTrack(p.getHierarchicName());
+	}
 	
 	ofColor getColor(string name);
 	ofColor getColorAtPercent(string name, float percent);
@@ -441,7 +588,6 @@ class ofxTimeline : ofThread {
 	
 	ofxTLColors& getColors();
 	ofxTimecode& getTimecode();
-	ofxMSATimer& getTimer();
 	ofxTLZoomer* getZoomer();
 	
 	vector<ofxTLPage*>& getPages();
@@ -484,21 +630,23 @@ class ofxTimeline : ofThread {
     float normalizedXtoScreenX(float x, ofRange inputRange);    
     
     virtual ofxTLEvents& events();
+
+	void saveStructure(const string & folder="") const;
+	void loadStructure(const string & folder="");
     
 	//binary test hack
 	bool curvesUseBinary;
 	
   protected:
 
-    ofxTimecode timecode;
-	ofxMSATimer timer;
+	ofxTimecode timecode;
     ofxTLEvents timelineEvents;
     ofxTLColors colors;
 
-    ofxTLInOut* inoutTrack;
-	ofxTLTicker* ticker;
-	ofxTLPageTabs* tabs;
-	ofxTLZoomer* zoomer;
+	ofxTLInOut inoutTrack;
+	ofxTLTicker ticker;
+	ofxTLPageTabs tabs;
+	ofxTLZoomer zoomer;
 
 	vector<ofxTLPage*> pages;
 	ofxTLPage* currentPage;
@@ -510,22 +658,22 @@ class ofxTimeline : ofThread {
     //can be blank, default save to bin/data/
     string workingFolder; 
     
-	bool isSetup;
-	bool usingEvents;
-	bool isOnThread;
+	bool isSetup = false;
+	bool usingEvents = false;
+	bool isOnThread = false;
 
 	//called when the name changes to setup the inout track, zoomer, ticker etc
 	void setupStandardElements();
 	
-	bool movePlayheadOnPaste;
-    long dragMillsecondOffset;
-	bool dragAnchorSet; // will disable snapping if no drag anchor is set on mousedown
-	bool lockWidthToWindow;
+	bool movePlayheadOnPaste = true;
+	long dragMillsecondOffset = 0;
+	bool dragAnchorSet = false; // will disable snapping if no drag anchor is set on mousedown
+	bool lockWidthToWindow = true;
     
 	//one string per track
 	vector<string> pasteboard;
     
-    bool undoEnabled; //turn off undo if you don't need it, it'll take up a ton of memory
+	bool undoEnabled = true; //turn off undo if you don't need it, it'll take up a ton of memory
     void collectStateBuffers();
     void pushUndoStack();
     void restoreToState(vector<UndoItem>& state);
@@ -537,19 +685,19 @@ class ofxTimeline : ofThread {
     //finally, the state buffers for the tracks that were modified are pushed onto the stack say that state may be returned
     deque< vector<UndoItem> > undoStack;
     //the undo pointer points into the array and lets the user move through undo/redo actions
-    int undoPointer;
+	int undoPointer = 0;
     
-	bool movePlayheadOnDrag;
-    bool snapToBPM;
-    bool snapToOtherElements;
+	bool movePlayheadOnDrag = false;
+	bool snapToBPM = false;
+	bool snapToOtherElements = true;
     
-    bool spacebarTogglesPlay;
+	bool spacebarTogglesPlay = true;
     
-	float width;
+	float width = 1024;
 	ofVec2f offset;
 
-	int fontSize;
-	string fontPath;
+	int fontSize = 9;
+	string fontPath{"GUI/NewMedia Fett.ttf"};
 	OFX_TIMELINE_FONT_RENDERER font;
 	
 	//only enabled while playing
@@ -573,33 +721,103 @@ class ofxTimeline : ofThread {
 	ofRange inoutRange;
     void triggerInOutEvent();
     
-    bool timelineHasFocus;
+	bool timelineHasFocus = false;
     
-    bool showTicker; 
-    bool showInoutControl; 
-    bool showZoomer;
+	bool showTicker = true;
+	bool showInoutControl = true;
+	bool showZoomer = true;
     
     ofxXmlSettings settings;
 	string name;
 	
 	ofRectangle totalDrawRect;
-	bool isEnabled; //allows for editing
-	bool isShowing; //allows for viewing
-	bool isPlaying; //moves playhead along
-	bool userChangedValue; //did value change this frame;
+	bool isEnabled = false; //allows for editing
+	bool isShowing = true; //allows for viewing
+	bool isPlaying = false; //moves playhead along
+	bool userChangedValue = false; //did value change this frame;
     
     //TODO: switch to millis!
-	float currentTime; 	
+	ofParameter<float> currentTime{"current time", 0, 0, 1};
 	ofLoopType loopType;
-	int playbackStartFrame;
-	double playbackStartTime;	
+	int playbackStartFrame = 0;
+	double playbackStartTime = 0;
 
-	bool autosave;
-	bool unsavedChanges;
-	bool headersAreEditable;
-	bool minimalHeaders;
-	bool footersHidden;
+	bool autosave = false;
+	bool unsavedChanges = false;
+	bool headersAreEditable = false;
+	bool minimalHeaders = false;
+	bool footersHidden = false;
 	
-	bool isFrameBased;
-	float durationInSeconds;
+	bool isFrameBased = false;
+	float durationInSeconds = 100.f/30.f;
+
+	ofTimer threadTimer;
+
+	std::map<std::string, Listener> listeners;
+	ofEventListener currentTimeListener{currentTime.newListener([this](float &){
+		auto event = createPlaybackEvent();
+		events().playheadTimeChanged.notify(this, event);
+	})};
+	ofEventListener updateListener;
+	ofEventListener pageListener;
+	std::vector<ofEventListener> coreListeners;
+	std::vector<ofEventListener> timelineListeners;
 };
+
+
+
+template<typename T>
+ofxTimeline::Listener::Listener(ofParameter<T> p, ofxTimeline * timeline, ofxTLCurves * curves){
+	timelineListeners.push_back(timeline->events().playheadTimeChanged.newListener([p, timeline, this](ofxTLPlaybackEventArgs&) mutable{
+		settingFromTimeline = true;
+		p.set(timeline->getValue(p.getHierarchicName()));
+		settingFromTimeline = false;
+	}));
+	timelineListeners.push_back(timeline->events().keyFrameChanged.newListener([p, timeline, this](ofxTLKeyframe&) mutable{
+		settingFromTimeline = true;
+		p.set(timeline->getValue(p.getHierarchicName()));
+		settingFromTimeline = false;
+	}));
+
+	valueListener = p.newListener([this, timeline, curves, p](T & v) mutable{
+		if(!settingFromTimeline){
+			auto t = timeline->getCurrentTime();
+			auto pct = ofMap(v, p.getMin(), p.getMax(), 0, 1, true);
+			auto kf = curves->getNearestKeyframe(t);
+			if(kf){
+				kf->value = pct;
+				curves->recomputePreviews();
+			}
+			p = timeline->getValue(p.getHierarchicName());
+		}
+	});
+}
+
+
+
+
+template<typename T>
+ofxTimeline::Listener::Listener(ofParameter<ofColor_<T>> p, ofxTimeline * timeline, ofxTLColorTrack * colorTrack){
+	timelineListeners.push_back(timeline->events().playheadTimeChanged.newListener([p, timeline, this](ofxTLPlaybackEventArgs&) mutable{
+		settingFromTimeline = true;
+		p.set(timeline->getColor(p.getHierarchicName()));
+		settingFromTimeline = false;
+	}));
+	timelineListeners.push_back(timeline->events().keyFrameChanged.newListener([p, timeline, this](ofxTLKeyframe&) mutable{
+		settingFromTimeline = true;
+		p.set(timeline->getColor(p.getHierarchicName()));
+		settingFromTimeline = false;
+	}));
+	valueListener = p.newListener([p, this, colorTrack, timeline](ofColor_<T> & v) mutable{
+		if(!settingFromTimeline){
+			auto t = timeline->getCurrentTime();
+			auto kf = (ofxTLColorSample*)colorTrack->getNearestKeyframe(t);
+			if(kf){
+				kf->color = v;
+				colorTrack->recomputePreviews();
+				colorTrack->updatePreviewPalette();
+			}
+			p = timeline->getColor(p.getHierarchicName());
+		}
+	});
+}

@@ -108,14 +108,26 @@ void ofxTLBangs::update(){
 //	if(isPlaying || timeline->getIsPlaying()){
 		long thisTimelinePoint = currentTrackTime();
 		for(int i = 0; i < keyframes.size(); i++){
-			if(timeline->getInOutRangeMillis().contains(keyframes[i]->time) &&
-               lastTimelinePoint <= keyframes[i]->time &&
-               thisTimelinePoint >= keyframes[i]->time &&
-               thisTimelinePoint != lastTimelinePoint)
-            {
-//				ofLogNotice() << "fired bang with accuracy of " << (keyframes[i]->time - thisTimelinePoint) << endl;
-				bangFired(keyframes[i]);
-				lastBangTime = ofGetElapsedTimef();
+			if(thisTimelinePoint>lastTimelinePoint){
+				if(timeline->getInOutRangeMillis().contains(keyframes[i]->time) &&
+				   lastTimelinePoint <= keyframes[i]->time &&
+				   thisTimelinePoint >= keyframes[i]->time &&
+				   thisTimelinePoint != lastTimelinePoint)
+				{
+	//				ofLogNotice() << "fired bang with accuracy of " << (keyframes[i]->time - thisTimelinePoint) << endl;
+					bangFired(keyframes[i]);
+					lastBangTime = ofGetElapsedTimef();
+				}
+			}else{
+				if(timeline->getInOutRangeMillis().contains(keyframes[i]->time) &&
+				   lastTimelinePoint <= keyframes[i]->time &&
+				   lastTimelinePoint >= keyframes[i]->time &&
+				   thisTimelinePoint != lastTimelinePoint)
+				{
+	//				ofLogNotice() << "fired bang with accuracy of " << (keyframes[i]->time - thisTimelinePoint) << endl;
+					bangFired(keyframes[i]);
+					lastBangTime = ofGetElapsedTimef();
+				}
 			}
 		}
 		lastTimelinePoint = thisTimelinePoint;
@@ -148,6 +160,7 @@ void ofxTLBangs::playbackLooped(ofxTLPlaybackEventArgs& args){
 	lastTimelinePoint = 0;
 }
 
-string ofxTLBangs::getTrackType(){
-    return "Bangs";
+string ofxTLBangs::getTrackType() const{
+	return TRACK_TYPE;
 }
+

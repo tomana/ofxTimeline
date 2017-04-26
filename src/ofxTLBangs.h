@@ -48,8 +48,8 @@ class ofxTLBangs : public ofxTLKeyframes {
 	virtual void playbackEnded(ofxTLPlaybackEventArgs& args);
 	virtual void playbackLooped(ofxTLPlaybackEventArgs& args);
     
-    virtual string getTrackType();
-    
+	virtual string getTrackType() const;
+	static constexpr const char* TRACK_TYPE = "Bangs";
  protected:
 
     virtual ofxTLKeyframe* keyframeAtScreenpoint(ofVec2f p);

@@ -130,15 +130,17 @@ bool ofxTLFlags::mousePressed(ofMouseEventArgs& args, long millis){
 	return false;
 }
 
-void ofxTLFlags::mouseDragged(ofMouseEventArgs& args, long millis){
+bool ofxTLFlags::mouseDragged(ofMouseEventArgs& args, long millis){
     if(!enteringText){
-        ofxTLBangs::mouseDragged(args, millis);
-    }
+		return ofxTLBangs::mouseDragged(args, millis);
+	}else{
+		return false;
+	}
 }
 
 //if we didn't click on a text field and we are entering txt
 //take off the typing mode. Hitting enter will also do this
-void ofxTLFlags::mouseReleased(ofMouseEventArgs& args, long millis){
+bool ofxTLFlags::mouseReleased(ofMouseEventArgs& args, long millis){
 	if(enteringText){
 		//if we clicked outside of the rect, definitely deslect everything
 		if(clickedTextField == NULL && !ofGetModifierSelection()){
@@ -159,13 +161,14 @@ void ofxTLFlags::mouseReleased(ofMouseEventArgs& args, long millis){
 			timeline->dismissedModalContent();
 			timeline->flagTrackModified(this);
 		}
+		return false;
 	}
 	else {
-		ofxTLBangs::mouseReleased(args, millis);
+		return ofxTLBangs::mouseReleased(args, millis);
 	}
 }
 
-void ofxTLFlags::keyPressed(ofKeyEventArgs& args){
+bool ofxTLFlags::keyPressed(ofKeyEventArgs& args){
 	
 	if (enteringText) {
 		//enter key submits the values
@@ -177,14 +180,16 @@ void ofxTLFlags::keyPressed(ofKeyEventArgs& args){
 			}
 			timeline->dismissedModalContent();
 			timeline->flagTrackModified(this);
+			return true;
 		}
 		else {
 			clickedTextField->textField.keyPressed(args);
+			return true;
 		}
 	}
 	//normal behavior for nudging and deleting and stuff
 	else {
-		ofxTLBangs::keyPressed(args);
+		return ofxTLBangs::keyPressed(args);
 	}
 }
 
@@ -234,8 +239,8 @@ void ofxTLFlags::bangFired(ofxTLKeyframe* key){
     ofNotifyEvent(events().bangFired, args);    
 }
 
-string ofxTLFlags::getTrackType(){
-    return "Flags";
+string ofxTLFlags::getTrackType() const{
+	return TRACK_TYPE;
 }
 
 void ofxTLFlags::addFlag(string key) {

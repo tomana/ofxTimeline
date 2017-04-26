@@ -115,6 +115,7 @@ void ofxTLColorTrack::draw(){
 }
 
 void ofxTLColorTrack::drawModalContent(){
+	//TODO show curves modal content if there's no pallete
 	if(drawingColorWindow){
 
 		//this happens when a new keyframe is added
@@ -228,7 +229,6 @@ ofColor ofxTLColorTrack::getColorAtMillis(unsigned long long millis){
 	}
 
 	if(millis <= keyframes[0]->time){
-		//cout << "getting color before first key " << ((ofxTLColorSample*)keyframes[0])->color << endl;
 		return ((ofxTLColorSample*)keyframes[0])->color;
 	}
 
@@ -236,12 +236,16 @@ ofColor ofxTLColorTrack::getColorAtMillis(unsigned long long millis){
 		return ((ofxTLColorSample*)keyframes[keyframes.size()-1])->color;
 	}
 
-	for(int i = 1; i < keyframes.size(); i++){
+	for(size_t i = 1; i < keyframes.size(); i++){
 		if(keyframes[i]->time >= millis){
-			ofxTLColorSample* startSample = (ofxTLColorSample*)keyframes[i-1];
-			ofxTLColorSample* endSample = (ofxTLColorSample*)keyframes[i];
+			ofxTLColorSample* startSample = (ofxTLColorSample*)keyframes[i];
+			ofxTLColorSample* endSample = (ofxTLColorSample*)keyframes[i-1];
 			float interpolationPosition = ofMap(millis, startSample->time, endSample->time, 0.0, 1.0);
-			return samplePaletteAtPosition(startSample->samplePoint.getInterpolated(endSample->samplePoint, interpolationPosition));
+			if(colorPallete.isAllocated()){
+				return samplePaletteAtPosition(startSample->samplePoint.getInterpolated(endSample->samplePoint, interpolationPosition));
+			}else{
+				return startSample->color.getLerped(endSample->color, interpolationPosition);
+			}
 		}
 	}
 	ofLogError("ofxTLColorTrack::getColorAtMillis") << "Could not find color for millis " << millis << endl;
@@ -290,7 +294,7 @@ bool ofxTLColorTrack::mousePressed(ofMouseEventArgs& args, long millis){
 	}
 }
 
-void ofxTLColorTrack::mouseDragged(ofMouseEventArgs& args, long millis){
+bool ofxTLColorTrack::mouseDragged(ofMouseEventArgs& args, long millis){
 	if(drawingColorWindow){
 		if(clickedInColorRect){
 			ofxTLColorSample* selectedSample = (ofxTLColorSample*)selectedKeyframe;
@@ -299,16 +303,18 @@ void ofxTLColorTrack::mouseDragged(ofMouseEventArgs& args, long millis){
 			refreshSample(selectedSample);
 			shouldRecomputePreviews = true;
 		}
+		return clickedInColorRect;
 	}
 	else{
 		ofxTLKeyframes::mouseDragged(args, millis);
 		if(keysDidDrag){
 			shouldRecomputePreviews = true;
 		}
+		return keysDidDrag;
 	}
 }
 
-void ofxTLColorTrack::mouseReleased(ofMouseEventArgs& args, long millis){
+bool ofxTLColorTrack::mouseReleased(ofMouseEventArgs& args, long millis){
 	if(drawingColorWindow){
 		//if(args.button == 0 && !colorWindow.inside(args.x, args.y) ){
 		if(args.button == 0 && !clickedInColorRect && !ofGetModifierControlPressed()){
@@ -320,13 +326,14 @@ void ofxTLColorTrack::mouseReleased(ofMouseEventArgs& args, long millis){
 			drawingColorWindow = false;
 			shouldRecomputePreviews = true;
 		}
+		return false;
 	}
 	else{
-		ofxTLKeyframes::mouseReleased(args, millis);
+		return ofxTLKeyframes::mouseReleased(args, millis);
 	}
 }
 
-void ofxTLColorTrack::keyPressed(ofKeyEventArgs& args){
+bool ofxTLColorTrack::keyPressed(ofKeyEventArgs& args){
 	if(drawingColorWindow){
 		if(args.key == OF_KEY_RETURN){
 			ofxTLColorSample* selectedSample = (ofxTLColorSample*)selectedKeyframe;
@@ -336,10 +343,13 @@ void ofxTLColorTrack::keyPressed(ofKeyEventArgs& args){
 			timeline->dismissedModalContent();
 			drawingColorWindow = false;
 			shouldRecomputePreviews = true;
+			return true;
+		}else{
+			return false;
 		}
 	}
 	else{
-		ofxTLKeyframes::keyPressed(args);
+		return ofxTLKeyframes::keyPressed(args);
 	}
 }
 
@@ -353,11 +363,15 @@ void ofxTLColorTrack::updatePreviewPalette(){
 		return; //we just draw solid colors in this case
 	}
 
-	previewPalette.setUseTexture(false);
-	for(int i = 0; i < bounds.width; i++){
-		previewPalette.setColor(i, 0, getColorAtMillis(screenXToMillis(bounds.x+i)));
+	auto i = 0;
+	ofPixels & pixels = previewPalette.getPixels();
+	for(ofPixels::Pixel p: pixels.getPixelsIter()){
+		auto c = getColorAtMillis(screenXToMillis(bounds.x+i));
+		p[0] = c[0];
+		p[1] = c[1];
+		p[2] = c[2];
+		i++;
 	}
-	previewPalette.setUseTexture(true);
 	previewPalette.update();
 
 	shouldRecomputePreviews = false;
@@ -378,11 +392,85 @@ ofxTLKeyframe* ofxTLColorTrack::newKeyframe(){
 	return sample;
 }
 
+void ofxTLColorTrack::addKeyframe(){
+	addKeyframeAtMillis(currentTrackTime());
+}
+
+void ofxTLColorTrack::addKeyframe(ofVec2f value){
+	addKeyframeAtMillis(value, currentTrackTime());
+}
+
+void ofxTLColorTrack::addKeyframe(ofColor value){
+	addKeyframeAtMillis(value, currentTrackTime());
+}
+
+void ofxTLColorTrack::addKeyframeAtMillis(unsigned long long millis){
+	addKeyframeAtMillis(ofVec2f(.5,.5), millis);
+}
+
+void ofxTLColorTrack::addKeyframeAtMillis(ofVec2f value, unsigned long long millis){
+	auto * key = (ofxTLColorSample*)getKeyframeAtMillis(millis);
+	if ( key == NULL)
+	{
+		key = (ofxTLColorSample*) newKeyframe();
+		key->time = key->previousTime = millis;
+		key->samplePoint = value;
+		if(colorPallete.isAllocated()){
+			key->color = samplePaletteAtPosition(value);
+		}
+		keyframes.push_back(key);
+		//smart sort, only sort if not added to end
+		if(keyframes.size() > 2 && keyframes[keyframes.size()-2]->time > keyframes[keyframes.size()-1]->time){
+			updateKeyframeSort();
+		}
+		lastKeyframeIndex = 1;
+	} else {
+		key->samplePoint = value;
+		if(colorPallete.isAllocated()){
+			key->color = samplePaletteAtPosition(value);
+		}
+	}
+	timeline->flagTrackModified(this);
+	shouldRecomputePreviews = true;
+	selectedKeyframe = key;
+
+}
+
+void ofxTLColorTrack::addKeyframeAtMillis(ofColor value, unsigned long long millis){
+	auto* key = (ofxTLColorSample*)getKeyframeAtMillis(millis);
+	if ( key == NULL)
+	{
+		key = (ofxTLColorSample*) newKeyframe();
+		key->time = key->previousTime = millis;
+		key->color = value;
+		keyframes.push_back(key);
+		//smart sort, only sort if not added to end
+		if(keyframes.size() > 2 && keyframes[keyframes.size()-2]->time > keyframes[keyframes.size()-1]->time){
+			updateKeyframeSort();
+		}
+		lastKeyframeIndex = 1;
+	} else {
+		 key->color = value;
+	}
+	timeline->flagTrackModified(this);
+	shouldRecomputePreviews = true;
+	selectedKeyframe = key;
+}
+
 void ofxTLColorTrack::restoreKeyframe(ofxTLKeyframe* key, ofxXmlSettings& xmlStore){
 	ofxTLColorSample* sample = (ofxTLColorSample*)key;
 
-	sample->samplePoint = ofVec2f(xmlStore.getValue("sampleX", 0.0),
-								  xmlStore.getValue("sampleY", 0.0));
+	if(colorPallete.isAllocated()){
+		sample->samplePoint = ofVec2f(xmlStore.getValue("sampleX", 0.5),
+								  xmlStore.getValue("sampleY", 0.5));
+	}else{
+		sample->color = ofColor(
+			xmlStore.getValue("colorR", (int)sample->color.r),
+			xmlStore.getValue("colorG", (int)sample->color.g),
+			xmlStore.getValue("colorB", (int)sample->color.b),
+			xmlStore.getValue("colorA", (int)sample->color.a)
+		);
+	}
 
 	//for pasted keyframes cancel the color window
 	drawingColorWindow = false;
@@ -392,8 +480,15 @@ void ofxTLColorTrack::restoreKeyframe(ofxTLKeyframe* key, ofxXmlSettings& xmlSto
 
 void ofxTLColorTrack::storeKeyframe(ofxTLKeyframe* key, ofxXmlSettings& xmlStore){
 	ofxTLColorSample* sample = (ofxTLColorSample*)key;
-	xmlStore.setValue("sampleX", sample->samplePoint.x);
-	xmlStore.setValue("sampleY", sample->samplePoint.y);
+	if(colorPallete.isAllocated()){
+		xmlStore.setValue("sampleX", sample->samplePoint.x);
+		xmlStore.setValue("sampleY", sample->samplePoint.y);
+	}else{
+		xmlStore.setValue("colorR", (int)sample->color.r);
+		xmlStore.setValue("colorG", (int)sample->color.g);
+		xmlStore.setValue("colorB", (int)sample->color.b);
+		xmlStore.setValue("colorA", (int)sample->color.a);
+	}
 }
 
 void ofxTLColorTrack::regionSelected(ofLongRange timeRange, ofRange valueRange){
@@ -453,7 +548,9 @@ void ofxTLColorTrack::refreshAllSamples(){
 }
 
 void ofxTLColorTrack::refreshSample(ofxTLColorSample* sample){
-	sample->color = samplePaletteAtPosition(sample->samplePoint);
+	if(colorPallete.isAllocated()){
+		sample->color = samplePaletteAtPosition(sample->samplePoint);
+	}
 }
 
 //assumes normalized position
@@ -475,6 +572,11 @@ ofColor ofxTLColorTrack::samplePaletteAtPosition(ofVec2f position){
 	}
 }
 
-string ofxTLColorTrack::getTrackType(){
-	return "Colors";
+string ofxTLColorTrack::getTrackType() const{
+	return TRACK_TYPE;
+}
+
+
+ofJson ofxTLColorTrack::getStructure() const{
+	return {{"name", name}, {"type", TRACK_TYPE}, {"defaultColor", ofToString(defaultColor)}};
 }

@@ -332,11 +332,12 @@ void ofxTLTicker::setDrawBPMGrid(bool drawGrid){
 	drawBPMGrid = drawGrid;
 }
 
-void ofxTLTicker::mouseMoved(ofMouseEventArgs& args){
+bool ofxTLTicker::mouseMoved(ofMouseEventArgs& args){
 	hover = totalDrawRect.inside(args.x, args.y);
+	return hover;
 }
 
-void ofxTLTicker::mousePressed(ofMouseEventArgs& args){
+bool ofxTLTicker::mousePressed(ofMouseEventArgs& args){
 
 	dragging = bounds.inside(args.x, args.y);
 	if(dragging){
@@ -348,17 +349,19 @@ void ofxTLTicker::mousePressed(ofMouseEventArgs& args){
         ofxTLPlaybackEventArgs args = timeline->createPlaybackEvent();
 		ofNotifyEvent(events().playheadScrubbed, args);		
 	}
+	return dragging;
 }
 
-void ofxTLTicker::mouseDragged(ofMouseEventArgs& args){
+bool ofxTLTicker::mouseDragged(ofMouseEventArgs& args){
 	if(dragging){
 		updateTimelinePosition();
         ofxTLPlaybackEventArgs args = timeline->createPlaybackEvent();
 		ofNotifyEvent(events().playheadScrubbed, args);
 	}	
+	return dragging;
 }
 
-void ofxTLTicker::mouseReleased(ofMouseEventArgs& args){
+bool ofxTLTicker::mouseReleased(ofMouseEventArgs& args){
     if(dragging){
 		ofxTLPlaybackEventArgs args = timeline->createPlaybackEvent();
 		ofNotifyEvent(events().playheadScrubbed, args);
@@ -369,6 +372,7 @@ void ofxTLTicker::mouseReleased(ofMouseEventArgs& args){
     }
 
 	dragging = false;
+	return false;
 }
 
 void ofxTLTicker::setTotalDrawRect(ofRectangle drawRect){

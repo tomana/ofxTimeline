@@ -106,6 +106,8 @@ ofColor ofxTLEmptyKeyframes::getColorAtTime(unsigned long long sampleTime){
 			return prevKey->color.getLerped(nextKey->color, alpha);
 		}
 	}
+
+	return ofColor(0,0,0);
 }
 
 bool ofxTLEmptyKeyframes::mousePressed(ofMouseEventArgs& args, long millis){
@@ -115,21 +117,21 @@ bool ofxTLEmptyKeyframes::mousePressed(ofMouseEventArgs& args, long millis){
 	return ofxTLKeyframes::mousePressed(args, millis);
 }
 
-void ofxTLEmptyKeyframes::mouseMoved(ofMouseEventArgs& args, long millis){
-	ofxTLKeyframes::mouseMoved(args, millis);
+bool ofxTLEmptyKeyframes::mouseMoved(ofMouseEventArgs& args, long millis){
+	return ofxTLKeyframes::mouseMoved(args, millis);
 }
 
-void ofxTLEmptyKeyframes::mouseDragged(ofMouseEventArgs& args, long millis){
-	ofxTLKeyframes::mouseDragged(args, millis);
+bool ofxTLEmptyKeyframes::mouseDragged(ofMouseEventArgs& args, long millis){
+	return ofxTLKeyframes::mouseDragged(args, millis);
 }
 
-void ofxTLEmptyKeyframes::mouseReleased(ofMouseEventArgs& args, long millis){
-	ofxTLKeyframes::mouseReleased(args, millis);
+bool ofxTLEmptyKeyframes::mouseReleased(ofMouseEventArgs& args, long millis){
+	return ofxTLKeyframes::mouseReleased(args, millis);
 }
 
 //keys pressed events, and nuding from arrow keys with normalized nudge amount 0 - 1.0
-void ofxTLEmptyKeyframes::keyPressed(ofKeyEventArgs& args){
-	ofxTLKeyframes::keyPressed(args);
+bool ofxTLEmptyKeyframes::keyPressed(ofKeyEventArgs& args){
+	return ofxTLKeyframes::keyPressed(args);
 }
 
 void ofxTLEmptyKeyframes::regionSelected(ofLongRange timeRange, ofRange valueRange){

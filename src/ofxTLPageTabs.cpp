@@ -56,7 +56,7 @@ void ofxTLPageTabs::draw(){
 	ofPopStyle();
 }
 
-void ofxTLPageTabs::mousePressed(ofMouseEventArgs& args){
+bool ofxTLPageTabs::mousePressed(ofMouseEventArgs& args){
 	pressedPageIndex = -1;
 	for(int i = 0; i < pages.size(); i++){
 		if(pages[i].bounds.inside(args.x, args.y)){
@@ -64,12 +64,14 @@ void ofxTLPageTabs::mousePressed(ofMouseEventArgs& args){
 			break;
 		}
 	}
+	return pressedPageIndex != -1;
 }
 
-void ofxTLPageTabs::mouseReleased(ofMouseEventArgs& args){
+bool ofxTLPageTabs::mouseReleased(ofMouseEventArgs& args){
 	if(pressedPageIndex != -1 && pages[pressedPageIndex].bounds.inside(args.x, args.y)){
 		selectPage(pressedPageIndex);
 	}
+	return pressedPageIndex != -1;
 }
 
 void ofxTLPageTabs::addPage(string name){
@@ -145,8 +147,8 @@ void ofxTLPageTabs::clear(){
 	pages.clear();
 }
 
-void ofxTLPageTabs::keyPressed(ofKeyEventArgs& args){
-
+bool ofxTLPageTabs::keyPressed(ofKeyEventArgs& args){
+	return false;
 }
 
 void ofxTLPageTabs::drawRectChanged(){
