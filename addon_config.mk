@@ -9,7 +9,7 @@ common:
 	# dependencies with other addons, a list of them separated by spaces 
 	# or use += in several lines
 	ADDON_DEPENDENCIES = ofxXmlSettings
-	ADDON_DEPENDENCIES += ofxTween
+	ADDON_DEPENDENCIES += ofxEasing
 	ADDON_DEPENDENCIES += ofxRange
 	ADDON_DEPENDENCIES += ofxTimecode
 	ADDON_DEPENDENCIES += ofxTextInputField

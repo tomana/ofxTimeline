@@ -35,9 +35,13 @@
 
 #include "ofMain.h"
 #include "ofxTLKeyframes.h"
-#include "ofxTween.h"
+#include "ofxEasing.h"
 
-typedef struct {
+struct EasingFunction{
+	EasingFunction(ofxeasing::Function easing, std::string name)
+		:name(name)
+		,easing(easing){}
+
 	int id;
 	ofRectangle bounds;
 	string name;
@@ -45,40 +49,24 @@ typedef struct {
 	ofPolyline easeOutPreview;
 	ofPolyline easeInOutPreview;
 
-	ofxBaseEasing* easing;
-} EasingFunction;
+	ofxeasing::Function easing;
+} ;
 
-typedef struct {
+
+struct EasingType{
+	EasingType(ofxeasing::Type type, std::string name)
+		:name(name)
+		,type(type){}
 	int id;
 	ofRectangle bounds;
 	string name;
-	ofxTween::ofxEasingType type;
-} EasingType;
+	ofxeasing::Type type;
+} ;
 
 class ofxTLTweenKeyframe : public ofxTLKeyframe{
   public:
-    EasingFunction* easeFunc;
+	EasingFunction* easeFunc;
 	EasingType* easeType;
-};
-
- enum EasingFunctions {
-    EasingFunction_linear,
-    EasingFunction_sine,
-    EasingFunction_circular,
-    EasingFunction_quadratic,
-    EasingFunction_cubic,
-    EasingFunction_quartic,
-    EasingFunction_quintic,
-    EasingFunction_exponential,
-    EasingFunction_back,
-    EasingFunction_bounce,
-    EasingFunction_elastic
-};
-
-enum EasingTypes {
-    EasingType_in,
-    EasingType_out,
-    EasingType_in_out
 };
 
 
@@ -119,8 +107,8 @@ class ofxTLCurves : public ofxTLKeyframes {
     void initializeEasings();
 	ofVec2f easingWindowPosition;
 	bool drawingEasingWindow;
-	vector<EasingFunction*> easingFunctions;
-	vector<EasingType*> easingTypes;
+	vector<EasingFunction> easingFunctions;
+	vector<EasingType> easingTypes;
 
 	float easingBoxWidth;
 	float easingBoxHeight;
