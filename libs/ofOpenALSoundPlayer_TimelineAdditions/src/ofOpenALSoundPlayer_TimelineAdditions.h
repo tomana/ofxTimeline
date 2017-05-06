@@ -1,4 +1,5 @@
 #pragma once
+#ifdef TIMELINE_AUDIO_INCLUDED
 
 #include "ofConstants.h"
 
@@ -203,4 +204,5 @@ class ofOpenALSoundPlayer_TimelineAdditions : public ofBaseSoundPlayer, public o
         bool timeSet;
     float justSetTime;
 };
+#endif
 
