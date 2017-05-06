@@ -60,10 +60,9 @@ ofxTimeline::~ofxTimeline(){
 	}
 }
 
-void ofxTimeline::setup(const string& dataPathRoot){
+void ofxTimeline::setup(const ofxTimeline::Settings& settings){
 
-    //TODO: error if isSetup...
-
+	//TODO: error if isSetup...
 	isSetup = true;
 
 	width = ofGetWidth();
@@ -87,12 +86,12 @@ void ofxTimeline::setup(const string& dataPathRoot){
 	zoomer.setDrawRect(ofRectangle(offset.y, ticker.getBottomEdge(), width, ZOOMER_HEIGHT));
 
 	//Update the data paths
-	defaultPalettePath = dataPathRoot + "defaultColorPalette.png";
-	fontPath = dataPathRoot + "NewMedia Fett.ttf";
+	defaultPalettePath = settings.dataPath + "defaultColorPalette.png";
+	fontPath = settings.dataPath + "NewMedia Fett.ttf";
 
-	colors.load(dataPathRoot + "defaultColors.xml");
+	colors.load(settings.dataPath + "defaultColors.xml");
 
-	enable();
+	enable(settings.eventsPriority);
 
 	timelineListeners.push_back(timelineEvents.viewWasResized.newListener(this, &ofxTimeline::viewWasResized));
 	pageListener = timelineEvents.pageChanged.newListener(this, &ofxTimeline::pageChanged);
@@ -212,23 +211,6 @@ void ofxTimeline::saveTracksToFolder(string folderPath){
 #pragma mark CONFIGURATION
 void ofxTimeline::setDefaultFontPath(string newFontPath){
     fontPath = newFontPath;
-}
-
-void ofxTimeline::show(){
-	isShowing = true;
-}
-
-void ofxTimeline::hide(){
-	isShowing = false;
-}
-
-bool ofxTimeline::toggleShow(){
-	isShowing = !isShowing;
-	return isShowing;
-}
-
-bool ofxTimeline::getIsShowing(){
-	return isShowing;
 }
 
 void ofxTimeline::setShowTimeControls(bool shouldShowTimeControls){
@@ -755,19 +737,15 @@ bool ofxTimeline::toggleEnabled(){
 	return isEnabled;
 }
 
-void ofxTimeline::enable(){
-    if(!isEnabled){
-		isEnabled = true;
-		enableEvents();
-    }
+void ofxTimeline::enable(ofEventOrder eventsPriority){
+	isEnabled = true;
+	enableEvents(eventsPriority);
 }
 
 void ofxTimeline::disable(){
-    if(isEnabled){
-        stop();
-		isEnabled = false;
-		disableEvents();
-    }
+	stop();
+	isEnabled = false;
+	disableEvents();
 }
 
 bool ofxTimeline::getIsEnabled(){
@@ -1070,30 +1048,28 @@ bool ofxTimeline::getSnapToOtherElements(){
 }
 
 #pragma mark EVENTS
-void ofxTimeline::enableEvents() {
-	if (!usingEvents) {
-		coreListeners.push_back(ofEvents().mouseMoved.newListener(this, &ofxTimeline::mouseMoved, OF_EVENT_ORDER_BEFORE_APP));
-		coreListeners.push_back(ofEvents().mousePressed.newListener(this, &ofxTimeline::mousePressed, OF_EVENT_ORDER_BEFORE_APP));
-		coreListeners.push_back(ofEvents().mouseReleased.newListener(this, &ofxTimeline::mouseReleased, OF_EVENT_ORDER_BEFORE_APP));
-		coreListeners.push_back(ofEvents().mouseDragged.newListener(this, &ofxTimeline::mouseDragged, OF_EVENT_ORDER_BEFORE_APP));
-		coreListeners.push_back(ofEvents().mouseScrolled.newListener(this, &ofxTimeline::mouseScrolled, OF_EVENT_ORDER_BEFORE_APP));
+void ofxTimeline::enableEvents(ofEventOrder eventsPriority) {
+	coreListeners.clear();
+	coreListeners.push_back(ofEvents().mouseMoved.newListener(this, &ofxTimeline::mouseMoved, eventsPriority));
+	coreListeners.push_back(ofEvents().mousePressed.newListener(this, &ofxTimeline::mousePressed, eventsPriority));
+	coreListeners.push_back(ofEvents().mouseReleased.newListener(this, &ofxTimeline::mouseReleased, eventsPriority));
+	coreListeners.push_back(ofEvents().mouseDragged.newListener(this, &ofxTimeline::mouseDragged, eventsPriority));
+	coreListeners.push_back(ofEvents().mouseScrolled.newListener(this, &ofxTimeline::mouseScrolled, eventsPriority));
 
 //		ofAddListener(ofEvents().draw, this, &ofxTimeline::draw);
 
-		coreListeners.push_back(ofEvents().keyPressed.newListener(this, &ofxTimeline::keyPressed, OF_EVENT_ORDER_BEFORE_APP));
-		coreListeners.push_back(ofEvents().keyReleased.newListener(this, &ofxTimeline::keyReleased, OF_EVENT_ORDER_BEFORE_APP));
-		coreListeners.push_back(ofEvents().windowResized.newListener(this, &ofxTimeline::windowResized, OF_EVENT_ORDER_BEFORE_APP));
+	coreListeners.push_back(ofEvents().keyPressed.newListener(this, &ofxTimeline::keyPressed, eventsPriority));
+	coreListeners.push_back(ofEvents().keyReleased.newListener(this, &ofxTimeline::keyReleased, eventsPriority));
+	coreListeners.push_back(ofEvents().windowResized.newListener(this, &ofxTimeline::windowResized, eventsPriority));
+	coreListeners.push_back(ofEvents().update.newListener([this](ofEventArgs&){ isShowing = false; }));
 
-		usingEvents = true;
-	}
+	usingEvents = true;
 }
 
 void ofxTimeline::disableEvents() {
-	if (usingEvents) {
-		coreListeners.clear();
+	coreListeners.clear();
 
-		usingEvents = false;
-	}
+	usingEvents = false;
 }
 
 bool ofxTimeline::mousePressed(ofMouseEventArgs& args){
@@ -1482,7 +1458,7 @@ void ofxTimeline::checkLoop(){
 
 void ofxTimeline::draw(){
 
-	if(isSetup && isShowing){
+	if(isSetup){
 		ofPushStyle();
 
 		glDisable(GL_DEPTH_TEST);
@@ -1516,6 +1492,7 @@ void ofxTimeline::draw(){
 
 		glDisable(GL_SCISSOR_TEST);
 		ofPopStyle();
+		isShowing = false;
 	}
 
 }

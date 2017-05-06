@@ -101,6 +101,15 @@ class ofxTimeline : ofThread {
 	};
 
   public:
+
+	struct Settings{
+		Settings()
+			:dataPath(ofToDataPath("GUI/"))
+			,eventsPriority(OF_EVENT_ORDER_BEFORE_APP){}
+
+		string dataPath;
+		ofEventOrder eventsPriority;
+	};
 	
 	//needed for hotkeys to work
 	//optionally pass in an "app name" for Quit.
@@ -108,7 +117,7 @@ class ofxTimeline : ofThread {
 
 	virtual ~ofxTimeline();
 	
-	virtual void setup(const string& dataPathRoot = ofToDataPath("GUI/"));
+	virtual void setup(const Settings& settings = Settings());
 	
 	//Optionally run ofxTimeline on the background thread
 	//this isn't necessary most of the time but
@@ -118,11 +127,11 @@ class ofxTimeline : ofThread {
     virtual void removeFromThread();
 	
 	bool toggleEnabled();
-    void enable();
+	void enable(ofEventOrder eventsPriority = OF_EVENT_ORDER_BEFORE_APP);
 	void disable();
     bool getIsEnabled();
 	
-	void enableEvents();
+	void enableEvents(ofEventOrder eventsPriority = OF_EVENT_ORDER_BEFORE_APP);
 	void disableEvents();
 
     virtual void clear(); //clears every track
@@ -150,10 +159,6 @@ class ofxTimeline : ofThread {
 	virtual ofLoopType getLoopType();
     bool isDone(); //returns true if percentComplete == 1.0 and loop type is none
 
-	virtual bool toggleShow();    
-    virtual void show();
-	virtual void hide();
-	virtual bool getIsShowing();
 	virtual void draw();
     
 	virtual bool mousePressed(ofMouseEventArgs& args);
