@@ -1,4 +1,5 @@
 #include "ofOpenALSoundPlayer_TimelineAdditions.h"
+#ifdef TIMELINE_AUDIO_INCLUDED
 
 //#ifdef OF_SOUND_PLAYER_OPENAL
 
@@ -1095,3 +1096,5 @@ void ofOpenALSoundPlayer_TimelineAdditions::runWindow(vector<float> & signal){
 }
 
 //#endif
+
+#endif
