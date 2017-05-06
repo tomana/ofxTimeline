@@ -1492,7 +1492,7 @@ void ofxTimeline::draw(){
 
 		glDisable(GL_SCISSOR_TEST);
 		ofPopStyle();
-		isShowing = false;
+		isShowing = true;
 	}
 
 }
