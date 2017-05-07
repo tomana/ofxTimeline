@@ -70,8 +70,9 @@ bool ofxTLPageTabs::mousePressed(ofMouseEventArgs& args){
 bool ofxTLPageTabs::mouseReleased(ofMouseEventArgs& args){
 	if(pressedPageIndex != -1 && pages[pressedPageIndex].bounds.inside(args.x, args.y)){
 		selectPage(pressedPageIndex);
+		return true;
 	}
-	return pressedPageIndex != -1;
+	return false;
 }
 
 void ofxTLPageTabs::addPage(string name){
