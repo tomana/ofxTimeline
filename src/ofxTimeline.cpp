@@ -2168,7 +2168,7 @@ float ofxTimeline::normalizedXtoScreenX(float x, ofRange inputRange){
 ofxTimeline::Listener::Listener(ofParameter<bool> p, ofxTimeline * timeline, ofxTLSwitches * tlSwitches){
 	timelineListeners.push_back(tlSwitches->events().switched.newListener([p, timeline, this](ofxTLSwitchEventArgs&sw) mutable{
 		settingFromTimeline = true;
-		p.set(sw.on);
+		p.set(timeline->isSwitchOn(p.getHierarchicName()));
 		settingFromTimeline = false;
 	}));
 	valueListener = p.newListener([p, this, tlSwitches, timeline](bool & v) mutable{
