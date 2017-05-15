@@ -2216,28 +2216,52 @@ void ofxTimeline::loadStructure(const string & folder){
 	auto structure = ofLoadJson(ofFilePath::join(folder, "timeline_structure.json"));
 	name = structure["name"].get<string>();
 	auto pages = structure["pages"];
-	for(auto & p: pages){
-		auto currentPage = getPage(getCurrentPageName());
-		if(currentPage->getTracks().empty()){
-			setPageName(p["name"]);
-		}else{
-			addPage(p["name"], true);
-		}
-		for(auto t: p["tracks"]){
-			auto type = t["type"];
-			auto tName = confirmedUniqueName(t["name"]);
-			auto txmlName = nameToXMLName(tName);
-			if(getTrack(tName)){
-				removeTrack(tName);
+	for (auto & p: pages) {
+		string pName = p["name"];
+		auto page = getPage(pName);
+		if (page == nullptr) {
+			// Page doesn't exist.
+			auto currentPage = getPage(getCurrentPageName());
+			if (currentPage->getTracks().empty()) {
+				// Current page is empty, use it.
+				setPageName(pName);
 			}
-			if(type == ofxTLCurves::TRACK_TYPE){
-				addCurves(tName, txmlName, ofRange(t["min"], t["max"]));
-			}else if(type == ofxTLSwitches::TRACK_TYPE){
-				addSwitches(tName, txmlName);
-			}else if(type == ofxTLBangs::TRACK_TYPE){
-				addBangs(tName, txmlName);
-			}else if(type == ofxTLColorTrack::TRACK_TYPE){
-				addColors(tName, txmlName);
+			else {
+				// Current page has tracks, add a new page.
+				addPage(pName, true);
+			}
+		}
+		else {
+			// Page exists, use it.
+			setCurrentPage(page->getName());
+		}
+		
+		for (auto t: p["tracks"]) {
+			auto type = t["type"];
+			string tName = t["name"];
+			auto track = getTrack(tName);
+			if (track != nullptr) {
+				if (type == ofxTLCurves::TRACK_TYPE) {
+					static_cast<ofxTLCurves *>(track)->setValueRange(ofRange(t["min"], t["max"]));
+				}
+			}
+			else {
+				auto txmlName = nameToXMLName(tName);
+				if (type == ofxTLCurves::TRACK_TYPE) {
+					addCurves(tName, txmlName, ofRange(t["min"], t["max"]));
+				}
+				else if (type == ofxTLSwitches::TRACK_TYPE) {
+					addSwitches(tName, txmlName);
+				}
+				else if (type == ofxTLBangs::TRACK_TYPE) {
+					addBangs(tName, txmlName);
+				}
+				else if (type == ofxTLColorTrack::TRACK_TYPE) {
+					addColors(tName, txmlName);
+				}
+				else {
+					ofLogError(__FUNCTION__) << "Track type " << type << " can't be created automatically!";
+				}
 			}
 		}
 	}
