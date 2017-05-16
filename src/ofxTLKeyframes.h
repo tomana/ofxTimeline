@@ -37,6 +37,32 @@
 #include "ofxTLTrack.h"
 #include "ofxXmlSettings.h"
 
+
+enum class ofxTLScale{
+	Linear,
+	Logarithmic,
+};
+
+inline ofParameterScale toOf(ofxTLScale scale){
+	switch(scale){
+		case ofxTLScale::Logarithmic:
+			return ofParameterScale::Logarithmic;
+		case ofxTLScale::Linear:
+		default:
+			return ofParameterScale::Linear;
+	}
+}
+
+inline ofxTLScale toOfxTL(ofParameterScale scale){
+	switch(scale){
+		case ofParameterScale::Logarithmic:
+			return ofxTLScale::Logarithmic;
+		case ofParameterScale::Linear:
+		default:
+			return ofxTLScale::Linear;
+	}
+}
+
 class ofxTLKeyframe {
   public:
 	ofVec2f screenPosition; // cached screen position
@@ -44,7 +70,7 @@ class ofxTLKeyframe {
     unsigned long long time; //in millis
     float value; //normalized
     long grabTimeOffset;
-    float grabValueOffset;
+	float grabValueOffset;
 };
 
 class ofxTLKeyframes : public ofxTLTrack
@@ -109,11 +135,19 @@ class ofxTLKeyframes : public ofxTLTrack
 	virtual float getValue();
 	virtual float getValueAtPercent(float percent);
 	virtual float getValueAtTimeInMillis(long sampleTime);
+	virtual float getDefaultValue();
+
+	virtual float getNormalizedValue();
+	virtual float getNormalizedValueAtPercent(float percent);
+	virtual float getNormalizedValueAtTimeInMillis(long sampleTime);
 
 	virtual void setValueRange(ofRange range, float defaultValue = 0);
 	virtual void setValueRangeMin(float min);
 	virtual void setValueRangeMax(float max);
 	virtual void setDefaultValue(float defaultValue);
+
+	virtual void setScale(ofxTLScale scale);
+	virtual ofxTLScale getScale(ofxTLScale scale);
 
 	virtual void quantizeKeys(int step);
 
@@ -141,6 +175,8 @@ class ofxTLKeyframes : public ofxTLTrack
 	virtual float evaluateKeyframeAtTime(ofxTLKeyframe* key, unsigned long long sampleTime, bool firstKey = false);
 
     ofRange valueRange;
+	ofxTLScale scale = ofxTLScale::Linear;
+	bool scaled = false;;
 	float defaultValue;
 
 	//keep these stored for efficient search through the keyframe array

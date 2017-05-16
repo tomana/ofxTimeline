@@ -33,6 +33,7 @@
 #include "ofxTLKeyframes.h"
 #include "ofxTimeline.h"
 #include "ofxHotKeys.h"
+#include "ofxXmlSettings.h"
 
 bool keyframesort(ofxTLKeyframe* a, ofxTLKeyframe* b){
 	return a->time < b->time;
@@ -158,15 +159,40 @@ void ofxTLKeyframes::draw(){
 
 //TODO: potentially scale internal values at this point
 void ofxTLKeyframes::setValueRange(ofRange range, float newDefaultValue){
+	if(valueRange!=range){
+		for(auto * kf: keyframes){
+			ofParameter<float> scaleParam{"", valueRange.min, valueRange.min, valueRange.max, toOf(scale)};
+			scaleParam.setPctScaled(kf->value);
+			scaleParam.setMin(range.min);
+			scaleParam.setMax(range.max);
+			kf->value = scaleParam.getPctScaled();
+		}
+	}
 	valueRange = range;
     defaultValue = newDefaultValue;
 }
 
 void ofxTLKeyframes::setValueRangeMin(float min){
+	if(valueRange.min!=min){
+		for(auto * kf: keyframes){
+			ofParameter<float> scaleParam{"", valueRange.min, valueRange.min, valueRange.max, toOf(scale)};
+			scaleParam.setPctScaled(kf->value);
+			scaleParam.setMin(min);
+			kf->value = scaleParam.getPctScaled();
+		}
+	}
 	valueRange.min = min;
 }
 
 void ofxTLKeyframes::setValueRangeMax(float max){
+	if(valueRange.max!=max){
+		for(auto * kf: keyframes){
+			ofParameter<float> scaleParam{"", valueRange.min, valueRange.min, valueRange.max, toOf(scale)};
+			scaleParam.setPctScaled(kf->value);
+			scaleParam.setMax(max);
+			kf->value = scaleParam.getPctScaled();
+		}
+	}
 	valueRange.max = max;
 }
 
@@ -195,7 +221,25 @@ float ofxTLKeyframes::getValueAtPercent(float percent){
 }
 
 float ofxTLKeyframes::getValueAtTimeInMillis(long sampleTime){
-	return ofMap(sampleAtTime(sampleTime), 0.0, 1.0, valueRange.min, valueRange.max, false);
+	ofParameter<float> scale{"", valueRange.min, valueRange.min, valueRange.max, toOf(this->scale)};
+	scale.setPctScaled(sampleAtTime(sampleTime));
+	return scale.get();
+}
+
+float ofxTLKeyframes::getDefaultValue(){
+	return defaultValue;
+}
+
+float ofxTLKeyframes::getNormalizedValue(){
+	return getNormalizedValueAtTimeInMillis(currentTrackTime());
+}
+
+float ofxTLKeyframes::getNormalizedValueAtPercent(float percent){
+	return getNormalizedValueAtTimeInMillis(percent*timeline->getDurationInMilliseconds());
+}
+
+float ofxTLKeyframes::getNormalizedValueAtTimeInMillis(long sampleTime){
+	return sampleAtTime(sampleTime);
 }
 
 float ofxTLKeyframes::sampleAtPercent(float percent){
@@ -207,7 +251,8 @@ float ofxTLKeyframes::sampleAtTime(long sampleTime){
 
 	//edge cases
 	if(keyframes.size() == 0){
-		return ofMap(defaultValue, valueRange.min, valueRange.max, 0, 1.0, true);
+		ofParameter<float> scale{"", defaultValue, valueRange.min, valueRange.max, toOf(this->scale)};
+		return scale.getPctScaled();
 	}
 
 	if(sampleTime <= keyframes[0]->time){
@@ -233,6 +278,22 @@ float ofxTLKeyframes::sampleAtTime(long sampleTime){
 	}
 	ofLog(OF_LOG_ERROR, "ofxTLKeyframes --- Error condition, couldn't find keyframe for percent " + ofToString(sampleTime));
 	return defaultValue;
+}
+
+void ofxTLKeyframes::setScale(ofxTLScale scale){
+	if(this->scale != scale){
+		for(auto * kf: keyframes){
+			ofParameter<float> scaleParam{"", valueRange.min, valueRange.min, valueRange.max, toOf(this->scale)};
+			scaleParam.setPctScaled(kf->value);
+			scaleParam.setScale(toOf(scale));
+			kf->value = scaleParam.getPctScaled();
+		}
+	}
+	this->scale = scale;
+}
+
+ofxTLScale ofxTLKeyframes::getScale(ofxTLScale scale){
+	return scale;
 }
 
 float ofxTLKeyframes::evaluateKeyframeAtTime(ofxTLKeyframe* key, unsigned long long sampleTime, bool firstKey){
@@ -286,14 +347,15 @@ void ofxTLKeyframes::createKeyframesFromXML(ofxXmlSettings xmlStore, vector<ofxT
 	            key->time = key->previousTime = timeline->getTimecode().millisForTimecode(timecode);
             }
 
-            float legacyYValue = xmlStore.getValue("y", 0.0);
+			float legacyYValue = xmlStore.getValue("y", 0.0);
             if(legacyYValue != 0.0){
                 ofLogNotice() << "ofxTLKeyframes::createKeyframesFromXML -- Found legacy value " << legacyYValue << endl;
                 key->value = legacyYValue;
             }
-            else{
-	            key->value = xmlStore.getValue("value", 0.0f);
-            }
+			else {
+				key->value = xmlStore.getValue("value", 0.0f);
+			}
+
 			restoreKeyframe(key, xmlStore);
 			xmlStore.popTag(); //key
 			keyContainer.push_back( key );

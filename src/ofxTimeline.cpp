@@ -1745,6 +1745,38 @@ float ofxTimeline::getValue(string trackName, int atFrame){
     return getValue(trackName, timecode.secondsForFrame(atFrame));
 }
 
+float ofxTimeline::getNormalizedValue(string trackName){
+	if(!hasTrack(trackName)){
+		ofLogError(__FUNCTION__) << "Couldn't find track " << trackName;
+		return 0.0;
+	}
+	ofxTLCurves* curves = (ofxTLCurves*)trackNameToPage[trackName]->getTrack(trackName);
+	return curves->getNormalizedValue();
+}
+
+float ofxTimeline::getNormalizedValueAtPercent(string trackName, float atPercent){
+	if(!hasTrack(trackName)){
+		ofLogError(__FUNCTION__) << "Couldn't find track " << trackName;
+		return 0.0;
+	}
+	ofxTLCurves* curves = (ofxTLCurves*)trackNameToPage[trackName]->getTrack(trackName);
+	return curves->getNormalizedValueAtTimeInMillis(atPercent*durationInSeconds*1000);
+}
+
+float ofxTimeline::getNormalizedValue(string trackName, float atTime){
+	if(!hasTrack(trackName)){
+		ofLogError(__FUNCTION__) << "Couldn't find track " << trackName;
+		return 0.0;
+	}
+	ofxTLCurves* curves = (ofxTLCurves*)trackNameToPage[trackName]->getTrack(trackName);
+	return curves->getNormalizedValueAtTimeInMillis(atTime*1000);
+}
+
+float ofxTimeline::getNormalizedValue(string trackName, int atFrame){
+	return getNormalizedValue(trackName, timecode.secondsForFrame(atFrame));
+
+}
+
 bool ofxTimeline::hasTrack(string trackName){
 	return trackNameToPage.find(trackName) != trackNameToPage.end();
 }
@@ -2243,12 +2275,20 @@ void ofxTimeline::loadStructure(const string & folder){
 			if (track != nullptr) {
 				if (type == ofxTLCurves::TRACK_TYPE) {
 					static_cast<ofxTLCurves *>(track)->setValueRange(ofRange(t["min"], t["max"]));
+					if(t["scale"].is_number()){
+						int scale = t["scale"];
+						static_cast<ofxTLCurves *>(track)->setScale(ofxTLScale(scale));
+					}
 				}
 			}
 			else {
 				auto txmlName = nameToXMLName(tName);
 				if (type == ofxTLCurves::TRACK_TYPE) {
-					addCurves(tName, txmlName, ofRange(t["min"], t["max"]));
+					auto curves = addCurves(tName, txmlName, ofRange(t["min"], t["max"]));
+					if(t["scale"].is_number()){
+						int scale = t["scale"];
+						static_cast<ofxTLCurves *>(track)->setScale(ofxTLScale(scale));
+					}
 				}
 				else if (type == ofxTLSwitches::TRACK_TYPE) {
 					addSwitches(tName, txmlName);

@@ -399,8 +399,8 @@ class ofxTimeline : ofThread {
 		if(newCurves->getKeyframes().empty()){
 			newCurves->addKeyframeAtMillis(p.get(), getCurrentTimeMillis());
 		}
-		newCurves->setValueRangeMin(p.getMin());
-		newCurves->setValueRangeMax(p.getMax());
+		newCurves->setValueRange(ofRange(p.getMin(), p.getMax()), newCurves->getDefaultValue());
+		newCurves->setScale(toOfxTL(p.getScale()));
 		p = getValue(controlName);
 		listeners.emplace(
 			std::piecewise_construct,
@@ -427,6 +427,12 @@ class ofxTimeline : ofThread {
 	float getValueAtPercent(string name, float atPercent);
 	float getValue(string name, float atTime);
 	float getValue(string name, int atFrame);
+
+
+	float getNormalizedValue(string name);
+	float getNormalizedValueAtPercent(string name, float atPercent);
+	float getNormalizedValue(string name, float atTime);
+	float getNormalizedValue(string name, int atFrame);
 
 	//adding tracks always adds to the current page
     ofxTLLFO* addLFO(string name, ofRange valueRange = ofRange(0,1.0), float defaultValue = 0);
@@ -775,25 +781,25 @@ template<typename T>
 ofxTimeline::Listener::Listener(ofParameter<T> p, ofxTimeline * timeline, ofxTLCurves * curves){
 	timelineListeners.push_back(timeline->events().playheadTimeChanged.newListener([p, timeline, this](ofxTLPlaybackEventArgs&) mutable{
 		settingFromTimeline = true;
-		p.set(timeline->getValue(p.getHierarchicName()));
+		p.setPctScaled(timeline->getNormalizedValue(p.getHierarchicName()));
 		settingFromTimeline = false;
 	}));
 	timelineListeners.push_back(timeline->events().keyFrameChanged.newListener([p, timeline, this](ofxTLKeyframe&) mutable{
 		settingFromTimeline = true;
-		p.set(timeline->getValue(p.getHierarchicName()));
+		p.setPctScaled(timeline->getNormalizedValue(p.getHierarchicName()));
 		settingFromTimeline = false;
 	}));
 
 	valueListener = p.newListener([this, timeline, curves, p](T & v) mutable{
 		if(!settingFromTimeline){
 			auto t = timeline->getCurrentTime();
-			auto pct = ofMap(v, p.getMin(), p.getMax(), 0, 1, true);
+			auto pct = p.getPctScaled();
 			auto kf = curves->getNearestKeyframe(t);
 			if(kf){
 				kf->value = pct;
 				curves->recomputePreviews();
 			}
-			p = timeline->getValue(p.getHierarchicName());
+			p.setPctScaled(timeline->getNormalizedValue(p.getHierarchicName()));
 		}
 	});
 }

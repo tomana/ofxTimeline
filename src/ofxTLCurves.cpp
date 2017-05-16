@@ -55,7 +55,7 @@ string ofxTLCurves::getTrackType() const{
 }
 
 ofJson ofxTLCurves::getStructure() const{
-	return {{"name", name}, {"type", TRACK_TYPE}, {"min", valueRange.min}, {"max", valueRange.max}};
+	return {{"name", name}, {"type", TRACK_TYPE}, {"min", valueRange.min}, {"max", valueRange.max}, {"scale", int(scale)}};
 }
 
 ofxTLKeyframe* ofxTLCurves::newKeyframe(){
