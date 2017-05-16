@@ -2287,7 +2287,7 @@ void ofxTimeline::loadStructure(const string & folder){
 					auto curves = addCurves(tName, txmlName, ofRange(t["min"], t["max"]));
 					if(t["scale"].is_number()){
 						int scale = t["scale"];
-						static_cast<ofxTLCurves *>(track)->setScale(ofxTLScale(scale));
+						curves->setScale(ofxTLScale(scale));
 					}
 				}
 				else if (type == ofxTLSwitches::TRACK_TYPE) {
