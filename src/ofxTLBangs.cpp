@@ -108,13 +108,13 @@ void ofxTLBangs::update(){
 //	if(isPlaying || timeline->getIsPlaying()){
 		long thisTimelinePoint = currentTrackTime();
 		for(int i = 0; i < keyframes.size(); i++){
-			if(thisTimelinePoint>lastTimelinePoint){
+			if(thisTimelinePoint > lastTimelinePoint){
 				if(timeline->getInOutRangeMillis().contains(keyframes[i]->time) &&
-				   lastTimelinePoint <= keyframes[i]->time &&
-				   thisTimelinePoint >= keyframes[i]->time &&
-				   thisTimelinePoint != lastTimelinePoint)
+				   (lastTimelinePoint <= keyframes[i]->time) &&
+				   (thisTimelinePoint >= keyframes[i]->time) &&
+				   (thisTimelinePoint != lastTimelinePoint))
 				{
-	//				ofLogNotice() << "fired bang with accuracy of " << (keyframes[i]->time - thisTimelinePoint) << endl;
+//					ofLogNotice() << "fired bang with accuracy of " << (keyframes[i]->time - thisTimelinePoint) << endl;
 					bangFired(keyframes[i]);
 					lastBangTime = ofGetElapsedTimef();
 				}

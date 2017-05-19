@@ -2246,6 +2246,9 @@ void ofxTimeline::saveStructure(const string & folder) const{
 
 void ofxTimeline::loadStructure(const string & folder){
 	auto structure = ofLoadJson(ofFilePath::join(folder, "timeline_structure.json"));
+	if(structure.is_null()){
+		return;
+	}
 	name = structure["name"].get<string>();
 	auto pages = structure["pages"];
 	for (auto & p: pages) {

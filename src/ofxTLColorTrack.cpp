@@ -153,7 +153,7 @@ void ofxTLColorTrack::drawModalContent(){
 		}
 		colorPallete.draw(colorWindow);
 
-		ofVec2f selectionPoint = colorWindow.getMin() + selectedSample->samplePoint * ofVec2f(colorWindow.width,colorWindow.height);
+		ofVec2f selectionPoint = colorWindow.getMin().xy() + selectedSample->samplePoint * ofVec2f(colorWindow.width,colorWindow.height);
 		ofSetColor(selectedSample->color.getInverted());
 		ofDrawLine(selectionPoint - ofVec2f(8,0), selectionPoint + ofVec2f(8,0));
 		ofDrawLine(selectionPoint - ofVec2f(0,8), selectionPoint + ofVec2f(0,8));
@@ -161,13 +161,13 @@ void ofxTLColorTrack::drawModalContent(){
 		ofPushStyle();
 		ofNoFill();
 		if(previousSample != NULL){
-			ofVec2f previousSamplePoint = colorWindow.getMin() + previousSample->samplePoint * ofVec2f(colorWindow.width,colorWindow.height);
+			ofVec2f previousSamplePoint = colorWindow.getMin().xy() + previousSample->samplePoint * ofVec2f(colorWindow.width,colorWindow.height);
 			ofSetColor(previousSample->color.getInverted(), 150);
 			ofDrawCircle(previousSamplePoint, 3);
 			ofDrawLine(previousSamplePoint,selectionPoint);
 		}
 		if(nextSample != NULL){
-			ofVec2f nextSamplePoint = colorWindow.getMin() + nextSample->samplePoint * ofVec2f(colorWindow.width,colorWindow.height);
+			ofVec2f nextSamplePoint = colorWindow.getMin().xy() + nextSample->samplePoint * ofVec2f(colorWindow.width,colorWindow.height);
 			ofSetColor(nextSample->color.getInverted(), 150);
 
 			//draw a little triangle pointer

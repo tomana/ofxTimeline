@@ -56,7 +56,7 @@ class ofxTLBangs : public ofxTLKeyframes {
 //    bool isPlayingBack;
 	virtual void update();
 	
-    long lastTimelinePoint;
+	unsigned long long lastTimelinePoint;
 	float lastBangTime; //just for display
 	
     virtual void bangFired(ofxTLKeyframe* key);

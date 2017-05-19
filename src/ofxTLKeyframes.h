@@ -67,7 +67,7 @@ class ofxTLKeyframe {
   public:
 	ofVec2f screenPosition; // cached screen position
 	unsigned long long previousTime; //for preventing overlap conflicts
-    unsigned long long time; //in millis
+	unsigned long long time; //in millis
     float value; //normalized
     long grabTimeOffset;
 	float grabValueOffset;
