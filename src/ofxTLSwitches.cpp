@@ -232,6 +232,25 @@ bool ofxTLSwitches::isOnAtPercent(float percent){
     return isOnAtMillis(millis);
 }
 
+ofxTLSwitch* ofxTLSwitches::addSwitch(long millis, long duration) {
+	addKeyframeAtMillis(millis);
+	auto key = this->getNearestKeyframe(millis);
+	if (key == nullptr)
+	{
+		ofLogError(__FUNCTION__) << "Unable to create switch";
+		return nullptr;
+	}
+
+	auto switchKey = static_cast<ofxTLSwitch *>(key);
+	switchKey->textField.setFont(timeline->getFont());
+	switchKey->timeRange.min = millis;
+	switchKey->timeRange.max = millis + duration;
+	switchKey->startSelected = true;
+	switchKey->endSelected = true;
+	placingSwitch = nullptr;
+	timeline->flagTrackModified(this);
+}
+
 ofxTLSwitch* ofxTLSwitches::getActiveSwitchAtMillis(long millis){
     for(int i = 0; i < keyframes.size(); i++){
         ofxTLSwitch* switchKey = (ofxTLSwitch*)keyframes[i];

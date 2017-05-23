@@ -60,6 +60,8 @@ class ofxTLSwitches : public ofxTLKeyframes {
 	virtual bool isOn();
     virtual bool isOnAtMillis(long millis);
     virtual bool isOnAtPercent(float percent);
+
+	ofxTLSwitch* addSwitch(long millis, long duration);
     
     ofxTLSwitch* getActiveSwitchAtMillis(long millis);
     
