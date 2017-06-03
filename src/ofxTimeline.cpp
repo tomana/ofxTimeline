@@ -95,7 +95,7 @@ void ofxTimeline::setup(const ofxTimeline::Settings& settings){
 
 	timelineListeners.push_back(timelineEvents.viewWasResized.newListener(this, &ofxTimeline::viewWasResized));
 	pageListener = timelineEvents.pageChanged.newListener(this, &ofxTimeline::pageChanged);
-	updateListener = ofEvents().update.newListener(this, &ofxTimeline::update);
+	updateListener = ofEvents().update.newListener(this, &ofxTimeline::update, OF_EVENT_ORDER_BEFORE_APP);
 
     //You can change this name by calling setPageName()
 	addPage("Page One", true);
