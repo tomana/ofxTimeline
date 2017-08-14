@@ -35,6 +35,8 @@
 #include <cfloat>
 #include "ofxHotKeys.h"
 
+constexpr const char * ofxTLColorTrack::TRACK_TYPE;
+
 ofxTLColorTrack::ofxTLColorTrack()
  :	drawingColorWindow(false),
 	clickedInColorRect(false),

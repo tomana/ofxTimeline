@@ -34,6 +34,8 @@
 #include "ofxTimeline.h"
 #include "ofxHotKeys.h"
 
+constexpr const char * ofxTLCurves::TRACK_TYPE;
+
 ofxTLCurves::ofxTLCurves(){
 	initializeEasings();
 	valueRange = ofRange(0.0, 1.0);
