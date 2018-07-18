@@ -32,7 +32,6 @@
 
 #include "ofxTLFlags.h"
 #include "ofxTimeline.h"
-#include "ofxHotKeys.h"
 
 //flagssss
 ofxTLFlags::ofxTLFlags() {
@@ -61,7 +60,7 @@ void ofxTLFlags::draw(){
 			int textHeight = bounds.y + 10 + ( (20*i) % int(MAX(bounds.height-15, 15)));
 			key->display = ofRectangle(MIN(screenX+3, bounds.getMaxX() - key->textField.bounds.width),
 									   textHeight-10, 100, 15);
-			ofRect(key->display);
+			ofDrawRectangle(key->display);
 			
 			ofSetColor(timeline->getColors().textColor);
 			
@@ -98,10 +97,10 @@ bool ofxTLFlags::mousePressed(ofMouseEventArgs& args, long millis){
     //mulitple fields at once
     if(clickedTextField != NULL){
         timeline->presentedModalContent(this);
-        if(!ofGetModifierSelection()){
+        if(!(ofGetKeyPressed(OF_KEY_CONTROL) && ofGetKeyPressed(OF_KEY_SHIFT) && ofGetKeyPressed(OF_KEY_COMMAND))){
             timeline->unselectAll();
         }
-		if(ofGetModifierSelection() && clickedTextField->textField.isEditing()){
+        if((ofGetKeyPressed(OF_KEY_CONTROL) || ofGetKeyPressed(OF_KEY_SHIFT) || ofGetKeyPressed(OF_KEY_COMMAND)) && clickedTextField->textField.getIsEditing()){
 			clickedTextField->textField.endEditing();
 		}
 		else{
@@ -141,7 +140,7 @@ void ofxTLFlags::mouseDragged(ofMouseEventArgs& args, long millis){
 void ofxTLFlags::mouseReleased(ofMouseEventArgs& args, long millis){
 	if(enteringText){
 		//if we clicked outside of the rect, definitely deslect everything
-		if(clickedTextField == NULL && !ofGetModifierSelection()){
+        if(clickedTextField == NULL && !(ofGetKeyPressed(OF_KEY_CONTROL) && ofGetKeyPressed(OF_KEY_SHIFT) && ofGetKeyPressed(OF_KEY_COMMAND))){
 			for(int i = 0; i < selectedKeyframes.size(); i++){
 				((ofxTLFlag*)selectedKeyframes[i])->textField.endEditing();
 			}
@@ -151,7 +150,7 @@ void ofxTLFlags::mouseReleased(ofMouseEventArgs& args, long millis){
 		else{
 			enteringText = false;
 			for(int i = 0; i < selectedKeyframes.size(); i++){
-				enteringText = enteringText || ((ofxTLFlag*)selectedKeyframes[i])->textField.isEditing();
+                enteringText = enteringText || ((ofxTLFlag*)selectedKeyframes[i])->textField.getIsEditing();
 			}
 		}
 
@@ -207,7 +206,7 @@ void ofxTLFlags::storeKeyframe(ofxTLKeyframe* key, ofxXmlSettings& xmlStore){
 
 void ofxTLFlags::willDeleteKeyframe(ofxTLKeyframe* keyframe){
 	ofxTLFlag* flag = (ofxTLFlag*)keyframe;
-	if(flag->textField.isEditing()){
+    if(flag->textField.getIsEditing()){
 		timeline->dismissedModalContent();
 		timeline->flagTrackModified(this);
 	}

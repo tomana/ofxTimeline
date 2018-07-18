@@ -34,12 +34,6 @@
 
 #include "ofMain.h"
 
-//For lack of a type abstraction, this let's you #define a font renderer before including ofxTimeline
-//(like ofxFTGL or ofxFont)
-//to use ofxFTGL use somethinglike this:
-//#define OFX_TIMELINE_FONT_RENDERER ofxFTGLFont
-//#define OFX_TIMELINE_FONT_INCLUDE "ofxFTGLFont.h"
-
 #ifndef OFX_TIMELINE_FONT_RENDERER
 #define OFX_TIMELINE_FONT_RENDERER ofTrueTypeFont
 #endif
@@ -65,18 +59,8 @@
 #include "ofxTLFlags.h"
 #include "ofxTLSwitches.h"
 #include "ofxTLColorTrack.h"
-#include "ofxTLImageSequence.h"
-#include "ofxTLCameraTrack.h"
 #include "ofxTLColors.h"
 #include "ofxTLLFO.h"
-
-#ifdef TIMELINE_VIDEO_INCLUDED
-#include "ofxTLVideoTrack.h"
-#endif
-
-#ifdef TIMELINE_AUDIO_INCLUDED
-#include "ofxTLAudioTrack.h"
-#endif
 
 
 typedef struct {
@@ -86,10 +70,6 @@ typedef struct {
 
 class ofxTimeline : ofThread {
   public:
-	
-	//needed for hotkeys to work
-	//optionally pass in an "app name" for Quit.
-	static void removeCocoaMenusFromGlut(string appName);
 	
 	ofxTimeline();
 	virtual ~ofxTimeline();
@@ -268,7 +248,7 @@ class ofxTimeline : ofThread {
 	virtual void setHeight(float height);
 	virtual void collapseAllTracks(); //collapses all tracks heights to 0;
 	
-	ofRectangle getDrawRect();
+    ofRectangle getDrawRect();
 	float getWidth();
 	float getHeight();
     ofVec2f getTopRight();
@@ -387,31 +367,6 @@ class ofxTimeline : ofThread {
     
 	void setDefaultColorPalettePath(string path);
 	string getDefaultColorPalettePath();
-    
-    //TODO: remove image sequence from the core? ... or fix it up.
-	//*IMAGE SEQUENCE DOES NOT WORK*
-	ofxTLImageSequence* addImageSequence(string name);
-	ofxTLImageSequence* addImageSequence(string name, string directory);
-	ofImage* getImage(string name);
-	ofImage* getImage(string name, float atTime);
-	ofImage* getImage(string name, int atFrame);
-	//*IMAGE SEQUENCE DOES NOT WORK*
-
-	#ifdef TIMELINE_VIDEO_INCLUDED
-	ofxTLVideoTrack* addVideoTrack(string name);
-    ofxTLVideoTrack* addVideoTrackWithPath(string videoPath);
-    ofxTLVideoTrack* addVideoTrack(string name, string videoPath);
-    ofxTLVideoTrack* getVideoTrack(string videoTrackName);
-    ofPtr<ofVideoPlayer> getVideoPlayer(string videoTrackName);
-	#endif
-    
-	#ifdef TIMELINE_AUDIO_INCLUDED
-    //Audio tracks only work with PCM Wav or Aiff file
-    ofxTLAudioTrack* addAudioTrack(string trackName);
-    ofxTLAudioTrack* addAudioTrackWithPath(string audioPath);
-    ofxTLAudioTrack* addAudioTrack(string name, string audioPath);
-    ofxTLAudioTrack* getAudioTrack(string audioTrackName);
-	#endif
 
     //used for audio and video.
     //we punt to the track to control time.
@@ -582,7 +537,7 @@ class ofxTimeline : ofThread {
     ofxXmlSettings settings;
 	string name;
 	
-	ofRectangle totalDrawRect;
+    ofRectangle totalDrawRect;
 	bool isEnabled; //allows for editing
 	bool isShowing; //allows for viewing
 	bool isPlaying; //moves playhead along

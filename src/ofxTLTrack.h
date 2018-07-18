@@ -75,9 +75,9 @@ class ofxTLTrack
 	unsigned long long currentTrackTime();
 
     //returns the screenspace position of the elements bounds, not including header and footer
-	virtual ofRectangle getDrawRect();
+    virtual ofRectangle getDrawRect();
     //managed by the page object, do not set yourself
-	virtual void setDrawRect(ofRectangle bounds);
+    virtual void setDrawRect(ofRectangle bounds);
 	float getBottomEdge();
 
     //saving and loading
@@ -218,6 +218,6 @@ class ofxTLTrack
 	string name;
     string displayName;
 	string xmlFileName;
-	ofRectangle bounds;
+    ofRectangle bounds;
 	ofRange zoomBounds;
 };

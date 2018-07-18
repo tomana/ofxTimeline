@@ -49,7 +49,7 @@ void ofxTLTrackHeader::enable(){
 		nameField.setFont(timeline->getFont());
 		//nameField.drawBounds = false;
 		ofxTLTrack::enable();
-    	ofAddListener(nameField.onTextChange, this, &ofxTLTrackHeader::textFieldEnter);
+        //ofAddListener(nameField.onTextChange, this, &ofxTLTrackHeader::textFieldEnter);
 	}
 }
 
@@ -57,7 +57,7 @@ void ofxTLTrackHeader::disable(){
 	if(isEnabled()){
 		ofxTLTrack::disable();
 		nameField.disable();
-	    ofRemoveListener(nameField.onTextChange, this, &ofxTLTrackHeader::textFieldEnter);
+        //ofRemoveListener(nameField.onTextChange, this, &ofxTLTrackHeader::textFieldEnter);
 	}
 }
 
@@ -103,24 +103,24 @@ void ofxTLTrackHeader::draw(){
 	if(track->hasFocus()){
 		ofFill();
 		ofSetColor(timeline->getColors().highlightColor, 50);
-		ofRect(bounds.x, bounds.y, bounds.width, bounds.height);
+		ofDrawRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
 	// TODO: set these somewhere else instead of setting it every frame here
     // set name if it's empty and we're not editing
-    if(nameField.text != track->getDisplayName() && !nameField.isEnabled()){
+    if(nameField.text != track->getDisplayName() && !nameField.getIsEnabled()){
     	nameField.text = track->getDisplayName();
     }
 
-	if(timeline->areHeadersEditable() && !nameField.isEnabled()){
+    if(timeline->areHeadersEditable() && !nameField.getIsEnabled()){
 		nameField.enable();
 	}
 
-	if(!timeline->areHeadersEditable() && nameField.isEnabled()){
+    if(!timeline->areHeadersEditable() && nameField.getIsEnabled()){
 		nameField.disable();
 	}
 
-    if(nameField.isEditing()){
+    if(nameField.getIsEditing()){
     	track->getTimeline()->presentedModalContent(this);
     }
 
@@ -140,7 +140,7 @@ void ofxTLTrackHeader::draw(){
 	}
 
 	ofSetColor(track->getTimeline()->getColors().outlineColor);
-	ofRect(bounds);
+	ofDrawRectangle(bounds);
 
 	//draw grippy lines on the footer draggable element
 	if(footerHeight > 0){

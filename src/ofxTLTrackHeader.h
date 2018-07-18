@@ -61,7 +61,7 @@ class ofxTLTrackHeader : public ofxTLTrack
 	virtual void setFooterHeight(float height);
 	virtual void collapseTrack();
     
-	virtual ofRectangle getFooterRect();
+    virtual ofRectangle getFooterRect();
 	virtual void textFieldEnter(string& newText);
 	
 	//for the header, this returns the track's display name
@@ -74,7 +74,7 @@ class ofxTLTrackHeader : public ofxTLTrack
 	float footerHeight;
 	void recalculateFooter();
 	
-	ofRectangle footerRect;
+    ofRectangle footerRect;
 	
 	bool hoveringFooter;
 	bool draggingSize;

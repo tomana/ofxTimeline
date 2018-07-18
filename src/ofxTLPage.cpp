@@ -33,7 +33,6 @@
 #include "ofxTLPage.h"
 #include "ofxTLTicker.h"
 #include "ofxTimeline.h"
-#include "ofxHotKeys.h"
 
 ofxTLPage::ofxTLPage()
 :	trackContainerRect(ofRectangle(0,0,0,0)),
@@ -43,7 +42,6 @@ ofxTLPage::ofxTLPage()
 	snappingTolerance(12),
 	ticker(NULL),
 	millisecondDragOffset(0),
-//	snapToOtherTracksEnabled(true),
 	headerHasFocus(false),
 	focusedTrack(NULL),
 	draggingSelectionRectangle(false),
@@ -131,7 +129,7 @@ void ofxTLPage::draw(){
 		set<unsigned long long>::iterator it;
 //		for(int i = 0; i < snapPoints.size(); i++){
 		for(it = snapPoints.begin(); it != snapPoints.end(); it++){
-			ofLine(timeline->millisToScreenX(*it), trackContainerRect.y,
+            ofDrawLine(timeline->millisToScreenX(*it), trackContainerRect.y,
                    timeline->millisToScreenX(*it), trackContainerRect.y+trackContainerRect.height);
 		}
 		ofPopStyle();
@@ -144,11 +142,11 @@ void ofxTLPage::draw(){
     if(draggingSelectionRectangle){
 		ofFill();
 		ofSetColor(timeline->getColors().keyColor, 30);
-		ofRect(selectionRectangle);
+		ofDrawRectangle(selectionRectangle);
 		
 		ofNoFill();
 		ofSetColor(timeline->getColors().keyColor, 255);
-		ofRect(selectionRectangle);
+		ofDrawRectangle(selectionRectangle);
 		
 	}
 }
@@ -190,7 +188,7 @@ void ofxTLPage::mousePressed(ofMouseEventArgs& args, long millis){
 		
         refreshSnapPoints();
 
-		if(!footerIsDragging && (headerHasFocus || timeline->getTotalSelectedItems() == 0 || ofGetModifierShiftPressed()) ){
+        if(!footerIsDragging && (headerHasFocus || timeline->getTotalSelectedItems() == 0 || ofGetKeyPressed(OF_KEY_SHIFT)) ){
             draggingSelectionRectangle = true;
             selectionRectangleAnchor = ofVec2f(args.x,args.y);
             selectionRectangle = ofRectangle(args.x,args.y,0,0);
@@ -314,7 +312,7 @@ void ofxTLPage::mouseReleased(ofMouseEventArgs& args, long millis){
 	}
 
 	if(draggingSelectionRectangle && selectionRectangle.getArea() != 0){
-		if(!ofGetModifierSelection() ){
+        if(!ofGetKeyPressed() ){
 			timeline->unselectAll();
 		}
 

@@ -32,7 +32,6 @@
 
 #include "ofxTLSwitches.h"
 #include "ofxTimeline.h"
-#include "ofxHotKeys.h"
 
 ofxTLSwitches::ofxTLSwitches(){
 	placingSwitch = NULL;
@@ -90,7 +89,7 @@ void ofxTLSwitches::draw(){
 	//play solo change
 	if(isOn()){
 		ofSetColor(timeline->getColors().disabledColor, 20+(1-powf(sin(ofGetElapsedTimef()*5)*.5+.5,2))*20);
-		ofRect(bounds);
+		ofDrawRectangle(bounds);
 	}
 
     for(int i = 0; i < keyframes.size(); i++){
@@ -113,7 +112,7 @@ void ofxTLSwitches::draw(){
 	        ofSetColor(timeline->getColors().keyColor);    
         }
 
-        ofLine(switchKey->display.x, bounds.y, 
+        ofDrawLine(switchKey->display.x, bounds.y,
                switchKey->display.x, bounds.y+bounds.height);
 
         if(keyIsSelected || switchKey->endSelected){
@@ -122,7 +121,7 @@ void ofxTLSwitches::draw(){
         else{
 	        ofSetColor(timeline->getColors().keyColor);    
         }        
-        ofLine(switchKey->display.x+switchKey->display.width, bounds.y, 
+        ofDrawLine(switchKey->display.x+switchKey->display.width, bounds.y,
                switchKey->display.x+switchKey->display.width, bounds.y+bounds.height);
 
         //draw region
@@ -142,7 +141,7 @@ void ofxTLSwitches::draw(){
                 else{
                     ofSetColor(timeline->getColors().keyColor);
                 }
-                ofRect(switchKey->display.x-2, bounds.y, 4, bounds.height);
+                ofDrawRectangle(switchKey->display.x-2, bounds.y, 4, bounds.height);
                 ofPopStyle();
             }
             else if(endHover){
@@ -153,7 +152,7 @@ void ofxTLSwitches::draw(){
                 else{
                     ofSetColor(timeline->getColors().keyColor);
                 }
-                ofRect(switchKey->display.x+switchKey->display.width-2, bounds.y, 4.0, bounds.height);
+                ofDrawRectangle(switchKey->display.x+switchKey->display.width-2, bounds.y, 4.0, bounds.height);
                 ofPopStyle();
             }
             else {
@@ -164,7 +163,7 @@ void ofxTLSwitches::draw(){
                 }
             }
         }
-        ofRect(switchKey->display);
+        ofDrawRectangle(switchKey->display);
     }
     
     ofFill();
@@ -178,7 +177,7 @@ void ofxTLSwitches::draw(){
 			int textHeight = bounds.y + 10 + ( (20*i) % int(MAX(bounds.height-15, 15)));
 			switchKey->textFieldDisplay = ofRectangle(MIN(screenX+3, bounds.getMaxX() - switchKey->textField.bounds.width),
 									   textHeight-10, 100, 15);
-			ofRect(switchKey->textFieldDisplay);
+			ofDrawRectangle(switchKey->textFieldDisplay);
 			
 			ofSetColor(timeline->getColors().textColor);
 			
@@ -244,10 +243,10 @@ bool ofxTLSwitches::mousePressed(ofMouseEventArgs& args, long millis){
     //mulitple fields at once
     if(clickedTextField != NULL){
         timeline->presentedModalContent(this);
-        if(!ofGetModifierSelection()){
+        if(!ofGetKeyPressed(OF_KEY_CONTROL) && !ofGetKeyPressed(OF_KEY_SHIFT) && !ofGetKeyPressed(OF_KEY_COMMAND)){
             timeline->unselectAll();
         }
-		if(ofGetModifierSelection() && clickedTextField->textField.isEditing()){
+        if(!ofGetKeyPressed(OF_KEY_CONTROL) && !ofGetKeyPressed(OF_KEY_SHIFT) && !ofGetKeyPressed(OF_KEY_COMMAND) && clickedTextField->textField.getIsEditing()){
 			clickedTextField->textField.endEditing();
 		}
 		else{
@@ -284,7 +283,7 @@ bool ofxTLSwitches::mousePressed(ofMouseEventArgs& args, long millis){
 		return false;
 	}
 	
-	keysAreDraggable = !ofGetModifierSelection();
+    keysAreDraggable = !ofGetKeyPressed(OF_KEY_CONTROL) && !ofGetKeyPressed(OF_KEY_SHIFT) && !ofGetKeyPressed(OF_KEY_COMMAND);
 	
     //check to see if we are close to any edges, if so select them
     bool startSelected = false;
@@ -296,11 +295,11 @@ bool ofxTLSwitches::mousePressed(ofMouseEventArgs& args, long millis){
             ofxTLSwitch* switchKey = (ofxTLSwitch*)keyframes[i];
             //unselect everything else if we just clicked this edge without shift held down
             startSelected = abs(switchKey->display.x - args.x) < 10.0;
-            if (startSelected && !switchKey->startSelected && !ofGetModifierSelection()) {
+            if (startSelected && !switchKey->startSelected && !ofGetKeyPressed(OF_KEY_CONTROL) && !ofGetKeyPressed(OF_KEY_SHIFT) && !ofGetKeyPressed(OF_KEY_COMMAND)) {
                 timeline->unselectAll();
             }
             //Deselect the key if we clicked it already selected with shift held down
-            if(ofGetModifierSelection() && ((startSelected && switchKey->startSelected) || isKeyframeSelected(switchKey))){
+            if((ofGetKeyPressed(OF_KEY_CONTROL) || ofGetKeyPressed(OF_KEY_SHIFT) || ofGetKeyPressed(OF_KEY_COMMAND)) && ((startSelected && switchKey->startSelected) || isKeyframeSelected(switchKey))){
                 switchKey->startSelected = false;    
             }
             else {
@@ -309,11 +308,11 @@ bool ofxTLSwitches::mousePressed(ofMouseEventArgs& args, long millis){
             float endEdge = switchKey->display.x+switchKey->display.width;
             endSelected = abs(endEdge - args.x) < 10.0;
             //don't let them both be selected in one click!
-            if(!startSelected && endSelected && !switchKey->endSelected && !ofGetModifierSelection()){
+            if(!startSelected && endSelected && !switchKey->endSelected && !ofGetKeyPressed(OF_KEY_CONTROL) && !ofGetKeyPressed(OF_KEY_SHIFT) && !ofGetKeyPressed(OF_KEY_COMMAND)){
                 timeline->unselectAll();
             }
             //Deselect the key if we clicked it already selected with shift held down
-            if(ofGetModifierSelection() && ((endSelected && switchKey->endSelected) || isKeyframeSelected(switchKey))){
+            if((ofGetKeyPressed(OF_KEY_CONTROL) || ofGetKeyPressed(OF_KEY_SHIFT) || ofGetKeyPressed(OF_KEY_COMMAND)) && ((endSelected && switchKey->endSelected) || isKeyframeSelected(switchKey))){
                 switchKey->endSelected = false;    
             }
             else{
@@ -497,7 +496,7 @@ void ofxTLSwitches::mouseReleased(ofMouseEventArgs& args, long millis){
     //take off the typing mode. Hitting enter will also do this
     if(enteringText){
 		//if we clicked outside of the rect, definitely deslect everything
-		if(clickedTextField == NULL && !ofGetModifierSelection()){
+        if(clickedTextField == NULL && !ofGetKeyPressed(OF_KEY_CONTROL) && !ofGetKeyPressed(OF_KEY_SHIFT) && !ofGetKeyPressed(OF_KEY_COMMAND)){
 			for(int i = 0; i < selectedKeyframes.size(); i++){
 				((ofxTLSwitch*)selectedKeyframes[i])->textField.endEditing();
 			}
@@ -507,7 +506,7 @@ void ofxTLSwitches::mouseReleased(ofMouseEventArgs& args, long millis){
 		else{
 			enteringText = false;
 			for(int i = 0; i < selectedKeyframes.size(); i++){
-				enteringText = enteringText || ((ofxTLSwitch*)selectedKeyframes[i])->textField.isEditing();
+                enteringText = enteringText || ((ofxTLSwitch*)selectedKeyframes[i])->textField.getIsEditing();
 			}
 		}
         
@@ -613,7 +612,7 @@ void ofxTLSwitches::storeKeyframe(ofxTLKeyframe* key, ofxXmlSettings& xmlStore){
 
 void ofxTLSwitches::willDeleteKeyframe(ofxTLKeyframe* keyframe){
 	ofxTLSwitch* switchKey = (ofxTLSwitch* )keyframe;
-	if(switchKey->textField.isEditing()){
+    if(switchKey->textField.getIsEditing()){
 		timeline->dismissedModalContent();
 		timeline->flagTrackModified(this);
 	}

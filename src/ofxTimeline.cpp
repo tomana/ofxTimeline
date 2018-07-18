@@ -31,10 +31,6 @@
  */
 
 #include "ofxTimeline.h"
-#include "ofxHotKeys.h"
-#ifdef TARGET_OSX
-#include "ofxRemoveCocoaMenu.h"
-#endif
 
 //increments to keep auto generated names unique
 static int timelineNumber = 0;
@@ -129,7 +125,7 @@ void ofxTimeline::setup(){
 	tabs = new ofxTLPageTabs();
 	tabs->setTimeline(this);
 	tabs->setup();
-	tabs->setDrawRect(ofRectangle(offset.x, offset.y, width, TAB_HEIGHT));
+    tabs->setDrawRect(ofRectangle(offset.x, offset.y, width, TAB_HEIGHT));
 
 	if(inoutTrack != NULL){
 		delete inoutTrack;
@@ -146,13 +142,13 @@ void ofxTimeline::setup(){
 
     //TODO: save ticker playhead position
 	ticker->setup();
-	ticker->setDrawRect(ofRectangle(offset.x, inoutTrack->getBottomEdge(), width, TICKER_HEIGHT));
+    ticker->setDrawRect(ofRectangle(offset.x, inoutTrack->getBottomEdge(), width, TICKER_HEIGHT));
 	if(zoomer != NULL){
 		delete zoomer;
 	}
 	zoomer = new ofxTLZoomer();
 	zoomer->setTimeline(this);
-	zoomer->setDrawRect(ofRectangle(offset.y, ticker->getBottomEdge(), width, ZOOMER_HEIGHT));
+    zoomer->setDrawRect(ofRectangle(offset.y, ticker->getBottomEdge(), width, ZOOMER_HEIGHT));
 
 	colors.load();
 
@@ -324,7 +320,7 @@ void ofxTimeline::setShowZoomer(bool shouldShowZoomer){
 }
 
 void ofxTimeline::setupFont(){
-	font.loadFont(fontPath, fontSize);
+    font.load(fontPath, fontSize);
 }
 
 void ofxTimeline::setupFont(string newFontPath, int newFontSize){
@@ -539,17 +535,6 @@ void ofxTimeline::play(){
 		ofxTLPlaybackEventArgs args = createPlaybackEvent();
 		ofNotifyEvent(timelineEvents.playbackStarted, args);
 	}
-}
-
-static bool menusRemoved = false;
-void ofxTimeline::removeCocoaMenusFromGlut(string appName){
-
-	#ifdef TARGET_OSX
-	if(!menusRemoved){
-		RemoveCocoaMenusFromGlut(appName);
-		menusRemoved = true;
-	}
-	#endif
 }
 
 void ofxTimeline::stop(){
@@ -1284,8 +1269,8 @@ void ofxTimeline::keyPressed(ofKeyEventArgs& args){
 
 	if(!timelineHasFocus) return;
 
-	if(undoEnabled && ofGetModifierShortcutKeyPressed() && (args.key == 'z' || args.key == 'z'-96)){
-		if(ofGetModifierShiftPressed()){
+    if(undoEnabled && ofGetKeyPressed(OF_KEY_CONTROL) && (args.key == 'z' || args.key == 'z'-96)){
+        if(ofGetKeyPressed(OF_KEY_SHIFT)){
 			redo();
 		}
 		else{
@@ -1298,7 +1283,7 @@ void ofxTimeline::keyPressed(ofKeyEventArgs& args){
     collectStateBuffers();
 
 
-	if(ofGetModifierShortcutKeyPressed()){
+    if(ofGetKeyPressed(OF_KEY_CONTROL)){
 		if(args.key == 'c' || args.key == 'c'-96){ //copy
 			vector<string> copyattempt;
 			currentPage->copyRequest(copyattempt);
@@ -1319,7 +1304,7 @@ void ofxTimeline::keyPressed(ofKeyEventArgs& args){
 			}
 		}
 		else if(args.key == 'a' || args.key == 'a'-96){ //select all
-			if(!ofGetModifierShiftPressed()){
+            if(!ofGetKeyPressed(OF_KEY_SHIFT)){
 				unselectAll();
 			}
 			currentPage->selectAll();
@@ -1328,9 +1313,9 @@ void ofxTimeline::keyPressed(ofKeyEventArgs& args){
 			save();
 		}
 	}
-	else if(ofGetModifierAltPressed()){
+    else if(ofGetKeyPressed(OF_KEY_ALT)){
 		if(args.key == 'c' || args.key == 'c'-96 || args.key == 'C' || args.key == 'C'-96){
-			if(ofGetModifierShiftPressed()){
+            if(ofGetKeyPressed(OF_KEY_SHIFT)){
 				currentPage->evenlyDistributeTrackHeights();
 			}
 			else{
@@ -1347,7 +1332,7 @@ void ofxTimeline::keyPressed(ofKeyEventArgs& args){
 	}
 	else{
 		if(args.key >= OF_KEY_LEFT && args.key <= OF_KEY_DOWN){
-			ofVec2f nudgeAmount = ofGetModifierShiftPressed() ? getBigNudgePercent() : getNudgePercent();
+            ofVec2f nudgeAmount = ofGetKeyPressed(OF_KEY_SHIFT) ? getBigNudgePercent() : getNudgePercent();
 
 			if(getTotalSelectedItems() == 0){
 				if(args.key == OF_KEY_LEFT){
@@ -1433,21 +1418,21 @@ void ofxTimeline::recalculateBoundingRects(){
     }
 
 	if(pages.size() > 1){
-		tabs->setDrawRect(ofRectangle(offset.x, offset.y, width, TAB_HEIGHT));
+        tabs->setDrawRect(ofRectangle(offset.x, offset.y, width, TAB_HEIGHT));
 	}
 	else{
-		tabs->setDrawRect(ofRectangle(offset.x, offset.y, width, 0));
+        tabs->setDrawRect(ofRectangle(offset.x, offset.y, width, 0));
 	}
 
     inoutTrack->setDrawRect( ofRectangle(offset.x, tabs->getBottomEdge(), width, showInoutControl ? INOUT_HEIGHT : 0) );
     ticker->setDrawRect( ofRectangle(offset.x, inoutTrack->getBottomEdge(), width, showTicker ? TICKER_HEIGHT : 0) );
     updatePagePositions();
-	zoomer->setDrawRect(ofRectangle(offset.x, currentPage->getBottomEdge(), width, showZoomer ? ZOOMER_HEIGHT : 0));
+    zoomer->setDrawRect(ofRectangle(offset.x, currentPage->getBottomEdge(), width, showZoomer ? ZOOMER_HEIGHT : 0));
     inoutTrack->setPageRectangle(currentPage->getDrawRect());
-	ofRectangle tickerRect = ofRectangle(offset.x, ticker->getDrawRect().y,
+    ofRectangle tickerRect = ofRectangle(offset.x, ticker->getDrawRect().y,
                                         width, currentPage->getBottomEdge()-ticker->getDrawRect().y);
 	ticker->setTotalDrawRect(tickerRect);
-	totalDrawRect = ofRectangle(offset.x, offset.y, width, zoomer->getDrawRect().y+zoomer->getDrawRect().height - offset.y);
+    totalDrawRect = ofRectangle(offset.x, offset.y, width, zoomer->getDrawRect().y+zoomer->getDrawRect().height - offset.y);
 }
 
 
@@ -1550,7 +1535,7 @@ void ofxTimeline::draw(){
 		ofEnableAlphaBlending();
 
         ofSetColor(colors.guiBackgroundColor);
-		ofRect(totalDrawRect);
+        ofDrawRectangle(totalDrawRect);
 
 		ofSetColor(255);
 
@@ -1994,107 +1979,6 @@ void ofxTimeline::setDefaultColorPalettePath(string path){
 string ofxTimeline::getDefaultColorPalettePath(){
 	return defaultPalettePath;
 }
-
-//*** IMAGE SEQUENCE DOESN'T WORK **///
-ofxTLImageSequence* ofxTimeline::addImageSequence(string trackName){
-	ofFileDialogResult result = ofSystemLoadDialog("Load Sequence", true);
-	if(result.bSuccess && ofDirectory::doesDirectoryExist(result.filePath, false)){
-		return addImageSequence(trackName, result.getPath());
-	}
-	return NULL;
-}
-
-ofxTLImageSequence* ofxTimeline::addImageSequence(string trackName, string directory){
-	ofxTLImageSequence*	newImageSequence = new ofxTLImageSequence();
-	newImageSequence->setCreatedByTimeline(true);
-	newImageSequence->loadSequence(directory);
-	addTrack(confirmedUniqueName(trackName), newImageSequence);
-	return newImageSequence;
-}
-
-
-ofImage* ofxTimeline::getImage(string trackName){
-	return NULL;
-}
-
-ofImage* ofxTimeline::getImage(string trackName, float atTime){
-	return NULL;
-}
-
-ofImage* ofxTimeline::getImage(string trackName, int atFrame){
-	return NULL;
-}
-
-#ifdef TIMELINE_VIDEO_INCLUDED
-ofxTLVideoTrack* ofxTimeline::addVideoTrack(string trackName){
-	return addVideoTrack(trackName, "");
-}
-
-ofxTLVideoTrack* ofxTimeline::addVideoTrackWithPath(string videoPath){
-	return addVideoTrack("video", videoPath);
-}
-
-ofxTLVideoTrack* ofxTimeline::addVideoTrack(string trackName, string videoPath){
-	ofxTLVideoTrack* videoTrack = new ofxTLVideoTrack();
-	videoTrack->setCreatedByTimeline(true);
-	addTrack(confirmedUniqueName(trackName), videoTrack);
-	if(videoPath != ""){
-	    if(!videoTrack->load(videoPath)){
-        	ofLogError("ofxTimeline::addVideoTrack -- video " + videoPath + " failed to load");
-		}
-		else{
-			//make time control by default
-//			setTimecontrolTrack(videoTrack);
-			setFrameRate(videoTrack->getPlayer()->getTotalNumFrames()/videoTrack->getPlayer()->getDuration());
-//			setDurationInFrames(videoTrack->getPlayer()->getTotalNumFrames());
-		}
-    }
-    return videoTrack;
-}
-
-ofxTLVideoTrack* ofxTimeline::getVideoTrack(string videoTrackName){
-	return (ofxTLVideoTrack*)getTrack(videoTrackName);
-}
-
-ofPtr<ofVideoPlayer> ofxTimeline::getVideoPlayer(string videoTrackName){
-    ofxTLVideoTrack* track = getVideoTrack(videoTrackName);
-    if(track == NULL){
-        ofLogError("ofxTimeline::getPlayer -- video player is null");
-        return ofPtr<ofVideoPlayer>(); //null ptr
-    }
-    return track->getPlayer();
-}
-#endif
-
-#ifdef TIMELINE_AUDIO_INCLUDED
-ofxTLAudioTrack* ofxTimeline::addAudioTrack(string trackName){
-    return addAudioTrack(trackName, "");
-}
-
-ofxTLAudioTrack* ofxTimeline::addAudioTrackWithPath(string audioPath){
-    return addAudioTrack("audio", audioPath);
-}
-
-ofxTLAudioTrack* ofxTimeline::addAudioTrack(string trackName, string audioPath){
-    ofxTLAudioTrack* audioTrack = new ofxTLAudioTrack();
-    audioTrack->setCreatedByTimeline(true);
-    addTrack(confirmedUniqueName(trackName), audioTrack);
-    if(audioPath != ""){
-        if(!audioTrack->loadSoundfile(audioPath)){
-            ofLogError("ofxTimeline::addAudioTrack -- audio file " + audioPath + " failed to load. Use only WAV and AIFF files");
-        }
-    }
-    return audioTrack;
-}
-
-ofxTLAudioTrack* ofxTimeline::getAudioTrack(string audioTrackName){
-    return (ofxTLAudioTrack*)getTrack(audioTrackName);
-}
-
-ofxTLTrackHeader* ofxTimeline::getTrackHeader(string trackName){
-    return getTrackHeader(getTrack(name));
-}
-#endif
 
 ofxTLTrackHeader* ofxTimeline::getTrackHeader(ofxTLTrack* track){
     return trackNameToPage[track->getName()]->getTrackHeader(track);

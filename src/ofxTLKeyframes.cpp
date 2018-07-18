@@ -32,7 +32,6 @@
 
 #include "ofxTLKeyframes.h"
 #include "ofxTimeline.h"
-#include "ofxHotKeys.h"
 
 bool keyframesort(ofxTLKeyframe* a, ofxTLKeyframe* b){
 	return a->time < b->time;
@@ -111,7 +110,7 @@ void ofxTLKeyframes::draw(){
 	//float currentPercent = sampleAtTime(timeline->getCurrentTimeMillis());
 	float currentPercent = sampleAtTime(currentTrackTime());
 	ofFill();
-	ofRect(bounds.x, bounds.getMaxY(), bounds.width, -bounds.height*currentPercent);
+	ofDrawRectangle(bounds.x, bounds.getMaxY(), bounds.width, -bounds.height*currentPercent);
 
 	//***** DRAW KEYFRAME LINES
 	ofSetColor(timeline->getColors().keyColor);
@@ -127,7 +126,7 @@ void ofxTLKeyframes::draw(){
 		ofFill();
 		ofSetColor(timeline->getColors().highlightColor);
 		ofVec2f hoverKeyPoint = screenPositionForKeyframe( hoverKeyframe );
-		ofCircle(hoverKeyPoint.x, hoverKeyPoint.y, 6);
+        ofDrawCircle(hoverKeyPoint.x, hoverKeyPoint.y, 6);
 		ofPopStyle();
 	}
 
@@ -135,7 +134,7 @@ void ofxTLKeyframes::draw(){
 	ofSetColor(timeline->getColors().textColor);
 	ofNoFill();
 	for(int i = 0; i < keyPoints.size(); i++){
-		ofRect(keyPoints[i].x-1, keyPoints[i].y-1, 3, 3);
+		ofDrawRectangle(keyPoints[i].x-1, keyPoints[i].y-1, 3, 3);
 	}
 
 	//**** SELECTED KEYS
@@ -149,7 +148,7 @@ void ofxTLKeyframes::draw(){
 				string frameString = timeline->formatTime(selectedKeyframes[i]->time);
 				timeline->getFont().drawString(ofToString(keysValue, 4), screenpoint.x+5, screenpoint.y-5);
 			}
-			ofCircle(screenpoint.x, screenpoint.y, 4);
+            ofDrawCircle(screenpoint.x, screenpoint.y, 4);
 		}
 	}
 
@@ -354,9 +353,9 @@ string ofxTLKeyframes::getXMLStringForKeyframes(vector<ofxTLKeyframe*>& keys){
 bool ofxTLKeyframes::mousePressed(ofMouseEventArgs& args, long millis){
 
 	ofVec2f screenpoint = ofVec2f(args.x, args.y);
-	keysAreStretchable = ofGetModifierShiftPressed() && ofGetModifierControlPressed();
+    keysAreStretchable = ofGetKeyPressed(OF_KEY_SHIFT) && ofGetKeyPressed(OF_KEY_CONTROL);
 
-	constrainVerticalDrag = ofGetModifierAltPressed() ? args.y : NULL;
+    constrainVerticalDrag = ofGetKeyPressed(OF_KEY_ALT) ? args.y : 0.0f;
 
 
     keysDidDrag = false;
@@ -378,11 +377,11 @@ bool ofxTLKeyframes::mousePressed(ofMouseEventArgs& args, long millis){
 		return true;
 	}
 
-    keysAreDraggable = !ofGetModifierShiftPressed();
+    keysAreDraggable = !ofGetKeyPressed(OF_KEY_SHIFT);
 	selectedKeyframe =  keyframeAtScreenpoint(screenpoint);
     //if we clicked OFF of a keyframe OR...
     //if we clicked on a keyframe outside of the current selection and we aren't holding down shift, clear all
-    if(!ofGetModifierSelection() && (isActive() || selectedKeyframe != NULL) ){
+    if(!(ofGetKeyPressed(OF_KEY_SHIFT) || ofGetKeyPressed(OF_KEY_CONTROL) || ofGetKeyPressed(OF_KEY_COMMAND)) && (isActive() || selectedKeyframe != NULL) ){
         bool didJustDeselect = false;
 	    if( selectedKeyframe == NULL || !isKeyframeSelected(selectedKeyframe)){
             //settings this to true causes the first click off of the timeline to deselct rather than create a new keyframe
@@ -392,7 +391,7 @@ bool ofxTLKeyframes::mousePressed(ofMouseEventArgs& args, long millis){
 
         //if we didn't just deselect everything and clicked in an empty space add a new keyframe there
         if(selectedKeyframe == NULL && !didJustDeselect){
-			createNewOnMouseup = args.button == 0 && !ofGetModifierControlPressed();
+            createNewOnMouseup = args.button == 0 && !ofGetKeyPressed(OF_KEY_CONTROL);
         }
     }
 
@@ -404,7 +403,7 @@ bool ofxTLKeyframes::mousePressed(ofMouseEventArgs& args, long millis){
 //			selectKeyframe(selectedKeyframe);
         }
         //unselect it if it's selected and we clicked the key with shift pressed
-        else if(ofGetModifierSelection()){
+        else if(ofGetKeyPressed(OF_KEY_SHIFT) || ofGetKeyPressed(OF_KEY_CONTROL) || ofGetKeyPressed(OF_KEY_COMMAND)){
         	deselectKeyframe(selectedKeyframe);
 			selectedKeyframe = NULL;
         }
@@ -415,7 +414,7 @@ bool ofxTLKeyframes::mousePressed(ofMouseEventArgs& args, long millis){
         updateDragOffsets(screenpoint, millis);
 		if(selectedKeyframe != NULL){
 
-			if(args.button == 0 && !ofGetModifierSelection() && !ofGetModifierControlPressed()){
+            if(args.button == 0 && !(ofGetKeyPressed(OF_KEY_SHIFT) || ofGetKeyPressed(OF_KEY_CONTROL) || ofGetKeyPressed(OF_KEY_COMMAND))){
 
 	            timeline->setDragTimeOffset(selectedKeyframe->grabTimeOffset);
 				//move the playhead
@@ -423,7 +422,7 @@ bool ofxTLKeyframes::mousePressed(ofMouseEventArgs& args, long millis){
 					timeline->setCurrentTimeMillis(selectedKeyframe->time);
 				}
 			}
-			if(args.button == 2 || ofGetModifierControlPressed()){
+            if(args.button == 2 || ofGetKeyPressed(OF_KEY_CONTROL)){
 				selectedKeySecondaryClick(args);
 			}
 		}
@@ -462,7 +461,7 @@ void ofxTLKeyframes::mouseMoved(ofMouseEventArgs& args, long millis){
 void ofxTLKeyframes::mouseDragged(ofMouseEventArgs& args, long millis){
 
 
-    if ( ofGetModifierAltPressed() && constrainVerticalDrag != NULL ) args.y = constrainVerticalDrag;
+    if ( ofGetKeyPressed(OF_KEY_ALT) && constrainVerticalDrag != 0.0f ) args.y = constrainVerticalDrag;
 
 	if(keysAreStretchable){
 		//cast the stretch anchor to long so that it can be signed
@@ -921,13 +920,13 @@ void ofxTLKeyframes::simplifySelectedKeyframes( float tolerance ){
         }
         deleteSelectedKeyframes();
 
-        ofPolyline line(pts);
+        /*ofPolyline line(pts);
         line.simplify(tolerance);
         int i = 0;
         while ( i < line.size())
         {
            addKeyframeAtMillis(ofMap(line[i].y, 0.0, 1.0, valueRange.min, valueRange.max, false),(unsigned long long)(line[i].x / timeNormalizationFactor+startTime));
            i++;
-        }
+        }*/
     }
 }

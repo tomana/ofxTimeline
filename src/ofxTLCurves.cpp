@@ -32,7 +32,6 @@
 
 #include "ofxTLCurves.h"
 #include "ofxTimeline.h"
-#include "ofxHotKeys.h"
 
 ofxTLCurves::ofxTLCurves(){
 	initializeEasings();
@@ -86,7 +85,7 @@ void ofxTLCurves::drawModalContent(){
             ofSetColor(80, 80, 80);
         }
         ofFill();
-        ofRect(easingWindowPosition.x + easingTypes[i]->bounds.x, easingWindowPosition.y + easingTypes[i]->bounds.y,
+        ofDrawRectangle(easingWindowPosition.x + easingTypes[i]->bounds.x, easingWindowPosition.y + easingTypes[i]->bounds.y,
                easingTypes[i]->bounds.width, easingTypes[i]->bounds.height);
         ofSetColor(200, 200, 200);
         timeline->getFont().drawString(easingTypes[i]->name,
@@ -94,7 +93,7 @@ void ofxTLCurves::drawModalContent(){
 									   easingWindowPosition.y + easingTypes[i]->bounds.y+10);
         ofNoFill();
         ofSetColor(40, 40, 40);
-        ofRect(easingWindowPosition.x + easingTypes[i]->bounds.x,
+        ofDrawRectangle(easingWindowPosition.x + easingTypes[i]->bounds.x,
                easingWindowPosition.y + easingTypes[i]->bounds.y,
                easingTypes[i]->bounds.width, easingTypes[i]->bounds.height);
     }
@@ -108,7 +107,7 @@ void ofxTLCurves::drawModalContent(){
             ofSetColor(80, 80, 80);
         }
         ofFill();
-        ofRect(easingWindowPosition.x + easingFunctions[i]->bounds.x, easingWindowPosition.y +easingFunctions[i]->bounds.y,
+        ofDrawRectangle(easingWindowPosition.x + easingFunctions[i]->bounds.x, easingWindowPosition.y +easingFunctions[i]->bounds.y,
                easingFunctions[i]->bounds.width, easingFunctions[i]->bounds.height);
         ofSetColor(200, 200, 200);
 //        timeline->getFont().drawString(easingFunctions[i]->name,
@@ -130,7 +129,7 @@ void ofxTLCurves::drawModalContent(){
 		ofPopMatrix();
         ofNoFill();
         ofSetColor(40, 40, 40);
-        ofRect(easingWindowPosition.x + easingFunctions[i]->bounds.x, easingWindowPosition.y +easingFunctions[i]->bounds.y,
+        ofDrawRectangle(easingWindowPosition.x + easingFunctions[i]->bounds.x, easingWindowPosition.y +easingFunctions[i]->bounds.y,
                easingFunctions[i]->bounds.width, easingFunctions[i]->bounds.height);
     }
 
@@ -152,7 +151,7 @@ void ofxTLCurves::mouseDragged(ofMouseEventArgs& args, long millis){
 }
 
 void ofxTLCurves::mouseReleased(ofMouseEventArgs& args, long millis){
-	if(drawingEasingWindow && (args.button == 0 && !ofGetModifierControlPressed()) ){
+    if(drawingEasingWindow && (args.button == 0 && !ofGetKeyPressed(OF_KEY_CONTROL)) ){
 		drawingEasingWindow = false;
 		timeline->dismissedModalContent();
 		ofVec2f screenpoint(args.x,args.y);

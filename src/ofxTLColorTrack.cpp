@@ -33,7 +33,6 @@
 #include "ofxTLColorTrack.h"
 #include "ofxTimeline.h"
 #include <cfloat>
-#include "ofxHotKeys.h"
 
 ofxTLColorTrack::ofxTLColorTrack()
  :	drawingColorWindow(false),
@@ -61,7 +60,7 @@ void ofxTLColorTrack::draw(){
 		ofPushStyle();
 		ofSetColor(defaultColor);
 		ofFill();
-		ofRect(bounds);
+        ofDrawRectangle(bounds);
 		ofPopStyle();
 	}
 	else if(keyframes.size() == 1){
@@ -69,7 +68,7 @@ void ofxTLColorTrack::draw(){
 		ofxTLColorSample* s = (ofxTLColorSample*)keyframes[0];
 		ofSetColor(s->color);
 		ofFill();
-		ofRect(bounds);
+        ofDrawRectangle(bounds);
 		ofPopStyle();
 	}
 	else{
@@ -92,11 +91,11 @@ void ofxTLColorTrack::draw(){
 		ofFill();
 		ofxTLColorSample* s = (ofxTLColorSample*)keyframes[i];
 		ofSetColor(s->color);
-		ofTriangle(a,b,c);
+        ofDrawTriangle(a,b,c);
 		ofNoFill();
 		ofSetColor(s->color.getInverted());
 		ofSetLineWidth(1);
-		ofTriangle(a,b,c);
+        ofDrawTriangle(a,b,c);
 
 		if(keyframes[i] == hoverKeyframe){
 			ofSetColor(timeline->getColors().highlightColor);
@@ -109,7 +108,7 @@ void ofxTLColorTrack::draw(){
 		else{
 			ofSetColor(s->color.getInverted());
 		}
-		ofLine(c, ofVec2f(screenX, bounds.getMaxY()));
+        ofDrawLine(c, glm::vec3(screenX, bounds.getMaxY(),0));
 		ofPopStyle();
 	}
 }
@@ -126,14 +125,14 @@ void ofxTLColorTrack::drawModalContent(){
 			setNextAndPreviousOnUpdate = false;
 		}
 
-		if(selectedKeyframe == NULL){
+        if(selectedKeyframe == nullptr){
 			ofLogError("ofxTLColorTrack::drawModalContent") << "The selected keyframe is null" << endl;
 			drawingColorWindow = false;
 			timeline->dismissedModalContent();
 			return;
 		}
 
-		if(!colorPallete.bAllocated()){
+        if(!colorPallete.isAllocated()){
 			ofLogError("ofxTLColorTrack::drawModalContent") << "The color palette is not allocated" << endl;
 			timeline->dismissedModalContent();
 			drawingColorWindow = false;
@@ -143,7 +142,7 @@ void ofxTLColorTrack::drawModalContent(){
 		ofSetColor(255);
 
 		ofxTLColorSample* selectedSample = (ofxTLColorSample*)selectedKeyframe;
-		colorWindow = ofRectangle( millisToScreenX(selectedKeyframe->time), bounds.y+bounds.height, 200, 200);
+        colorWindow = ofRectangle( millisToScreenX(selectedKeyframe->time), bounds.y+bounds.height, 200, 200);
 		if(colorWindow.getMaxY()+25 > timeline->getBottomLeft().y){
 			colorWindow.y = bounds.y - 25 - colorWindow.height;
 		}
@@ -152,45 +151,45 @@ void ofxTLColorTrack::drawModalContent(){
 		}
 		colorPallete.draw(colorWindow);
 
-		ofVec2f selectionPoint = colorWindow.getMin() + selectedSample->samplePoint * ofVec2f(colorWindow.width,colorWindow.height);
+        /*ofVec2f selectionPoint = colorWindow.getMin() + selectedSample->samplePoint * ofVec2f(colorWindow.width,colorWindow.height);
 		ofSetColor(selectedSample->color.getInverted());
-		ofLine(selectionPoint - ofVec2f(8,0), selectionPoint + ofVec2f(8,0));
-		ofLine(selectionPoint - ofVec2f(0,8), selectionPoint + ofVec2f(0,8));
+        ofDrawLine(selectionPoint - glm::vec2(8,0), selectionPoint + glm::vec2(8,0));
+        ofDrawLine(selectionPoint - glm::vec2(0,8), selectionPoint + glm::vec2(0,8));
 
 		ofPushStyle();
 		ofNoFill();
 		if(previousSample != NULL){
 			ofVec2f previousSamplePoint = colorWindow.getMin() + previousSample->samplePoint * ofVec2f(colorWindow.width,colorWindow.height);
 			ofSetColor(previousSample->color.getInverted(), 150);
-			ofCircle(previousSamplePoint, 3);
-			ofLine(previousSamplePoint,selectionPoint);
+            ofDrawCircle(previousSamplePoint, 3);
+            ofDrawLine(previousSamplePoint,selectionPoint);
 		}
 		if(nextSample != NULL){
 			ofVec2f nextSamplePoint = colorWindow.getMin() + nextSample->samplePoint * ofVec2f(colorWindow.width,colorWindow.height);
 			ofSetColor(nextSample->color.getInverted(), 150);
 
 			//draw a little triangle pointer
-			ofVec2f direction = (nextSamplePoint - selectionPoint).normalized();
+            ofVec2f direction = (nextSamplePoint - selectionPoint).normalized();
 			ofVec2f backStep = nextSamplePoint-direction*5;
-			ofTriangle(nextSamplePoint,
+            ofDrawTriangle(nextSamplePoint,
 					   backStep + direction.getRotated(90)*3,
 					   backStep - direction.getRotated(90)*3);
-			ofLine(nextSamplePoint,selectionPoint);
+            ofDrawLine(nextSamplePoint,selectionPoint);
 		}
 		ofPopStyle();
 
-		previousColorRect = ofRectangle(colorWindow.x, colorWindow.getMaxY(), colorWindow.width/2, 25);
-		newColorRect = ofRectangle(colorWindow.x+colorWindow.width/2, colorWindow.getMaxY(), colorWindow.width/2, 25);
+        previousColorRect = ofRectangle(colorWindow.x, colorWindow.getMaxY(), colorWindow.width/2, 25);
+        newColorRect = ofRectangle(colorWindow.x+colorWindow.width/2, colorWindow.getMaxY(), colorWindow.width/2, 25);
 
 		ofSetColor(colorAtClickTime);
-		ofRect(previousColorRect);
+        ofDrawRectangle(previousColorRect);
 		ofSetColor(selectedSample->color);
-		ofRect(newColorRect);
+        ofDrawRectangle(newColorRect);
 		ofSetColor(timeline->getColors().keyColor);
 		ofNoFill();
 		ofSetLineWidth(2);
-		ofRect(colorWindow);
-		ofPopStyle();
+        ofDrawRectangle(colorWindow);
+        ofPopStyle();*/
 	}
 }
 
@@ -200,7 +199,7 @@ void ofxTLColorTrack::loadColorPalette(ofBaseHasPixels& image){
 }
 
 bool ofxTLColorTrack::loadColorPalette(string imagePath){
-	if(colorPallete.loadImage(imagePath)){
+    if(colorPallete.load(imagePath)){
 		palettePath = imagePath;
 		refreshAllSamples();
 		return true;
@@ -311,7 +310,7 @@ void ofxTLColorTrack::mouseDragged(ofMouseEventArgs& args, long millis){
 void ofxTLColorTrack::mouseReleased(ofMouseEventArgs& args, long millis){
 	if(drawingColorWindow){
 		//if(args.button == 0 && !colorWindow.inside(args.x, args.y) ){
-		if(args.button == 0 && !clickedInColorRect && !ofGetModifierControlPressed()){
+        if(args.button == 0 && !clickedInColorRect && !ofGetKeyPressed(OF_KEY_CONTROL)){
 			ofxTLColorSample* selectedSample = (ofxTLColorSample*)selectedKeyframe;
 			if(selectedSample->color != colorAtClickTime){
 				timeline->flagTrackModified(this);
@@ -458,16 +457,16 @@ void ofxTLColorTrack::refreshSample(ofxTLColorSample* sample){
 
 //assumes normalized position
 ofColor ofxTLColorTrack::samplePaletteAtPosition(ofVec2f position){
-	if(colorPallete.bAllocated()){
+    if(colorPallete.isAllocated()){
 		ofVec2f positionPixelSpace = position * ofVec2f(colorPallete.getWidth(),colorPallete.getHeight());
 		//bilinear interpolation from http://www.gamedev.net/page/resources/_/technical/graphics-programming-and-theory/bilinear-interpolation-of-texture-maps-r810
 		int x0 = int(positionPixelSpace.x);
 		int y0 = int(positionPixelSpace.y);
 		float dx = positionPixelSpace.x-x0, dy = positionPixelSpace.y-y0, omdx = 1-dx, omdy = 1-dy;
-		return colorPallete.getPixelsRef().getColor(x0,y0)*omdx*omdy +
-	           colorPallete.getPixelsRef().getColor(x0,MIN(y0+1, colorPallete.getHeight()-1))*omdx*dy +
-               colorPallete.getPixelsRef().getColor(MIN(x0+1,colorPallete.getWidth()-1),y0)*dx*omdy +
-			   colorPallete.getPixelsRef().getColor(MIN(x0+1,colorPallete.getWidth()-1),MIN(y0+1, colorPallete.getHeight()-1))*dx*dy;
+        return colorPallete.getPixels().getColor(x0,y0)*omdx*omdy +
+               colorPallete.getPixels().getColor(x0,MIN(y0+1, colorPallete.getHeight()-1))*omdx*dy +
+               colorPallete.getPixels().getColor(MIN(x0+1,colorPallete.getWidth()-1),y0)*dx*omdy +
+               colorPallete.getPixels().getColor(MIN(x0+1,colorPallete.getWidth()-1),MIN(y0+1, colorPallete.getHeight()-1))*dx*dy;
 	}
 	else{
 		ofLogError("ofxTLColorTrack::refreshSample -- sampling palette is null");
