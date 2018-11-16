@@ -68,7 +68,7 @@ void ofxTLCurves::drawModalContent(){
     }
 
     ofxTLTweenKeyframe* tweenFrame = (ofxTLTweenKeyframe*) selectedKeyframe;
-	if(tweenFrame == NULL){
+    if(tweenFrame == nullptr){
 		if(selectedKeyframes.size() == 0){
 			return;
 		}

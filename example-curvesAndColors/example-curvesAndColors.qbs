@@ -23,9 +23,7 @@ Project{
         // the list of used addons in array format. eg:
         //
         of.addons: [
-            'ofxPoco',
-            'ofxTimeline',
-            'ofxXmlSettings',
+            'ofxTimeline'
         ]
 
         // additional flags for the project. the of module sets some

@@ -37,8 +37,8 @@ ofxTLLFO::ofxTLLFO(){
 	drawingLFORect = false;
 	rectWidth = 120;
 	rectHeight = 15;
-	mouseDownRect = NULL;
-	editingParam = NULL;
+    mouseDownRect = nullptr;
+    editingParam = nullptr;
 	drawingLFORect = false;
 }
 
@@ -100,12 +100,10 @@ void ofxTLLFO::drawModalContent(){
     
 	
 	ofSetColor(timeline->getColors().textColor, 200);
-	float lineHeight = timeline->getFont().getLineHeight();
+    float lineHeight = timeline->getFont().getLineHeight()*12;
 	timeline->getFont().drawString("sine", sineTypeRect.x+10, sineTypeRect.y+lineHeight);
 	timeline->getFont().drawString("noise", noiseTypeRect.x+10, noiseTypeRect.y+lineHeight);
 	timeline->getFont().drawString("phase: " + ofToString(lfokey->phaseShift, 1), phaseShiftRect.x+10, phaseShiftRect.y+lineHeight);
-			//TODO: Phase match
-//	timeline->getFont().drawString("phaseMatch", phaseMatchRect.x+10, phaseMatchRect.y+lineHeight);
 	timeline->getFont().drawString("amplitude: " + ofToString(lfokey->amplitude, 4), amplitudeRect.x+10, amplitudeRect.y+lineHeight);
 	timeline->getFont().drawString("frequency: " + ofToString(lfokey->frequency, 1), frequencyRect.x+10, frequencyRect.y+lineHeight);
 	timeline->getFont().drawString("seed: " + ofToString(lfokey->seed, 1), seedRect.x+10, seedRect.y+lineHeight);
@@ -137,6 +135,7 @@ void ofxTLLFO::draw(){
 	
 	ofPushStyle();
 	ofSetColor(timeline->getColors().keyColor);
+    ofSetLineWidth(2);
 	preview.draw();
 	
 	
@@ -247,8 +246,8 @@ float ofxTLLFO::evaluateKeyframeAtTime(ofxTLKeyframe* key, unsigned long long sa
 bool ofxTLLFO::mousePressed(ofMouseEventArgs& args, long millis){
 	if(drawingLFORect){
 		draggedValue = false;
-		mouseDownRect = NULL;
-		editingParam = NULL;
+        mouseDownRect = nullptr;
+        editingParam = nullptr;
 		editingClickX = args.x;
 		if(sineTypeRect.inside(args.x, args.y)){
 			mouseDownRect = &sineTypeRect;
@@ -301,7 +300,7 @@ bool ofxTLLFO::mousePressed(ofMouseEventArgs& args, long millis){
 		else if(expInterpolateRect.inside(args.x, args.y)){
 			mouseDownRect = &expInterpolateRect;
 		}
-		if(editingParam != NULL){
+        if(editingParam != nullptr){
 			editingStartValue = *editingParam;
 		}
 	}
@@ -323,7 +322,7 @@ void ofxTLLFO::mouseMoved(ofMouseEventArgs& args, long millis){
 
 void ofxTLLFO::mouseDragged(ofMouseEventArgs& args, long millis){
 	if(drawingLFORect){
-		if(mouseDownRect != NULL && editingParam != NULL){
+        if(mouseDownRect != nullptr && editingParam != nullptr){
 			float delta = (args.x-editingClickX)*editingSensitivity;
 			*editingParam = ofClamp(editingStartValue + delta, editingRange.min, editingRange.max);
 			shouldRecomputePreviews = true;
@@ -338,7 +337,7 @@ void ofxTLLFO::mouseDragged(ofMouseEventArgs& args, long millis){
 
 void ofxTLLFO::mouseReleased(ofMouseEventArgs& args, long millis){
 	if(drawingLFORect){
-		if(mouseDownRect != NULL && mouseDownRect->inside(args.x, args.y)){
+        if(mouseDownRect != nullptr && mouseDownRect->inside(args.x, args.y)){
 			ofxTLLFOKey* lfokey = (ofxTLLFOKey*)selectedKeyframe;
 			if(mouseDownRect == &sineTypeRect){
 				if( lfokey->type != OFXTL_LFO_TYPE_SINE){
@@ -378,7 +377,7 @@ void ofxTLLFO::mouseReleased(ofMouseEventArgs& args, long millis){
 				draggedValue = false;
 			}
 		}
-        if(args.button == 0 && !ofGetKeyPressed(OF_KEY_CONTROL) && !lfoRect.inside(args.x, args.y) && mouseDownRect == NULL){
+        if(args.button == 0 && !ofGetKeyPressed(OF_KEY_CONTROL) && !lfoRect.inside(args.x, args.y) && mouseDownRect == nullptr){
 			timeline->dismissedModalContent();
 			drawingLFORect = false;
 		}
@@ -495,7 +494,7 @@ ofxTLKeyframe* ofxTLLFO::keyframeAtScreenpoint(ofVec2f p){
             }
         }
     }
-	return NULL;
+    return nullptr;
 }
 
 

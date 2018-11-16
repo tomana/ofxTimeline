@@ -67,7 +67,7 @@ void ofxTLTicker::draw(){
 	
 	tickerMarks.setStrokeColor( ofColor(200, 180, 40) );
 	tickerMarks.setStrokeWidth(1);
-	tickerMarks.draw(0, bounds.y);
+    tickerMarks.draw(0, bounds.y);
 		
     if(drawBPMGrid){
 		if(viewIsDirty){
@@ -217,6 +217,10 @@ void ofxTLTicker::refreshTickMarks(){
 		showSeconds = true;
 		showMinutes = true;
 	}
+
+    showMillis = false;
+    showSeconds = true;
+    showMinutes = true;
 	
 	unsigned long long lastMillis = screenXToMillis(bounds.x);
 	int lastSecond = lastMillis/1000;

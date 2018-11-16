@@ -40,10 +40,10 @@ ofxTLPage::ofxTLPage()
 	defaultTrackHeight(0),
 	isSetup(false),
 	snappingTolerance(12),
-	ticker(NULL),
+    ticker(nullptr),
 	millisecondDragOffset(0),
 	headerHasFocus(false),
-	focusedTrack(NULL),
+    focusedTrack(nullptr),
 	draggingSelectionRectangle(false),
 	snappingEnabled(false),
 	headersAreMinimal(false),
@@ -75,6 +75,10 @@ void ofxTLPage::setup(){
         isSetup = true;
         headerHeight = 18;
         defaultTrackHeight = 40;
+        if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
+            headerHeight *= 2;
+            defaultTrackHeight *= 2;
+        }
         loadTrackPositions(); //name must be set
         ofAddListener(timeline->events().zoomEnded, this, &ofxTLPage::zoomEnded);
     }
@@ -129,8 +133,7 @@ void ofxTLPage::draw(){
 		set<unsigned long long>::iterator it;
 //		for(int i = 0; i < snapPoints.size(); i++){
 		for(it = snapPoints.begin(); it != snapPoints.end(); it++){
-            ofDrawLine(timeline->millisToScreenX(*it), trackContainerRect.y,
-                   timeline->millisToScreenX(*it), trackContainerRect.y+trackContainerRect.height);
+            ofDrawLine(timeline->millisToScreenX(*it), trackContainerRect.y,timeline->millisToScreenX(*it), trackContainerRect.y+trackContainerRect.height);
 		}
 		ofPopStyle();
 	}
@@ -156,17 +159,17 @@ void ofxTLPage::timelineGainedFocus(){
 }
 
 void ofxTLPage::timelineLostFocus(){
-    if(focusedTrack != NULL){
+    if(focusedTrack != nullptr){
         focusedTrack->lostFocus();
     }
-    focusedTrack = NULL;
+    focusedTrack = nullptr;
 }
 
 #pragma mark events
 void ofxTLPage::mousePressed(ofMouseEventArgs& args, long millis){
 	draggingInside = trackContainerRect.inside(args.x, args.y);
     draggingSelectionRectangle = false;
-	ofxTLTrack* newFocus = NULL;
+    ofxTLTrack* newFocus = nullptr;
 	if(draggingInside){
 		headerHasFocus = false;
 		footerIsDragging = false;
@@ -198,17 +201,17 @@ void ofxTLPage::mousePressed(ofMouseEventArgs& args, long millis){
 	
     //TODO: explore multi-focus tracks for pasting into many tracks at once
     //paste events get sent to the focus track
-    if(newFocus != NULL && newFocus != focusedTrack){
+    if(newFocus != nullptr && newFocus != focusedTrack){
         setFocusedTrack(newFocus);
     }
 }
 
 void ofxTLPage::setFocusedTrack(ofxTLTrack* track){
-    if(focusedTrack != NULL){
+    if(focusedTrack != nullptr){
         focusedTrack->lostFocus();
     }
     track->gainedFocus();
-    focusedTrack = track; //is set to NULL when the whole timeline loses focus
+    focusedTrack = track; //is set to nullptr when the whole timeline loses focus
 }
 
 ofxTLTrack* ofxTLPage::getFocusedTrack(){
@@ -361,7 +364,7 @@ void ofxTLPage::refreshSnapPoints(){
 		}
 	}
     
-	if(ticker != NULL && timeline->getSnapToBPM()){
+    if(ticker != nullptr && timeline->getSnapToBPM()){
 		ticker->getSnappingPoints(snapPoints);
 	}
 	
@@ -410,7 +413,7 @@ void ofxTLPage::cutRequest(vector<string>& bufs){
 
 void ofxTLPage::pasteSent(const vector<string>& pasteboard){
 	
-    if(focusedTrack != NULL){
+    if(focusedTrack != nullptr){
 		int pasteTrackIndex = -1;;
 		int bufferIndex = 0;
 		//iterate through all the  tracks, start pasting at the focused track down
@@ -438,7 +441,7 @@ void ofxTLPage::pasteSent(const vector<string>& pasteboard){
 }
 		
 void ofxTLPage::selectAll(){
-	if(focusedTrack != NULL){
+    if(focusedTrack != nullptr){
 		focusedTrack->selectAll();
 	}
 }
@@ -461,7 +464,13 @@ void ofxTLPage::addTrack(string trackName, ofxTLTrack* track){
     newHeader->setTimeline(timeline);
 	newHeader->setTrack(track);
 	newHeader->name = trackName;
-	newHeader->setFooterHeight(footersAreHidden ? 0 : FOOTER_HEIGHT);
+    newHeader->trackName = trackName;
+    if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
+        newHeader->setFooterHeight(footersAreHidden ? 0 : FOOTER_HEIGHT_RETINA);
+    }else{
+        newHeader->setFooterHeight(footersAreHidden ? 0 : FOOTER_HEIGHT);
+    }
+
 	newHeader->setup();
 
 	//	cout << "adding " << name << " current zoomer is " << zoomer->getDrawRect().y << endl;
@@ -505,15 +514,15 @@ vector<ofxTLTrack*>& ofxTLPage::getTracks(){
 ofxTLTrack* ofxTLPage::getTrack(string trackName){
 	if(tracks.find(trackName) == tracks.end()){
 		ofLogError("ofxTLPage -- Couldn't find element named " + trackName + " on page " + name);
-		return NULL;
+        return nullptr;
 	}
 	return tracks[trackName];
 }
 
 ofxTLTrackHeader* ofxTLPage::getTrackHeader(ofxTLTrack* track){
-    if(track == NULL){
+    if(track == nullptr){
         ofLogError() << "ofxTLPage::getTrackHeader -- Attempting to get header for a null track";
-        return NULL;
+        return nullptr;
     }
     
     for(int i = 0; i < headers.size(); i++){
@@ -523,7 +532,7 @@ ofxTLTrackHeader* ofxTLPage::getTrackHeader(ofxTLTrack* track){
     }
     
     ofLogError() << "ofxTLPage::getTrackHeader header for track " << track->getDisplayName() << " Couldn't be found";
-    return NULL;
+    return nullptr;
 }
 
 void ofxTLPage::setMinimalHeaders(bool minimal){
@@ -547,7 +556,11 @@ void ofxTLPage::expandFocusedTrack(){
 	
 	float staticSpacePerTrack = 0;
 	if(!headersAreMinimal)staticSpacePerTrack += headerHeight;
-	if(!footersAreHidden) staticSpacePerTrack += FOOTER_HEIGHT;
+    if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
+        if(!footersAreHidden) staticSpacePerTrack += FOOTER_HEIGHT_RETINA;
+    }else{
+        if(!footersAreHidden) staticSpacePerTrack += FOOTER_HEIGHT;
+    }
 	
 	float newHeight = trackContainerRect.height - headers.size()*staticSpacePerTrack;
 	ofRectangle trackRect = focusedTrack->getDrawRect();
@@ -570,7 +583,11 @@ void ofxTLPage::setExpandToHeight(float height){
 void ofxTLPage::evenlyDistributeTrackHeights(){
 	float addedHeightPerTrack = 0;
 	if(!headersAreMinimal)addedHeightPerTrack += headerHeight;
-	if(!footersAreHidden) addedHeightPerTrack += FOOTER_HEIGHT;
+    if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
+        if(!footersAreHidden) addedHeightPerTrack += FOOTER_HEIGHT_RETINA;
+    }else{
+        if(!footersAreHidden) addedHeightPerTrack += FOOTER_HEIGHT;
+    }
 	if(heightBeforeCollapse == 0){
 		heightBeforeCollapse = trackContainerRect.height - addedHeightPerTrack*headers.size();
 	}
@@ -633,7 +650,7 @@ void ofxTLPage::bringTrackToBottom(ofxTLTrack* track){
 }
 
 void ofxTLPage::removeTrack(ofxTLTrack* track){
-    if(track == NULL){
+    if(track == nullptr){
         ofLogError() << "ofxTLPage::removeTrack -- removing null track!" << endl;
         return;
     }
@@ -652,7 +669,7 @@ void ofxTLPage::removeTrack(ofxTLTrack* track){
             tracks.erase(track->getName());
             if(track == focusedTrack){
                 focusedTrack->lostFocus();
-                focusedTrack = NULL;
+                focusedTrack = nullptr;
             }
             //TODO smart pointers this won't be necessary
             if(track->getCreatedByTimeline()){
@@ -705,9 +722,16 @@ void ofxTLPage::recalculateHeight(){
 			headers[i]->setFooterHeight(0);
 		}
 		else{
-			currentY += thisHeader.height + trackRectangle.height + FOOTER_HEIGHT;
-			totalHeight += thisHeader.height + trackRectangle.height + FOOTER_HEIGHT;
-			headers[i]->setFooterHeight(FOOTER_HEIGHT);
+            if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
+                currentY += thisHeader.height + trackRectangle.height + FOOTER_HEIGHT_RETINA;
+                totalHeight += thisHeader.height + trackRectangle.height + FOOTER_HEIGHT_RETINA;
+                headers[i]->setFooterHeight(FOOTER_HEIGHT_RETINA);
+            }else{
+                currentY += thisHeader.height + trackRectangle.height + FOOTER_HEIGHT;
+                totalHeight += thisHeader.height + trackRectangle.height + FOOTER_HEIGHT;
+                headers[i]->setFooterHeight(FOOTER_HEIGHT);
+            }
+
 		}
 
 		headers[i]->setDrawRect(thisHeader);

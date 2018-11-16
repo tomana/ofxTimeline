@@ -34,30 +34,35 @@
 #include "ofxTimeline.h"
 
 ofxTLTrackHeader::ofxTLTrackHeader(){
-	track = NULL;
+    track = nullptr;
 	draggingSize = false;
 	hoveringFooter = false;
-	footerHeight = FOOTER_HEIGHT;
+
+    if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
+        footerHeight = FOOTER_HEIGHT_RETINA;
+    }else{
+        footerHeight = FOOTER_HEIGHT;
+    }
+
+    nameField  = new ofxFontStash();
+    nameField->setup("timeline/NewMedia Fett.ttf",1.0,2048,true,8,3.0f);
+
 }
 
+//--------------------------------------------------------------
 ofxTLTrackHeader::~ofxTLTrackHeader(){
 
 }
 
 void ofxTLTrackHeader::enable(){
 	if(!isEnabled()){
-		nameField.setFont(timeline->getFont());
-		//nameField.drawBounds = false;
 		ofxTLTrack::enable();
-        //ofAddListener(nameField.onTextChange, this, &ofxTLTrackHeader::textFieldEnter);
 	}
 }
 
 void ofxTLTrackHeader::disable(){
 	if(isEnabled()){
 		ofxTLTrack::disable();
-		nameField.disable();
-        //ofRemoveListener(nameField.onTextChange, this, &ofxTLTrackHeader::textFieldEnter);
 	}
 }
 
@@ -72,10 +77,10 @@ ofxTLTrack* ofxTLTrackHeader::getTrack(){
 void ofxTLTrackHeader::textFieldEnter(string& newText){
 
     if(newText == ""){
-        nameField.text = name;
+        trackName = name;
     }
     else{
-        if(track != NULL){
+        if(track != nullptr){
             track->setDisplayName(newText);
         }
     }
@@ -83,7 +88,7 @@ void ofxTLTrackHeader::textFieldEnter(string& newText){
 }
 
 string ofxTLTrackHeader::getDisplayName(){
-	if(track != NULL){
+    if(track != nullptr){
 		return track->getDisplayName();
 	}
 	return "";
@@ -108,25 +113,10 @@ void ofxTLTrackHeader::draw(){
 
 	// TODO: set these somewhere else instead of setting it every frame here
     // set name if it's empty and we're not editing
-    if(nameField.text != track->getDisplayName() && !nameField.getIsEnabled()){
-    	nameField.text = track->getDisplayName();
+    if(trackName != track->getDisplayName()){
+        trackName = track->getDisplayName();
     }
 
-    if(timeline->areHeadersEditable() && !nameField.getIsEnabled()){
-		nameField.enable();
-	}
-
-    if(!timeline->areHeadersEditable() && nameField.getIsEnabled()){
-		nameField.disable();
-	}
-
-    if(nameField.getIsEditing()){
-    	track->getTimeline()->presentedModalContent(this);
-    }
-
-
-    nameField.bounds.x = bounds.x;
-    nameField.bounds.y = bounds.y;
 	ofNoFill();
 	if(bounds.height == 0){
 		ofSetColor(getTimeline()->getColors().textColor, 100);
@@ -136,9 +126,22 @@ void ofxTLTrackHeader::draw(){
 	}
 
 	if(getTrack()->getDrawRect().height > 0 || bounds.height > 0){
-	    nameField.draw();
-	}
+        ofFill();
+        if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
+            ofSetColor(255,255,255);
+            nameField->draw(trackName,26,bounds.x, bounds.y+28);
+            ofSetColor(255,255,127);
+            nameField->draw("X",26,bounds.width-30,bounds.y+28);
+        }else{
+            ofSetColor(255,255,255);
+            nameField->draw(trackName,12,bounds.x, bounds.y+14);
+            ofSetColor(255,255,127);
+            nameField->draw("X",12,bounds.width-15,bounds.y+14);
+        }
 
+
+	}
+    ofNoFill();
 	ofSetColor(track->getTimeline()->getColors().outlineColor);
 	ofDrawRectangle(bounds);
 
@@ -154,6 +157,7 @@ void ofxTLTrackHeader::draw(){
 		}
 	}
 	ofPopStyle();
+
 }
 
 void ofxTLTrackHeader::recalculateFooterStripes(){
@@ -177,6 +181,17 @@ void ofxTLTrackHeader::mousePressed(ofMouseEventArgs& args){
 		dragOffset = args.y - footerRect.y;
 		draggingSize = true;
 	}
+
+    if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
+        if(args.x >= bounds.width-30 && args.y >= bounds.y && args.x < bounds.width-30+20 && args.y < bounds.y+28){
+            track->getTimeline()->removeTrack(trackName);
+        }
+    }else{
+        if(args.x >= bounds.width-15 && args.y >= bounds.y && args.x < bounds.width-15+10 && args.y < bounds.y+14){
+            track->getTimeline()->removeTrack(trackName);
+        }
+    }
+
 }
 
 void ofxTLTrackHeader::mouseMoved(ofMouseEventArgs& args){

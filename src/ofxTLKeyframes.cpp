@@ -38,7 +38,7 @@ bool keyframesort(ofxTLKeyframe* a, ofxTLKeyframe* b){
 }
 
 ofxTLKeyframes::ofxTLKeyframes()
-:	hoverKeyframe(NULL),
+:	hoverKeyframe(nullptr),
 	keysAreDraggable(false),
 	keysDidDrag(false),
 	keysDidNudge(false),
@@ -110,10 +110,11 @@ void ofxTLKeyframes::draw(){
 	//float currentPercent = sampleAtTime(timeline->getCurrentTimeMillis());
 	float currentPercent = sampleAtTime(currentTrackTime());
 	ofFill();
-	ofDrawRectangle(bounds.x, bounds.getMaxY(), bounds.width, -bounds.height*currentPercent);
+    ofDrawRectangle(bounds.x, bounds.getMaxY(), bounds.width, -bounds.height*currentPercent);
 
 	//***** DRAW KEYFRAME LINES
 	ofSetColor(timeline->getColors().keyColor);
+    ofSetLineWidth(2);
 	ofNoFill();
 
 	preview.draw();
@@ -121,7 +122,7 @@ void ofxTLKeyframes::draw(){
 	//**** DRAW KEYFRAME DOTS
 
 	//**** HOVER FRAME
-	if(hoverKeyframe != NULL){
+    if(hoverKeyframe != nullptr){
 		ofPushStyle();
 		ofFill();
 		ofSetColor(timeline->getColors().highlightColor);
@@ -134,7 +135,8 @@ void ofxTLKeyframes::draw(){
 	ofSetColor(timeline->getColors().textColor);
 	ofNoFill();
 	for(int i = 0; i < keyPoints.size(); i++){
-		ofDrawRectangle(keyPoints[i].x-1, keyPoints[i].y-1, 3, 3);
+        ofSetLineWidth(1);
+        ofDrawCircle(keyPoints[i].x, keyPoints[i].y, 4);
 	}
 
 	//**** SELECTED KEYS
@@ -381,21 +383,21 @@ bool ofxTLKeyframes::mousePressed(ofMouseEventArgs& args, long millis){
 	selectedKeyframe =  keyframeAtScreenpoint(screenpoint);
     //if we clicked OFF of a keyframe OR...
     //if we clicked on a keyframe outside of the current selection and we aren't holding down shift, clear all
-    if(!(ofGetKeyPressed(OF_KEY_SHIFT) || ofGetKeyPressed(OF_KEY_CONTROL) || ofGetKeyPressed(OF_KEY_COMMAND)) && (isActive() || selectedKeyframe != NULL) ){
+    if(!(ofGetKeyPressed(OF_KEY_SHIFT) || ofGetKeyPressed(OF_KEY_CONTROL) || ofGetKeyPressed(OF_KEY_COMMAND)) && (isActive() || selectedKeyframe != nullptr) ){
         bool didJustDeselect = false;
-	    if( selectedKeyframe == NULL || !isKeyframeSelected(selectedKeyframe)){
+        if( selectedKeyframe == nullptr || !isKeyframeSelected(selectedKeyframe)){
             //settings this to true causes the first click off of the timeline to deselct rather than create a new keyframe
             didJustDeselect = timeline->getTotalSelectedItems() > 1;
     	    timeline->unselectAll();
         }
 
         //if we didn't just deselect everything and clicked in an empty space add a new keyframe there
-        if(selectedKeyframe == NULL && !didJustDeselect){
+        if(selectedKeyframe == nullptr && !didJustDeselect){
             createNewOnMouseup = args.button == 0 && !ofGetKeyPressed(OF_KEY_CONTROL);
         }
     }
 
-	if(selectedKeyframe != NULL){
+    if(selectedKeyframe != nullptr){
          //add the keyframe to the selection, whether it was just generated or not
     	if(!isKeyframeSelected(selectedKeyframe)){
 			selectedKeyframes.push_back(selectedKeyframe);
@@ -405,14 +407,14 @@ bool ofxTLKeyframes::mousePressed(ofMouseEventArgs& args, long millis){
         //unselect it if it's selected and we clicked the key with shift pressed
         else if(ofGetKeyPressed(OF_KEY_SHIFT) || ofGetKeyPressed(OF_KEY_CONTROL) || ofGetKeyPressed(OF_KEY_COMMAND)){
         	deselectKeyframe(selectedKeyframe);
-			selectedKeyframe = NULL;
+            selectedKeyframe = nullptr;
         }
 	}
 
     //if we have any keyframes selected update the grab offsets and check for showing the modal window
 	if(selectedKeyframes.size() != 0){
         updateDragOffsets(screenpoint, millis);
-		if(selectedKeyframe != NULL){
+        if(selectedKeyframe != nullptr){
 
             if(args.button == 0 && !(ofGetKeyPressed(OF_KEY_SHIFT) || ofGetKeyPressed(OF_KEY_CONTROL) || ofGetKeyPressed(OF_KEY_COMMAND))){
 
@@ -427,7 +429,7 @@ bool ofxTLKeyframes::mousePressed(ofMouseEventArgs& args, long millis){
 			}
 		}
 	}
-	return selectedKeyframe != NULL;
+    return selectedKeyframe != nullptr;
 }
 
 void ofxTLKeyframes::regionSelected(ofLongRange timeRange, ofRange valueRange){
@@ -486,7 +488,7 @@ void ofxTLKeyframes::mouseDragged(ofMouseEventArgs& args, long millis){
             selectedKeyframes[k]->value = screenYToValue(args.y - selectedKeyframes[k]->grabValueOffset);
             selectedKeyframes[k]->screenPosition = screenPositionForKeyframe(selectedKeyframes[k]);
         }
-        if(selectedKeyframe != NULL && timeline->getMovePlayheadOnDrag()){
+        if(selectedKeyframe != nullptr && timeline->getMovePlayheadOnDrag()){
             timeline->setCurrentTimeMillis(selectedKeyframe->time);
         }
         timeline->flagUserChangedValue();
@@ -635,7 +637,7 @@ void ofxTLKeyframes::addKeyframeAtMillis(unsigned long long millis){
 void ofxTLKeyframes::addKeyframeAtMillis(float value, unsigned long long millis){
 
     ofxTLKeyframe* key = getKeyframeAtMillis(millis);
-    if ( key == NULL)
+    if ( key == nullptr)
     {
         ofxTLKeyframe* key = newKeyframe();
         key->time = key->previousTime = millis;
@@ -670,7 +672,7 @@ ofxTLKeyframe* ofxTLKeyframes::getKeyframeAtMillis( unsigned long long millis){
         if ( keyframes[i]->time == millis) return keyframes[i];
     }
 
-    return NULL;
+    return nullptr;
 }
 
 
@@ -801,7 +803,7 @@ void ofxTLKeyframes::deleteSelectedKeyframes(){
 			}
 			willDeleteKeyframe(keyframes[i]);
 			if(keyframes[i] == hoverKeyframe){
-				hoverKeyframe = NULL;
+                hoverKeyframe = nullptr;
 			}
 			delete keyframes[i];
 			keyframes.erase(keyframes.begin()+i);
@@ -820,7 +822,7 @@ void ofxTLKeyframes::deleteSelectedKeyframes(){
 
 void ofxTLKeyframes::deleteKeyframe(ofxTLKeyframe* keyframe){
 
-	if(keyframe == NULL) return;
+    if(keyframe == nullptr) return;
 
 	for(int i = keyframes.size() - 1; i >= 0; i--){
 		if(keyframe == keyframes[i]){
@@ -835,7 +837,7 @@ void ofxTLKeyframes::deleteKeyframe(ofxTLKeyframe* keyframe){
 
 ofxTLKeyframe* ofxTLKeyframes::keyframeAtScreenpoint(ofVec2f p){
 	if(!bounds.inside(p)){
-		return NULL;
+        return nullptr;
 	}
 	float minDistanceSquared = 15*15;
 	for(int i = 0; i < keyframes.size(); i++){
@@ -845,7 +847,7 @@ ofxTLKeyframe* ofxTLKeyframes::keyframeAtScreenpoint(ofVec2f p){
 			return keyframes[i];
 		}
 	}
-	return NULL;
+    return nullptr;
 }
 
 void ofxTLKeyframes::selectKeyframe(ofxTLKeyframe* k){
@@ -865,7 +867,7 @@ void ofxTLKeyframes::deselectKeyframe(ofxTLKeyframe* k){
 
 bool ofxTLKeyframes::isKeyframeSelected(ofxTLKeyframe* k){
 
-	if(k == NULL) return false;
+    if(k == nullptr) return false;
 
 	return binary_search(selectedKeyframes.begin(), selectedKeyframes.end(), k, keyframesort);
 //	for(int i = 0; i < selectedKeyframes.size(); i++){

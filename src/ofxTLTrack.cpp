@@ -42,7 +42,7 @@ ofxTLTrack::ofxTLTrack()
 	active(false),
 	hover(false),
 	createdByTimeline(false),
-	timeline(NULL),
+    timeline(nullptr),
 	playbackStartTime(0),
 	isPlaying(false)
 {
@@ -210,7 +210,7 @@ bool ofxTLTrack::getIsPlaying(){
 
 void ofxTLTrack::playbackStarted(ofxTLPlaybackEventArgs& args){
 	//we stop playing solo if the main timeline starts
-	if(timeline->getTimecontrolTrack() == NULL || this != timeline->getTimecontrolTrack()){
+    if(timeline->getTimecontrolTrack() == nullptr || this != timeline->getTimecontrolTrack()){
 		stop();
 	}
 }

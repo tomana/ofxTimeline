@@ -33,10 +33,11 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxFontStash.h"
 #include "ofxTLTrack.h"
-#include "ofxTextInputField.h"
 
 #define FOOTER_HEIGHT 6
+#define FOOTER_HEIGHT_RETINA FOOTER_HEIGHT*2
 
 class ofxTLTrackHeader : public ofxTLTrack
 {
@@ -66,11 +67,13 @@ class ofxTLTrackHeader : public ofxTLTrack
 	
 	//for the header, this returns the track's display name
     virtual string getDisplayName();
+
+    string trackName;
 	
   protected:
 	ofxTLTrack* track;
-	ofxTextInputField nameField;
-	
+    ofxFontStash* nameField;
+
 	float footerHeight;
 	void recalculateFooter();
 	

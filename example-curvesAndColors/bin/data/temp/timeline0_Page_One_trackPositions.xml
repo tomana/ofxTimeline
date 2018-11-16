@@ -1,0 +1,32 @@
+<positions>
+    <element name="Bangs">
+        <x>0.000000000</x>
+        <y>463.156250000</y>
+        <width>1479.000000000</width>
+        <height>46.714843750</height>
+    </element>
+    <element name="Colors">
+        <x>0.000000000</x>
+        <y>347.234375000</y>
+        <width>1479.000000000</width>
+        <height>91.921875000</height>
+    </element>
+    <element name="LFO">
+        <x>0.000000000</x>
+        <y>533.871093750</y>
+        <width>1479.000000000</width>
+        <height>133.339843750</height>
+    </element>
+    <element name="Rotate X">
+        <x>0.000000000</x>
+        <y>52.000000000</y>
+        <width>1479.000000000</width>
+        <height>136.175781250</height>
+    </element>
+    <element name="Rotate Y">
+        <x>0.000000000</x>
+        <y>212.175781250</y>
+        <width>1479.000000000</width>
+        <height>111.058593750</height>
+    </element>
+</positions>

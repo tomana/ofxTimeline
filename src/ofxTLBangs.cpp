@@ -101,7 +101,7 @@ ofxTLKeyframe* ofxTLBangs::keyframeAtScreenpoint(ofVec2f p){
             }
         }
     }
-	return NULL;    
+    return nullptr;
 }
 
 void ofxTLBangs::update(){

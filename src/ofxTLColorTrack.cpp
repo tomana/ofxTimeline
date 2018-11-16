@@ -38,8 +38,8 @@ ofxTLColorTrack::ofxTLColorTrack()
  :	drawingColorWindow(false),
 	clickedInColorRect(false),
 	defaultColor(ofColor(0,0,0)),
-	previousSample(NULL),
-	nextSample(NULL),
+    previousSample(nullptr),
+    nextSample(nullptr),
 	setNextAndPreviousOnUpdate(false)
 
 {
@@ -126,7 +126,7 @@ void ofxTLColorTrack::drawModalContent(){
 		}
 
         if(selectedKeyframe == nullptr){
-			ofLogError("ofxTLColorTrack::drawModalContent") << "The selected keyframe is null" << endl;
+            ofLogError("ofxTLColorTrack::drawModalContent") << "The selected keyframe is nullptr" << endl;
 			drawingColorWindow = false;
 			timeline->dismissedModalContent();
 			return;
@@ -151,32 +151,21 @@ void ofxTLColorTrack::drawModalContent(){
 		}
 		colorPallete.draw(colorWindow);
 
-        /*ofVec2f selectionPoint = colorWindow.getMin() + selectedSample->samplePoint * ofVec2f(colorWindow.width,colorWindow.height);
+        glm::vec2 selectionPoint = glm::vec2(colorWindow.getMin().x + selectedSample->samplePoint.x*colorWindow.width,colorWindow.getMin().y + selectedSample->samplePoint.y*colorWindow.height);
 		ofSetColor(selectedSample->color.getInverted());
         ofDrawLine(selectionPoint - glm::vec2(8,0), selectionPoint + glm::vec2(8,0));
         ofDrawLine(selectionPoint - glm::vec2(0,8), selectionPoint + glm::vec2(0,8));
 
-		ofPushStyle();
+        ofPushStyle();
 		ofNoFill();
-		if(previousSample != NULL){
-			ofVec2f previousSamplePoint = colorWindow.getMin() + previousSample->samplePoint * ofVec2f(colorWindow.width,colorWindow.height);
+        if(previousSample != nullptr){
+            glm::vec2 previousSamplePoint = glm::vec2(colorWindow.getMin().x + (previousSample->samplePoint.x * colorWindow.width), colorWindow.getMin().y + (previousSample->samplePoint.y * colorWindow.height) );
 			ofSetColor(previousSample->color.getInverted(), 150);
+            ofSetLineWidth(2);
             ofDrawCircle(previousSamplePoint, 3);
             ofDrawLine(previousSamplePoint,selectionPoint);
 		}
-		if(nextSample != NULL){
-			ofVec2f nextSamplePoint = colorWindow.getMin() + nextSample->samplePoint * ofVec2f(colorWindow.width,colorWindow.height);
-			ofSetColor(nextSample->color.getInverted(), 150);
-
-			//draw a little triangle pointer
-            ofVec2f direction = (nextSamplePoint - selectionPoint).normalized();
-			ofVec2f backStep = nextSamplePoint-direction*5;
-            ofDrawTriangle(nextSamplePoint,
-					   backStep + direction.getRotated(90)*3,
-					   backStep - direction.getRotated(90)*3);
-            ofDrawLine(nextSamplePoint,selectionPoint);
-		}
-		ofPopStyle();
+        ofPopStyle();
 
         previousColorRect = ofRectangle(colorWindow.x, colorWindow.getMaxY(), colorWindow.width/2, 25);
         newColorRect = ofRectangle(colorWindow.x+colorWindow.width/2, colorWindow.getMaxY(), colorWindow.width/2, 25);
@@ -189,7 +178,8 @@ void ofxTLColorTrack::drawModalContent(){
 		ofNoFill();
 		ofSetLineWidth(2);
         ofDrawRectangle(colorWindow);
-        ofPopStyle();*/
+
+        ofPopStyle();
 	}
 }
 
@@ -406,8 +396,8 @@ void ofxTLColorTrack::regionSelected(ofLongRange timeRange, ofRange valueRange){
 void ofxTLColorTrack::selectedKeySecondaryClick(ofMouseEventArgs& args){
 
 	drawingColorWindow = true;
-	previousSample = NULL;
-	nextSample = NULL;
+    previousSample = nullptr;
+    nextSample = nullptr;
 
 	colorAtClickTime = ((ofxTLColorSample*)selectedKeyframe)->color;
 	samplePositionAtClickTime = ((ofxTLColorSample*)selectedKeyframe)->samplePoint;
@@ -417,7 +407,7 @@ void ofxTLColorTrack::selectedKeySecondaryClick(ofMouseEventArgs& args){
 }
 
 void ofxTLColorTrack::setNextAndPreviousSamples(){
-	previousSample = nextSample = NULL;
+    previousSample = nextSample = nullptr;
 	for(int i = 0; i < keyframes.size(); i++){
 		if(keyframes[i] == selectedKeyframe){
 			if(i > 0){
@@ -441,7 +431,7 @@ ofxTLKeyframe* ofxTLColorTrack::keyframeAtScreenpoint(ofVec2f p){
 			}
 		}
 	}
-	return NULL;
+    return nullptr;
 }
 
 void ofxTLColorTrack::refreshAllSamples(){
@@ -469,7 +459,7 @@ ofColor ofxTLColorTrack::samplePaletteAtPosition(ofVec2f position){
                colorPallete.getPixels().getColor(MIN(x0+1,colorPallete.getWidth()-1),MIN(y0+1, colorPallete.getHeight()-1))*dx*dy;
 	}
 	else{
-		ofLogError("ofxTLColorTrack::refreshSample -- sampling palette is null");
+        ofLogError("ofxTLColorTrack::refreshSample -- sampling palette is nullptr");
 		return defaultColor;
 	}
 }

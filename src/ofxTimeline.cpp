@@ -67,13 +67,13 @@ ofxTimeline::ofxTimeline()
 	movePlayheadOnPaste(true),
 	movePlayheadOnDrag(false),
 	inoutRange(ofRange(0.0,1.0)),
-	currentPage(NULL),
-	modalTrack(NULL),
-    tabs(NULL),
-	inoutTrack(NULL),
-	ticker(NULL),
-	zoomer(NULL),
-	timeControl(NULL),
+    currentPage(nullptr),
+    modalTrack(nullptr),
+    tabs(nullptr),
+    inoutTrack(nullptr),
+    ticker(nullptr),
+    zoomer(nullptr),
+    timeControl(nullptr),
 	loopType(OF_LOOP_NONE),
 	lockWidthToWindow(true),
 	currentTime(0.0),
@@ -84,10 +84,9 @@ ofxTimeline::ofxTimeline()
 	curvesUseBinary(false),
 	headersAreEditable(false),
 	minimalHeaders(false),
-   	//copy from ofxTimeline/assets into bin/data/
-	defaultPalettePath("GUI/defaultColorPalette.png"),
+    defaultPalettePath("timeline/defaultColorPalette.png"),
 	//TODO: should be able to use bitmap font if need be
-	fontPath("GUI/NewMedia Fett.ttf"),
+    fontPath("timeline/NewMedia Fett.ttf"),
 	fontSize(9),
 	footersHidden(false)
 {
@@ -119,7 +118,7 @@ void ofxTimeline::setup(){
 	isSetup = true;
 
 	width = ofGetWidth();
-    if(tabs != NULL){
+    if(tabs != nullptr){
         delete tabs;
     }
 	tabs = new ofxTLPageTabs();
@@ -127,14 +126,14 @@ void ofxTimeline::setup(){
 	tabs->setup();
     tabs->setDrawRect(ofRectangle(offset.x, offset.y, width, TAB_HEIGHT));
 
-	if(inoutTrack != NULL){
+    if(inoutTrack != nullptr){
 		delete inoutTrack;
 	}
     inoutTrack = new ofxTLInOut();
     inoutTrack->setTimeline(this);
     inoutTrack->setDrawRect(ofRectangle(offset.x, tabs->getBottomEdge(), width, INOUT_HEIGHT));
 
-	if(ticker != NULL){
+    if(ticker != nullptr){
 		delete ticker;
 	}
 	ticker = new ofxTLTicker();
@@ -143,7 +142,7 @@ void ofxTimeline::setup(){
     //TODO: save ticker playhead position
 	ticker->setup();
     ticker->setDrawRect(ofRectangle(offset.x, inoutTrack->getBottomEdge(), width, TICKER_HEIGHT));
-	if(zoomer != NULL){
+    if(zoomer != nullptr){
 		delete zoomer;
 	}
 	zoomer = new ofxTLZoomer();
@@ -320,7 +319,7 @@ void ofxTimeline::setShowZoomer(bool shouldShowZoomer){
 }
 
 void ofxTimeline::setupFont(){
-    font.load(fontPath, fontSize);
+    font.loadFont(fontPath,fontSize,1.0,2048);
 }
 
 void ofxTimeline::setupFont(string newFontPath, int newFontSize){
@@ -514,12 +513,7 @@ void ofxTimeline::play(){
     }
 
 	if(!getIsPlaying()){
-
-		//commented out - always updating
-//		if(!isOnThread){
-//			ofAddListener(ofEvents().update, this, &ofxTimeline::update);
-//		}
-		if(timeControl != NULL){
+        if(timeControl != nullptr){
 			timeControl->play();
 			return;
 		}
@@ -545,11 +539,7 @@ void ofxTimeline::stop(){
 
 	if(getIsPlaying()){
 
-//		if(!isOnThread){
-//	        ofRemoveListener(ofEvents().update, this, &ofxTimeline::update);
-//		}
-
-		if(timeControl != NULL){
+        if(timeControl != nullptr){
 			timeControl->stop();
 			return;
 		}
@@ -581,10 +571,6 @@ bool ofxTimeline::togglePlay(){
     if(!isEnabled){
         return false;
     }
-
-//    if(timeControl != NULL){
-//        return timeControl->togglePlay();
-//    }
 
 	if(getIsPlaying()){
 		stop();
@@ -1552,7 +1538,7 @@ void ofxTimeline::draw(){
 		inoutTrack->_draw();
         ofPopStyle();
 
-		if(modalTrack != NULL){
+        if(modalTrack != nullptr){
 			modalTrack->drawModalContent();
 		}
 
@@ -1843,45 +1829,6 @@ ofxTLPage* ofxTimeline::getPage(string pageName){
     return NULL;
 }
 
-
-ofxTLSwitches* ofxTimeline::addSwitches(string trackName){
-    string uniqueName = confirmedUniqueName(trackName);
-	return addSwitches(uniqueName, nameToXMLName(uniqueName));
-}
-
-ofxTLSwitches* ofxTimeline::addSwitches(string trackName, string xmlFileName){
-	ofxTLSwitches* newSwitches = new ofxTLSwitches();
-	newSwitches->setCreatedByTimeline(true);
-	newSwitches->setXMLFileName(xmlFileName);
-	addTrack(confirmedUniqueName(trackName), newSwitches);
-	return newSwitches;
-}
-
-bool ofxTimeline::isSwitchOn(string trackName, float atTime){
-	if(!hasTrack(trackName)){
-		ofLogError("ofxTimeline -- Couldn't find switcher track " + trackName);
-		return false;
-	}
-
-	ofxTLSwitches* switches = (ofxTLSwitches*)trackNameToPage[trackName]->getTrack(trackName);
-    return switches->isOnAtPercent(atTime/durationInSeconds);
-}
-
-bool ofxTimeline::isSwitchOn(string trackName){
-	if(!hasTrack(trackName)){
-		ofLogError("ofxTimeline -- Couldn't find switcher track " + trackName);
-		return false;
-	}
-
-	ofxTLSwitches* switches = (ofxTLSwitches*)trackNameToPage[trackName]->getTrack(trackName);
-	return switches->isOn();
-//    return isSwitchOn(trackName, currentTime);
-}
-
-bool ofxTimeline::isSwitchOn(string trackName, int atFrame){
-	return isSwitchOn(trackName, timecode.secondsForFrame(atFrame));
-}
-
 ofxTLBangs* ofxTimeline::addBangs(string trackName){
     string uniqueName = confirmedUniqueName(trackName);
  	return addBangs(uniqueName, nameToXMLName(uniqueName));
@@ -1893,19 +1840,6 @@ ofxTLBangs* ofxTimeline::addBangs(string trackName, string xmlFileName){
 	newBangs->setXMLFileName(xmlFileName);
 	addTrack(confirmedUniqueName(trackName), newBangs);
 	return newBangs;
-}
-
-ofxTLFlags* ofxTimeline::addFlags(string trackName){
-    string uniqueName = confirmedUniqueName(trackName);
-    return addFlags(uniqueName, nameToXMLName(uniqueName));
-}
-
-ofxTLFlags* ofxTimeline::addFlags(string trackName, string xmlFileName){
-    ofxTLFlags* newFlags = new ofxTLFlags();
-	newFlags->setCreatedByTimeline(true);
-	newFlags->setXMLFileName(xmlFileName);
-	addTrack(confirmedUniqueName(trackName), newFlags);
-	return newFlags;
 }
 
 ofxTLColorTrack* ofxTimeline::addColors(string trackName){

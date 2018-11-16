@@ -35,14 +35,11 @@
 #include "ofMain.h"
 
 #ifndef OFX_TIMELINE_FONT_RENDERER
-#define OFX_TIMELINE_FONT_RENDERER ofTrueTypeFont
-#endif
-
-#ifdef OFX_TIMELINE_FONT_INCLUDE
-#include OFX_TIMELINE_FONT_INCLUDE
+#define OFX_TIMELINE_FONT_RENDERER ofxFontStash
 #endif
 
 //external addons
+#include "ofxFontStash.h"
 #include "ofRange.h"
 #include "ofxMSATimer.h"
 #include "ofxTimecode.h"
@@ -56,8 +53,6 @@
 #include "ofxTLInOut.h"
 #include "ofxTLCurves.h"
 #include "ofxTLBangs.h"
-#include "ofxTLFlags.h"
-#include "ofxTLSwitches.h"
 #include "ofxTLColorTrack.h"
 #include "ofxTLColors.h"
 #include "ofxTLLFO.h"
@@ -340,18 +335,9 @@ class ofxTimeline : ofThread {
 	//adding tracks always adds to the current page
     ofxTLLFO* addLFO(string name, ofRange valueRange = ofRange(0,1.0), float defaultValue = 0);
 	ofxTLLFO* addLFO(string name, string xmlFileName, ofRange valueRange = ofRange(0,1.0), float defaultValue = 0);
-
-    ofxTLSwitches* addSwitches(string name);
-	ofxTLSwitches* addSwitches(string name, string xmlFileName);
-	bool isSwitchOn(string name);
-	bool isSwitchOn(string name, float atTime);
-	bool isSwitchOn(string name, int atFrame);
 	
     ofxTLBangs* addBangs(string name);
 	ofxTLBangs* addBangs(string name, string xmlFileName);
-    
-    ofxTLFlags* addFlags(string name);
-    ofxTLFlags* addFlags(string name, string xmlFileName);
 
 	ofxTLColorTrack* addColors(string name); //adds with the default palette
 	ofxTLColorTrack* addColors(string name, string xmlFileName); //adds with the default palette

@@ -3,11 +3,11 @@
 ofxTween::ofxTween(){
 	duration = 0;
 	completed = true;
-	easingFunction = NULL;
+    easingFunction = nullptr;
 	running = false;
 
 
-	easing = NULL;
+    easing = nullptr;
 	id = -1;
 	frameBased = false;
 }

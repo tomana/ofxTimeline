@@ -104,3 +104,15 @@ example-videoRenderer/bin/data/renders/
 oldExamples/
 ofxTimelineLib.a
 *.opendb
+
+#########################
+# miscellaneous
+#########################
+
+.mailmap
+*.app
+*.dSYM
+bin/.tmp
+obj/
+**/build-example-curvesAndColors-Desktop-Debug
+**/build-example-curvesAndColors-Desktop-Release

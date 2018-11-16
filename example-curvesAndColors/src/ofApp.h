@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxTimeline.h"
+#include "ofxDatGui.h"
 
 class ofApp : public ofBaseApp{
 
@@ -9,8 +10,6 @@ class ofApp : public ofBaseApp{
         void setup();
         void update();
         void draw();
-
-        ofLight light;
 	
         ofxTimeline timeline;
     
