@@ -185,10 +185,18 @@ void ofxTLTrackHeader::mousePressed(ofMouseEventArgs& args){
     if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
         if(args.x >= bounds.width-30 && args.y >= bounds.y && args.x < bounds.width-30+20 && args.y < bounds.y+28){
             track->getTimeline()->removeTrack(trackName);
+            ofFile temp(track->getTimeline()->getWorkingFolder()+track->getTimeline()->getName()+"_"+track->getName()+".xml");
+            if(temp.exists()){
+                ofFile::removeFile(temp.getAbsolutePath());
+            }
         }
     }else{
         if(args.x >= bounds.width-15 && args.y >= bounds.y && args.x < bounds.width-15+10 && args.y < bounds.y+14){
             track->getTimeline()->removeTrack(trackName);
+            ofFile temp(track->getTimeline()->getWorkingFolder()+track->getTimeline()->getName()+"_"+track->getName()+".xml");
+            if(temp.exists()){
+                ofFile::removeFile(temp.getAbsolutePath());
+            }
         }
     }
 
