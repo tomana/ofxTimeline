@@ -130,12 +130,12 @@ void ofxTLTrackHeader::draw(){
         if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
             ofSetColor(255,255,255);
             nameField->draw(trackName,26,bounds.x, bounds.y+28);
-            ofSetColor(255,255,127);
+            ofSetColor(255,255,190);
             nameField->draw("X",26,bounds.width-30,bounds.y+28);
         }else{
             ofSetColor(255,255,255);
             nameField->draw(trackName,12,bounds.x, bounds.y+14);
-            ofSetColor(255,255,127);
+            ofSetColor(255,255,190);
             nameField->draw("X",12,bounds.width-15,bounds.y+14);
         }
 
@@ -184,20 +184,10 @@ void ofxTLTrackHeader::mousePressed(ofMouseEventArgs& args){
 
     if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
         if(args.x >= bounds.width-30 && args.y >= bounds.y && args.x < bounds.width-30+20 && args.y < bounds.y+28){
-            track->getTimeline()->removeTrack(trackName);
-            ofFile temp(track->getTimeline()->getWorkingFolder()+track->getTimeline()->getName()+"_"+track->getName()+".xml");
-            if(temp.exists()){
-                ofFile::removeFile(temp.getAbsolutePath());
-            }
             ofNotifyEvent(removeTrackEvent, trackName);
         }
     }else{
         if(args.x >= bounds.width-15 && args.y >= bounds.y && args.x < bounds.width-15+10 && args.y < bounds.y+14){
-            track->getTimeline()->removeTrack(trackName);
-            ofFile temp(track->getTimeline()->getWorkingFolder()+track->getTimeline()->getName()+"_"+track->getName()+".xml");
-            if(temp.exists()){
-                ofFile::removeFile(temp.getAbsolutePath());
-            }
             ofNotifyEvent(removeTrackEvent, trackName);
         }
     }
