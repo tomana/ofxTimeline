@@ -189,6 +189,7 @@ void ofxTLTrackHeader::mousePressed(ofMouseEventArgs& args){
             if(temp.exists()){
                 ofFile::removeFile(temp.getAbsolutePath());
             }
+            ofNotifyEvent(removeTrackEvent, trackName);
         }
     }else{
         if(args.x >= bounds.width-15 && args.y >= bounds.y && args.x < bounds.width-15+10 && args.y < bounds.y+14){
@@ -197,6 +198,7 @@ void ofxTLTrackHeader::mousePressed(ofMouseEventArgs& args){
             if(temp.exists()){
                 ofFile::removeFile(temp.getAbsolutePath());
             }
+            ofNotifyEvent(removeTrackEvent, trackName);
         }
     }
 
