@@ -36,9 +36,6 @@
 #include "ofxFontStash.h"
 #include "ofxTLTrack.h"
 
-#define FOOTER_HEIGHT 6
-#define FOOTER_HEIGHT_RETINA FOOTER_HEIGHT*2
-
 class ofxTLTrackHeader : public ofxTLTrack
 {
   public:	

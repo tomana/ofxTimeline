@@ -428,6 +428,8 @@ class ofxTimeline : ofThread {
     
 	//binary test hack
 	bool curvesUseBinary;
+
+    bool forceRetina;
 	
   protected:
 

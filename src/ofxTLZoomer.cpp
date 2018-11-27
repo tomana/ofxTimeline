@@ -82,7 +82,7 @@ void ofxTLZoomer::draw(){
 	else{
 		ofNoFill();
 	}
-    ofDrawCircle(maxScreenX, screenY, 5);
+   ofDrawCircle(maxScreenX, screenY, 5);
 
 //	cout << "zoomer bounds width " << bounds.width << endl;
 	//draw playhead reference

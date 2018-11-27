@@ -137,14 +137,20 @@ void ofxTLColorTrack::drawModalContent(){
 			timeline->dismissedModalContent();
 			drawingColorWindow = false;
 		}
+
 		ofPushStyle();
 		ofFill();
 		ofSetColor(255);
 
 		ofxTLColorSample* selectedSample = (ofxTLColorSample*)selectedKeyframe;
-        colorWindow = ofRectangle( millisToScreenX(selectedKeyframe->time), bounds.y+bounds.height, 200, 200);
+        if(timeline->forceRetina){
+            colorWindow = ofRectangle( millisToScreenX(selectedKeyframe->time), bounds.y+bounds.height, 400, 400);
+        }else{
+            colorWindow = ofRectangle( millisToScreenX(selectedKeyframe->time), bounds.y+bounds.height, 200, 200);
+        }
+
 		if(colorWindow.getMaxY()+25 > timeline->getBottomLeft().y){
-			colorWindow.y = bounds.y - 25 - colorWindow.height;
+            colorWindow.y = bounds.y - 25;
 		}
 		if(colorWindow.getMaxX() > ofGetWidth()){
 			colorWindow.x -= colorWindow.width;

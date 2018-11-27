@@ -40,6 +40,9 @@
 #include <set>
 #include <climits>
 
+#define FOOTER_HEIGHT 6
+#define FOOTER_HEIGHT_RETINA FOOTER_HEIGHT*4
+
 class ofxTimeline;
 class ofxTLTrack
 {

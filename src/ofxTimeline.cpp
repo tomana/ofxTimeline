@@ -115,6 +115,8 @@ void ofxTimeline::setup(){
 
     //TODO: error if isSetup...
 
+    forceRetina = false;
+
 	isSetup = true;
 
 	width = ofGetWidth();
@@ -1788,8 +1790,22 @@ float ofxTimeline::getValue(string trackName){
 		ofLogError("ofxTimeline -- Couldn't find track " + trackName);
 		return 0.0;
 	}
-	ofxTLCurves* curves = (ofxTLCurves*)trackNameToPage[trackName]->getTrack(trackName);
-	return curves->getValue();
+
+    string type = trackNameToPage[trackName]->getTrack(trackName)->getTrackType();
+
+    if(type == "Bangs"){
+        ofxTLBangs* tt = (ofxTLBangs*)trackNameToPage[trackName]->getTrack(trackName);
+        return tt->getBang();
+    }else if(type == "LFO"){
+        ofxTLLFO* tt = (ofxTLLFO*)trackNameToPage[trackName]->getTrack(trackName);
+        return tt->getValue();
+    }else{ // Curves
+        ofxTLCurves* tt = (ofxTLCurves*)trackNameToPage[trackName]->getTrack(trackName);
+        return tt->getValue();
+    }
+
+
+
 }
 
 float ofxTimeline::getValue(string trackName, int atFrame){

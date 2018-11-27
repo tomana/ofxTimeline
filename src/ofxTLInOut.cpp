@@ -45,6 +45,7 @@ ofxTLInOut::ofxTLInOut()
 }
 
 void ofxTLInOut::draw(){
+
     ofPushStyle();
     
 	ofRange screenXRange(bounds.getMinX(),bounds.getMaxX());

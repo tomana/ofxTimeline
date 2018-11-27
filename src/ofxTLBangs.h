@@ -49,6 +49,8 @@ class ofxTLBangs : public ofxTLKeyframes {
 	virtual void playbackLooped(ofxTLPlaybackEventArgs& args);
     
     virtual string getTrackType();
+
+    float   getBang();
     
  protected:
 

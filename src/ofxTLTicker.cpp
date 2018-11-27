@@ -68,6 +68,7 @@ void ofxTLTicker::draw(){
 	tickerMarks.setStrokeColor( ofColor(200, 180, 40) );
 	tickerMarks.setStrokeWidth(1);
     tickerMarks.draw(0, bounds.y);
+
 		
     if(drawBPMGrid){
 		if(viewIsDirty){
@@ -96,7 +97,7 @@ void ofxTLTicker::draw(){
 //            int previewTimecodeX = ofClamp(screenX+5, bounds.getMinX(), bounds.getMaxX()-textW-5);
 			int previewTimecodeX;
 			if (timeline->getIsFrameBased()) {
-				text = ofToString( timeline->getTimecode().frameForMillis(hoverTime) );
+                text = ofToString(timeline->formatTime(hoverTime)) + " : " + ofToString(timeline->getTimecode().frameForMillis(hoverTime));
 			}
 			else{
 				text = timeline->formatTime(hoverTime);
@@ -106,7 +107,12 @@ void ofxTLTicker::draw(){
             ofDrawRectangle(previewTimecodeX-5, bounds.y+textH, textW, textH);		
             //draw playhead line
             ofSetColor(timeline->getColors().textColor);
-            timeline->getFont().drawString(text, previewTimecodeX, bounds.y+textH*2);
+            if(timeline->forceRetina){
+                timeline->getFont().draw(text,18,previewTimecodeX, bounds.y+textH*8);
+            }else{
+                timeline->getFont().drawString(text, previewTimecodeX, bounds.y+textH*2);
+            }
+
         }
 		
 		ofSetColor(timeline->getColors().highlightColor);
@@ -133,7 +139,12 @@ void ofxTLTicker::draw(){
         ofFill();
         ofDrawRectangle(timeCodeX-5, bounds.y, textW, textH);
         ofSetColor(timeline->getColors().textColor);
-        timeline->getFont().drawString(text, timeCodeX, bounds.y+textH);
+        if(timeline->forceRetina){
+            timeline->getFont().draw(text,18,timeCodeX, bounds.y+textH*8);
+        }else{
+            timeline->getFont().drawString(text, timeCodeX, bounds.y+textH);
+        }
+
     }
 	
     if(timeline->getIsPlaying()){
@@ -192,6 +203,7 @@ void ofxTLTicker::refreshTickMarks(){
     float millisPerPixel = durationInview / bounds.width;
 	
 	//expand to days
+    bool showFrames;
 	bool showMillis;
 	bool showSeconds;
 	bool showMinutes;
@@ -221,14 +233,17 @@ void ofxTLTicker::refreshTickMarks(){
     showMillis = false;
     showSeconds = true;
     showMinutes = true;
+    showFrames = false;
 	
 	unsigned long long lastMillis = screenXToMillis(bounds.x);
+    int lastFrame = lastMillis/40; // 25 FPS
 	int lastSecond = lastMillis/1000;
 	int lastMinute = lastSecond/60;
 	int lastHour = lastMinute/60;
 	for(int i = bounds.getMinX()+step; i < bounds.getMaxX(); i+=step){
 		int height = 0;
 		unsigned long long currentMillis = screenXToMillis(i);
+        int currentFrame = currentMillis/40;  // 25 FPS
 		int currentSecond = currentMillis/1000;
 		int currentMinute = currentSecond/60;
 		int currentHour = currentMinute/60;
@@ -238,6 +253,12 @@ void ofxTLTicker::refreshTickMarks(){
 			lastMillis = currentMillis;
 			x = millisToScreenX(currentMillis);
 		}
+
+        if(showFrames && currentFrame > lastFrame){
+            height = bounds.height*.25;
+            lastFrame = currentFrame;
+            x = millisToScreenX(lastFrame*40);
+        }
 
 		if(showSeconds && currentSecond > lastSecond){
 			height = bounds.height*.5;
@@ -275,9 +296,9 @@ void ofxTLTicker::updateBPMPoints(){
 	double halfMeasure = oneMeasure/2;
 	double quarterMeasure = halfMeasure/2;
 
-	bool showMeasure = false;
-	bool showHalfMeasure = false;
-	bool showQuarterMeasure = false;
+    bool showMeasure = false;
+    bool showHalfMeasure = false;
+    bool showQuarterMeasure = false;
 	showMeasure = screenXForTime(oneMeasure) - screenXForTime(0) > 20;
 	if(showMeasure){
 		showHalfMeasure = screenXForTime(halfMeasure) - screenXForTime(0) > 20;

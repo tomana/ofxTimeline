@@ -465,11 +465,7 @@ void ofxTLPage::addTrack(string trackName, ofxTLTrack* track){
 	newHeader->setTrack(track);
 	newHeader->name = trackName;
     newHeader->trackName = trackName;
-    if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
-        newHeader->setFooterHeight(footersAreHidden ? 0 : FOOTER_HEIGHT_RETINA);
-    }else{
-        newHeader->setFooterHeight(footersAreHidden ? 0 : FOOTER_HEIGHT);
-    }
+    newHeader->setFooterHeight(footersAreHidden ? 0 : FOOTER_HEIGHT);
 
 	newHeader->setup();
 
@@ -556,11 +552,7 @@ void ofxTLPage::expandFocusedTrack(){
 	
 	float staticSpacePerTrack = 0;
 	if(!headersAreMinimal)staticSpacePerTrack += headerHeight;
-    if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
-        if(!footersAreHidden) staticSpacePerTrack += FOOTER_HEIGHT_RETINA;
-    }else{
-        if(!footersAreHidden) staticSpacePerTrack += FOOTER_HEIGHT;
-    }
+    if(!footersAreHidden) staticSpacePerTrack += FOOTER_HEIGHT;
 	
 	float newHeight = trackContainerRect.height - headers.size()*staticSpacePerTrack;
 	ofRectangle trackRect = focusedTrack->getDrawRect();
@@ -583,11 +575,7 @@ void ofxTLPage::setExpandToHeight(float height){
 void ofxTLPage::evenlyDistributeTrackHeights(){
 	float addedHeightPerTrack = 0;
 	if(!headersAreMinimal)addedHeightPerTrack += headerHeight;
-    if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
-        if(!footersAreHidden) addedHeightPerTrack += FOOTER_HEIGHT_RETINA;
-    }else{
-        if(!footersAreHidden) addedHeightPerTrack += FOOTER_HEIGHT;
-    }
+    if(!footersAreHidden) addedHeightPerTrack += FOOTER_HEIGHT;
 	if(heightBeforeCollapse == 0){
 		heightBeforeCollapse = trackContainerRect.height - addedHeightPerTrack*headers.size();
 	}
@@ -722,16 +710,9 @@ void ofxTLPage::recalculateHeight(){
 			headers[i]->setFooterHeight(0);
 		}
 		else{
-            if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
-                currentY += thisHeader.height + trackRectangle.height + FOOTER_HEIGHT_RETINA;
-                totalHeight += thisHeader.height + trackRectangle.height + FOOTER_HEIGHT_RETINA;
-                headers[i]->setFooterHeight(FOOTER_HEIGHT_RETINA);
-            }else{
-                currentY += thisHeader.height + trackRectangle.height + FOOTER_HEIGHT;
-                totalHeight += thisHeader.height + trackRectangle.height + FOOTER_HEIGHT;
-                headers[i]->setFooterHeight(FOOTER_HEIGHT);
-            }
-
+            currentY += thisHeader.height + trackRectangle.height + FOOTER_HEIGHT;
+            totalHeight += thisHeader.height + trackRectangle.height + FOOTER_HEIGHT;
+            headers[i]->setFooterHeight(FOOTER_HEIGHT);
 		}
 
 		headers[i]->setDrawRect(thisHeader);

@@ -42,6 +42,15 @@ ofxTLBangs::~ofxTLBangs(){
 	disable();
 }
 
+float ofxTLBangs::getBang(){
+    float currentPercent = powf(ofMap(ofGetElapsedTimef() - lastBangTime, 0, .5, 1.0, 0,true), 2);
+    if(ofGetElapsedTimef() - lastBangTime < 0.04){
+        return 1.0f;
+    }else{
+        return 0.0f;
+    }
+}
+
 void ofxTLBangs::draw(){
         
     if(bounds.height < 2){
@@ -116,7 +125,7 @@ void ofxTLBangs::update(){
 //				ofLogNotice() << "fired bang with accuracy of " << (keyframes[i]->time - thisTimelinePoint) << endl;
 				bangFired(keyframes[i]);
 				lastBangTime = ofGetElapsedTimef();
-			}
+            }
 		}
 		lastTimelinePoint = thisTimelinePoint;
 //	}
@@ -132,7 +141,7 @@ void ofxTLBangs::bangFired(ofxTLKeyframe* key){
     args.currentPercent = timeline->getPercentComplete();
     args.currentFrame = timeline->getCurrentFrame();
     args.currentTime = timeline->getCurrentTime();
-    ofNotifyEvent(events().bangFired, args);    
+    ofNotifyEvent(events().bangFired, args);
 }
 
 void ofxTLBangs::playbackStarted(ofxTLPlaybackEventArgs& args){

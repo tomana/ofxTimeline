@@ -38,11 +38,7 @@ ofxTLTrackHeader::ofxTLTrackHeader(){
 	draggingSize = false;
 	hoveringFooter = false;
 
-    if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
-        footerHeight = FOOTER_HEIGHT_RETINA;
-    }else{
-        footerHeight = FOOTER_HEIGHT;
-    }
+    footerHeight = FOOTER_HEIGHT;
 
     nameField  = new ofxFontStash();
     nameField->setup("timeline/NewMedia Fett.ttf",1.0,2048,true,8,3.0f);
@@ -127,11 +123,11 @@ void ofxTLTrackHeader::draw(){
 
 	if(getTrack()->getDrawRect().height > 0 || bounds.height > 0){
         ofFill();
-        if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
+        if(getTimeline()->forceRetina){
             ofSetColor(255,255,255);
-            nameField->draw(trackName,26,bounds.x, bounds.y+28);
+            nameField->draw(trackName,16,bounds.x, bounds.y+14);
             ofSetColor(255,255,190);
-            nameField->draw("X",26,bounds.width-30,bounds.y+28);
+            nameField->draw("X",16,bounds.width-15,bounds.y+14);
         }else{
             ofSetColor(255,255,255);
             nameField->draw(trackName,12,bounds.x, bounds.y+14);
@@ -139,11 +135,10 @@ void ofxTLTrackHeader::draw(){
             nameField->draw("X",12,bounds.width-15,bounds.y+14);
         }
 
-
 	}
     ofNoFill();
 	ofSetColor(track->getTimeline()->getColors().outlineColor);
-	ofDrawRectangle(bounds);
+    ofDrawRectangle(bounds);
 
 	//draw grippy lines on the footer draggable element
 	if(footerHeight > 0){
