@@ -7,6 +7,10 @@
 #include "ofxEasing.h"
 #include "ofMain.h"
 
+#ifndef uint
+    typedef unsigned int uint;
+#endif
+
 class ofxTween{
 
 	public:
