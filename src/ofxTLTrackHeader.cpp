@@ -41,7 +41,7 @@ ofxTLTrackHeader::ofxTLTrackHeader(){
     footerHeight = FOOTER_HEIGHT;
 
     nameField  = new ofxFontStash();
-    nameField->setup("timeline/NewMedia Fett.ttf",1.0,2048,true,8,3.0f);
+    nameField->setup(ofToDataPath("timeline/NewMediaFett.ttf"),1.0,2048,true,8,3.0f);
 
 }
 

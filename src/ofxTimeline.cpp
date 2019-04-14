@@ -84,9 +84,9 @@ ofxTimeline::ofxTimeline()
 	curvesUseBinary(false),
 	headersAreEditable(false),
 	minimalHeaders(false),
-    defaultPalettePath("timeline/defaultColorPalette.png"),
+    defaultPalettePath(ofToDataPath("timeline/defaultColorPalette.png")),
 	//TODO: should be able to use bitmap font if need be
-    fontPath("timeline/NewMedia Fett.ttf"),
+    fontPath(ofToDataPath("timeline/NewMediaFett.ttf")),
 	fontSize(9),
 	footersHidden(false)
 {
@@ -1767,6 +1767,19 @@ ofxTLCurves* ofxTimeline::addCurves(string trackName, string xmlFileName, ofRang
 	return newCurves;
 }
 
+ofxTLNotes* ofxTimeline::addMIDI(string trackName){
+    string uniqueName = confirmedUniqueName(trackName);
+    return addMIDI(uniqueName, nameToXMLName(uniqueName));
+}
+
+ofxTLNotes* ofxTimeline::addMIDI(string trackName, string xmlFileName){
+    ofxTLNotes* newMidi = new ofxTLNotes();
+    newMidi->setCreatedByTimeline(true);
+    newMidi->setXMLFileName(xmlFileName);
+    addTrack(confirmedUniqueName(trackName), newMidi);
+    return newMidi;
+}
+
 float ofxTimeline::getValueAtPercent(string trackName, float atPercent){
 	if(!hasTrack(trackName)){
 		ofLogError("ofxTimeline -- Couldn't find track " + trackName);
@@ -1856,6 +1869,19 @@ ofxTLBangs* ofxTimeline::addBangs(string trackName, string xmlFileName){
 	newBangs->setXMLFileName(xmlFileName);
 	addTrack(confirmedUniqueName(trackName), newBangs);
 	return newBangs;
+}
+
+ofxTLSwitches* ofxTimeline::addSwitches(string trackName){
+    string uniqueName = confirmedUniqueName(trackName);
+    return addSwitches(uniqueName, nameToXMLName(uniqueName));
+}
+
+ofxTLSwitches* ofxTimeline::addSwitches(string trackName, string xmlFileName){
+    ofxTLSwitches* newSwitches = new ofxTLSwitches();
+    newSwitches->setCreatedByTimeline(true);
+    newSwitches->setXMLFileName(xmlFileName);
+    addTrack(confirmedUniqueName(trackName), newSwitches);
+    return newSwitches;
 }
 
 ofxTLColorTrack* ofxTimeline::addColors(string trackName){

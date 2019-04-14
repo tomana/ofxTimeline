@@ -53,9 +53,11 @@
 #include "ofxTLInOut.h"
 #include "ofxTLCurves.h"
 #include "ofxTLBangs.h"
+#include "ofxTLSwitches.h"
 #include "ofxTLColorTrack.h"
 #include "ofxTLColors.h"
 #include "ofxTLLFO.h"
+#include "ofxTLNotes.h"
 
 
 typedef struct {
@@ -339,12 +341,18 @@ class ofxTimeline : ofThread {
     ofxTLBangs* addBangs(string name);
 	ofxTLBangs* addBangs(string name, string xmlFileName);
 
+    ofxTLSwitches* addSwitches(string name);
+    ofxTLSwitches* addSwitches(string name, string xmlFileName);
+
 	ofxTLColorTrack* addColors(string name); //adds with the default palette
 	ofxTLColorTrack* addColors(string name, string xmlFileName); //adds with the default palette
 	ofxTLColorTrack* addColorsWithPalette(string name, ofImage& palette);
 	ofxTLColorTrack* addColorsWithPalette(string name, string palettePath);
 	ofxTLColorTrack* addColorsWithPalette(string name, string xmlFileName, ofImage& palette);
 	ofxTLColorTrack* addColorsWithPalette(string name, string xmlFileName, string palettePath);
+
+    ofxTLNotes* addMIDI(string name);
+    ofxTLNotes* addMIDI(string name, string xmlFileName);
 	
 	ofColor getColor(string name);
 	ofColor getColorAtPercent(string name, float percent);
