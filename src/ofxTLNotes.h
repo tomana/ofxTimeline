@@ -31,6 +31,7 @@
  */
 
 #pragma once
+
 #include "ofxTLSwitches.h"
 
 class ofxTLNote : public ofxTLSwitch {
