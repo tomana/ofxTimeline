@@ -46,7 +46,7 @@ ofxTLTicker::~ofxTLTicker(){
 
 void ofxTLTicker::draw(){
 	
-	if(bounds.height == 0){
+    if(bounds.height == 0 || !timeline->getFont().isLoaded()){
 		return;
 	}
 	
@@ -92,7 +92,7 @@ void ofxTLTicker::draw(){
 		ofSetColor(timeline->getColors().backgroundColor);
         float screenX = ofClamp(millisToScreenX(hoverTime), bounds.getMinX(), bounds.getMaxX());
 		text = timeline->formatTime(hoverTime);
-		textW = timeline->getFont().stringWidth(text)+3;
+        textW = timeline->getFont().stringWidth(text)+3;
         if(bounds.height > 2){
 //            int previewTimecodeX = ofClamp(screenX+5, bounds.getMinX(), bounds.getMaxX()-textW-5);
 			int previewTimecodeX;

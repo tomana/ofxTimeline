@@ -105,9 +105,9 @@ void ofxTLNotes::draw(){
     
     // Draw Row BGs
 	ofFill();
-	float rowHeight = bounds.height / (valueRange.span()+1);
+    float rowHeight = bounds.height / (valueRange.span()+1);
 	
-	for (int i = 0; i <= valueRange.span(); i++) {
+    for (int i = 0; i <= valueRange.span(); i++) {
 		// alternate row colors
 		if(i%2 == 1) {
 			ofSetColor(255, 255, 255, 50);
@@ -251,7 +251,7 @@ vector<float>* ofxTLNotes::getActiveNotes(){
             _activeNotes->at(whichRow) = 0.0f;
         }
     }
-
+    reverse(_activeNotes->begin(),_activeNotes->end());
     return _activeNotes;
 }
 
