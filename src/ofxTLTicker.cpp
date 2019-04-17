@@ -36,7 +36,7 @@
 ofxTLTicker::ofxTLTicker() {
 	dragging = false;
     hasBPM = false;
-	drawBPMGrid = false;
+    drawBPMGrid = false;
 	hoverTime = 0;
     playOnMouseReleased = false;
 }
@@ -236,14 +236,14 @@ void ofxTLTicker::refreshTickMarks(){
     showFrames = false;
 	
 	unsigned long long lastMillis = screenXToMillis(bounds.x);
-    int lastFrame = lastMillis/40; // 25 FPS
+    int lastFrame = lastMillis/(1000/timeline->getTimecode().getFPS());
 	int lastSecond = lastMillis/1000;
 	int lastMinute = lastSecond/60;
 	int lastHour = lastMinute/60;
 	for(int i = bounds.getMinX()+step; i < bounds.getMaxX(); i+=step){
 		int height = 0;
 		unsigned long long currentMillis = screenXToMillis(i);
-        int currentFrame = currentMillis/40;  // 25 FPS
+        int currentFrame = currentMillis/(1000/timeline->getTimecode().getFPS());
 		int currentSecond = currentMillis/1000;
 		int currentMinute = currentSecond/60;
 		int currentHour = currentMinute/60;
@@ -257,7 +257,7 @@ void ofxTLTicker::refreshTickMarks(){
         if(showFrames && currentFrame > lastFrame){
             height = bounds.height*.25;
             lastFrame = currentFrame;
-            x = millisToScreenX(lastFrame*40);
+            x = millisToScreenX(lastFrame*(1000/timeline->getTimecode().getFPS()));
         }
 
 		if(showSeconds && currentSecond > lastSecond){
@@ -296,8 +296,8 @@ void ofxTLTicker::updateBPMPoints(){
 	double halfMeasure = oneMeasure/2;
 	double quarterMeasure = halfMeasure/2;
 
-    bool showMeasure = false;
-    bool showHalfMeasure = false;
+    bool showMeasure = true;
+    bool showHalfMeasure = true;
     bool showQuarterMeasure = false;
 	showMeasure = screenXForTime(oneMeasure) - screenXForTime(0) > 20;
 	if(showMeasure){
