@@ -297,7 +297,7 @@ void ofxTLTicker::updateBPMPoints(){
 	double quarterMeasure = halfMeasure/2;
 
     bool showMeasure = true;
-    bool showHalfMeasure = true;
+    bool showHalfMeasure = false;
     bool showQuarterMeasure = false;
 	showMeasure = screenXForTime(oneMeasure) - screenXForTime(0) > 20;
 	if(showMeasure){
