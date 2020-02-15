@@ -44,9 +44,7 @@ ofxTLCurves::ofxTLCurves(){
 float ofxTLCurves::interpolateValueForKeys(ofxTLKeyframe* start,ofxTLKeyframe* end, unsigned long long sampleTime){
 	ofxTLTweenKeyframe* tweenKeyStart = (ofxTLTweenKeyframe*)start;
 	ofxTLTweenKeyframe* tweenKeyEnd = (ofxTLTweenKeyframe*)end;
-	return ofxTween::map(sampleTime, tweenKeyStart->time, tweenKeyEnd->time,
-						 			 tweenKeyStart->value, tweenKeyEnd->value,
-						 false, *tweenKeyStart->easeFunc->easing, tweenKeyStart->easeType->type);
+    return ofxeasing::map(sampleTime, tweenKeyStart->time, tweenKeyEnd->time,tweenKeyStart->value, tweenKeyEnd->value, tweenKeyStart->easeFunc->funcIN);
 }
 
 string ofxTLCurves::getTrackType(){
@@ -124,10 +122,10 @@ void ofxTLCurves::drawModalContent(){
 		ofPushMatrix();
 		ofTranslate(easingWindowPosition.x + easingFunctions[i]->bounds.x,
 					easingWindowPosition.y + easingFunctions[i]->bounds.y);
-		if(tweenFrame->easeType->type == ofxTween::easeIn){
+        if(tweenFrame->easeType->type == ofxeasing::Type::In){
 			easingFunctions[i]->easeInPreview.draw();
 		}
-		else if(tweenFrame->easeType->type == ofxTween::easeOut){
+        else if(tweenFrame->easeType->type == ofxeasing::Type::Out){
 			easingFunctions[i]->easeOutPreview.draw();
 		}
 		else {
@@ -263,74 +261,96 @@ void ofxTLCurves::initializeEasings(){
 	//FUNCTIONS ----
 	EasingFunction* ef;
 	ef = new EasingFunction();
-	ef->easing = new ofxEasingLinear();
 	ef->name = "linear";
+    ef->funcIN = ofxeasing::linear::easeIn;
+    ef->funcOUT = ofxeasing::linear::easeOut;
+    ef->funcINOUT = ofxeasing::linear::easeInOut;
 	easingFunctions.push_back(ef);
 
 	ef = new EasingFunction();
-	ef->easing = new ofxEasingSine();
 	ef->name = "sine";
+    ef->funcIN = ofxeasing::sine::easeIn;
+    ef->funcOUT = ofxeasing::sine::easeOut;
+    ef->funcINOUT = ofxeasing::sine::easeInOut;
 	easingFunctions.push_back(ef);
 
 	ef = new EasingFunction();
-	ef->easing = new ofxEasingCirc();
 	ef->name = "circular";
+    ef->funcIN = ofxeasing::circ::easeIn;
+    ef->funcOUT = ofxeasing::circ::easeOut;
+    ef->funcINOUT = ofxeasing::circ::easeInOut;
 	easingFunctions.push_back(ef);
 
 	ef = new EasingFunction();
-	ef->easing = new ofxEasingQuad();
 	ef->name = "quadratic";
+    ef->funcIN = ofxeasing::quad::easeIn;
+    ef->funcOUT = ofxeasing::quad::easeOut;
+    ef->funcINOUT = ofxeasing::quad::easeInOut;
 	easingFunctions.push_back(ef);
 
 	ef = new EasingFunction();
-	ef->easing = new ofxEasingCubic();
 	ef->name = "cubic";
+    ef->funcIN = ofxeasing::cubic::easeIn;
+    ef->funcOUT = ofxeasing::cubic::easeOut;
+    ef->funcINOUT = ofxeasing::cubic::easeInOut;
 	easingFunctions.push_back(ef);
 
 	ef = new EasingFunction();
-	ef->easing = new ofxEasingQuart();
 	ef->name = "quartic";
+    ef->funcIN = ofxeasing::quart::easeIn;
+    ef->funcOUT = ofxeasing::quart::easeOut;
+    ef->funcINOUT = ofxeasing::quart::easeInOut;
 	easingFunctions.push_back(ef);
 
 	ef = new EasingFunction();
-	ef->easing = new ofxEasingQuint();
 	ef->name = "quintic";
+    ef->funcIN = ofxeasing::quint::easeIn;
+    ef->funcOUT = ofxeasing::quint::easeOut;
+    ef->funcINOUT = ofxeasing::quint::easeInOut;
 	easingFunctions.push_back(ef);
 
 	ef = new EasingFunction();
-	ef->easing = new ofxEasingExpo();
 	ef->name = "exponential";
+    ef->funcIN = ofxeasing::exp::easeIn;
+    ef->funcOUT = ofxeasing::exp::easeOut;
+    ef->funcINOUT = ofxeasing::exp::easeInOut;
 	easingFunctions.push_back(ef);
 
 	ef = new EasingFunction();
-	ef->easing = new ofxEasingBack();
 	ef->name = "back";
+    ef->funcIN = ofxeasing::back::easeIn;
+    ef->funcOUT = ofxeasing::back::easeOut;
+    ef->funcINOUT = ofxeasing::back::easeInOut;
 	easingFunctions.push_back(ef);
 
 	ef = new EasingFunction();
-	ef->easing = new ofxEasingBounce();
 	ef->name = "bounce";
+    ef->funcIN = ofxeasing::bounce::easeIn;
+    ef->funcOUT = ofxeasing::bounce::easeOut;
+    ef->funcINOUT = ofxeasing::bounce::easeInOut;
 	easingFunctions.push_back(ef);
 
 	ef = new EasingFunction();
-	ef->easing = new ofxEasingElastic();
 	ef->name = "elastic";
+    ef->funcIN = ofxeasing::elastic::easeIn;
+    ef->funcOUT = ofxeasing::elastic::easeOut;
+    ef->funcINOUT = ofxeasing::elastic::easeInOut;
 	easingFunctions.push_back(ef);
 
 	///TYPES -------
 	EasingType* et;
 	et = new EasingType();
-	et->type = ofxTween::easeIn;
+    et->type = ofxeasing::Type::In;
 	et->name = "ease in";
 	easingTypes.push_back(et);
 
 	et = new EasingType();
-	et->type = ofxTween::easeOut;
+    et->type = ofxeasing::Type::Out;
 	et->name = "ease out";
 	easingTypes.push_back(et);
 
 	et = new EasingType();
-	et->type = ofxTween::easeInOut;
+    et->type = ofxeasing::Type::InOut;
 	et->name = "ease in-out";
 	easingTypes.push_back(et);
 
@@ -353,11 +373,11 @@ void ofxTLCurves::initializeEasings(){
 		//build preview
 		for(int p = 1; p < tweenBoxWidth-1; p++){
 			float percent;
-			percent = ofxTween::map(1.0*p/tweenBoxWidth, 0, 1.0, tweenBoxHeight-5, 5, false, *easingFunctions[i]->easing, ofxTween::easeIn);
+            percent = ofxeasing::map(1.0*p/tweenBoxWidth, 0, 1.0, tweenBoxHeight-5, 5, easingFunctions[i]->funcIN);
 			easingFunctions[i]->easeInPreview.addVertex(ofPoint(p, percent));
-			percent = ofxTween::map(1.0*p/tweenBoxWidth, 0, 1.0, tweenBoxHeight-5, 5, false, *easingFunctions[i]->easing, ofxTween::easeOut);
+            percent = ofxeasing::map(1.0*p/tweenBoxWidth, 0, 1.0, tweenBoxHeight-5, 5, easingFunctions[i]->funcOUT);
 			easingFunctions[i]->easeOutPreview.addVertex(ofPoint(p, percent));
-			percent = ofxTween::map(1.0*p/tweenBoxWidth, 0, 1.0, tweenBoxHeight-5, 5, false, *easingFunctions[i]->easing, ofxTween::easeInOut);
+            percent = ofxeasing::map(1.0*p/tweenBoxWidth, 0, 1.0, tweenBoxHeight-5, 5, easingFunctions[i]->funcINOUT);
 			easingFunctions[i]->easeInOutPreview.addVertex(ofPoint(p, percent));
 		}
 
