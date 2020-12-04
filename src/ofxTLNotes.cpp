@@ -120,7 +120,7 @@ void ofxTLNotes::draw(){
         if(pitchIsOn(whichRow)){
             ofSetColor(245);
             if(timeline->forceRetina){
-                timeline->getFont().draw(_notesNotation[i],18,bounds.x, bounds.y + i * rowHeight);
+                timeline->getFont().drawString(_notesNotation[i],bounds.x, bounds.y + i * rowHeight);
             }else{
                 timeline->getFont().drawString(_notesNotation[i],bounds.x, bounds.y + i * rowHeight);
             }

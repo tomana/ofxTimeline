@@ -33,7 +33,6 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxFontStash.h"
 #include "ofxTLTrack.h"
 
 class ofxTLTrackHeader : public ofxTLTrack
@@ -70,7 +69,7 @@ class ofxTLTrackHeader : public ofxTLTrack
 	
   protected:
 	ofxTLTrack* track;
-    ofxFontStash* nameField;
+    ofTrueTypeFont* nameField;
 
 	float footerHeight;
 	void recalculateFooter();

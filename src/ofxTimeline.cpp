@@ -321,7 +321,7 @@ void ofxTimeline::setShowZoomer(bool shouldShowZoomer){
 }
 
 void ofxTimeline::setupFont(){
-    font.loadFont(fontPath,fontSize,1.0,2048);
+    font.load(fontPath,fontSize);
 }
 
 void ofxTimeline::setupFont(string newFontPath, int newFontSize){

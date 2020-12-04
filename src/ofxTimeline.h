@@ -35,11 +35,10 @@
 #include "ofMain.h"
 
 #ifndef OFX_TIMELINE_FONT_RENDERER
-#define OFX_TIMELINE_FONT_RENDERER ofxFontStash
+#define OFX_TIMELINE_FONT_RENDERER ofTrueTypeFont
 #endif
 
 //external addons
-#include "ofxFontStash.h"
 #include "ofRange.h"
 #include "ofxMSATimer.h"
 #include "ofxTimecode.h"

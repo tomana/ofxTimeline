@@ -102,15 +102,15 @@ void ofxTLLFO::drawModalContent(){
 	ofSetColor(timeline->getColors().textColor, 200);
     float lineHeight = timeline->getFont().getLineHeight()*12;
     if(timeline->forceRetina){
-        timeline->getFont().draw("sine", 14, sineTypeRect.x+10, sineTypeRect.y+lineHeight);
-        timeline->getFont().draw("noise", 14, noiseTypeRect.x+10, noiseTypeRect.y+lineHeight);
-        timeline->getFont().draw("phase: " + ofToString(lfokey->phaseShift, 1), 14, phaseShiftRect.x+10, phaseShiftRect.y+lineHeight);
-        timeline->getFont().draw("amplitude: " + ofToString(lfokey->amplitude, 4), 14, amplitudeRect.x+10, amplitudeRect.y+lineHeight);
-        timeline->getFont().draw("frequency: " + ofToString(lfokey->frequency, 1), 14, frequencyRect.x+10, frequencyRect.y+lineHeight);
-        timeline->getFont().draw("seed: " + ofToString(lfokey->seed, 1), 14, seedRect.x+10, seedRect.y+lineHeight);
-        timeline->getFont().draw("center: " + ofToString(ofMap(lfokey->center, 0, 4, valueRange.min, valueRange.max), 4), 14, centerRect.x+10, centerRect.y+lineHeight);
-        timeline->getFont().draw("interpolate", 14, interpolateRect.x+10, interpolateRect.y+lineHeight);
-        timeline->getFont().draw("expinterpolate", 14, expInterpolateRect.x+10, expInterpolateRect.y+lineHeight);
+        timeline->getFont().drawString("sine", sineTypeRect.x+10, sineTypeRect.y+lineHeight);
+        timeline->getFont().drawString("noise", noiseTypeRect.x+10, noiseTypeRect.y+lineHeight);
+        timeline->getFont().drawString("phase: " + ofToString(lfokey->phaseShift, 1), phaseShiftRect.x+10, phaseShiftRect.y+lineHeight);
+        timeline->getFont().drawString("amplitude: " + ofToString(lfokey->amplitude, 4), amplitudeRect.x+10, amplitudeRect.y+lineHeight);
+        timeline->getFont().drawString("frequency: " + ofToString(lfokey->frequency, 1), frequencyRect.x+10, frequencyRect.y+lineHeight);
+        timeline->getFont().drawString("seed: " + ofToString(lfokey->seed, 1), seedRect.x+10, seedRect.y+lineHeight);
+        timeline->getFont().drawString("center: " + ofToString(ofMap(lfokey->center, 0, 4, valueRange.min, valueRange.max), 4), centerRect.x+10, centerRect.y+lineHeight);
+        timeline->getFont().drawString("interpolate", interpolateRect.x+10, interpolateRect.y+lineHeight);
+        timeline->getFont().drawString("expinterpolate", expInterpolateRect.x+10, expInterpolateRect.y+lineHeight);
     }else{
         timeline->getFont().drawString("sine", sineTypeRect.x+10, sineTypeRect.y+lineHeight);
         timeline->getFont().drawString("noise", noiseTypeRect.x+10, noiseTypeRect.y+lineHeight);

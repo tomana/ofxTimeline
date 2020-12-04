@@ -32,7 +32,6 @@
 
 #pragma once 
 #include "ofxTLKeyframes.h"
-#include "ofxTextInputField.h"
 
 class ofxTLSwitch : public ofxTLKeyframe {
   public:
@@ -46,7 +45,6 @@ class ofxTLSwitch : public ofxTLKeyframe {
     long edgeDragOffset;
     ofRectangle display;
     
-    ofxTextInputField textField;
     ofRectangle textFieldDisplay;
 };
 

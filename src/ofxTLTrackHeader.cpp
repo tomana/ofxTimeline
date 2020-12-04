@@ -40,8 +40,8 @@ ofxTLTrackHeader::ofxTLTrackHeader(){
 
     footerHeight = FOOTER_HEIGHT;
 
-    nameField  = new ofxFontStash();
-    nameField->setup(ofToDataPath("timeline/NewMediaFett.ttf"),1.0,2048,true,8,3.0f);
+    nameField  = new ofTrueTypeFont();
+    nameField->load(ofToDataPath("timeline/NewMediaFett.ttf"),10);
 
 }
 
@@ -125,14 +125,14 @@ void ofxTLTrackHeader::draw(){
         ofFill();
         if(getTimeline()->forceRetina){
             ofSetColor(255,255,255);
-            nameField->draw(trackName,16,bounds.x + 20, bounds.y+14);
+            nameField->drawString(trackName,bounds.x + 20, bounds.y+14);
             ofSetColor(255,255,190);
-            nameField->draw("X",16,bounds.width-15,bounds.y+14);
+            nameField->drawString("X",bounds.width-15,bounds.y+14);
         }else{
             ofSetColor(255,255,255);
-            nameField->draw(trackName,12,bounds.x + 10, bounds.y+14);
+            nameField->drawString(trackName,bounds.x + 10, bounds.y+14);
             ofSetColor(255,255,190);
-            nameField->draw("X",12,bounds.width-15,bounds.y+14);
+            nameField->drawString("X",bounds.width-15,bounds.y+14);
         }
 
 	}

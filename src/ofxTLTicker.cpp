@@ -108,7 +108,7 @@ void ofxTLTicker::draw(){
             //draw playhead line
             ofSetColor(timeline->getColors().textColor);
             if(timeline->forceRetina){
-                timeline->getFont().draw(text,18,previewTimecodeX, bounds.y+textH*8);
+                timeline->getFont().drawString(text,previewTimecodeX, bounds.y+textH*8);
             }else{
                 timeline->getFont().drawString(text, previewTimecodeX, bounds.y+textH*2);
             }
@@ -140,7 +140,7 @@ void ofxTLTicker::draw(){
         ofDrawRectangle(timeCodeX-5, bounds.y, textW, textH);
         ofSetColor(timeline->getColors().textColor);
         if(timeline->forceRetina){
-            timeline->getFont().draw(text,18,timeCodeX, bounds.y+textH*8);
+            timeline->getFont().drawString(text,timeCodeX, bounds.y+textH*8);
         }else{
             timeline->getFont().drawString(text, timeCodeX, bounds.y+textH);
         }

@@ -88,7 +88,7 @@ void ofxTLCurves::drawModalContent(){
         ofSetColor(200, 200, 200);
 
         if(timeline->forceRetina){
-            timeline->getFont().draw(easingTypes[i]->name, 14,
+            timeline->getFont().drawString(easingTypes[i]->name,
                                            easingWindowPosition.x + easingTypes[i]->bounds.x+11,
                                            easingWindowPosition.y + easingTypes[i]->bounds.y+10);
         }else{

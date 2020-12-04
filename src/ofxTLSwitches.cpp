@@ -75,7 +75,7 @@ void ofxTLSwitches::switchStateChanged(ofxTLKeyframe* key){
     args.sender = timeline;
     args.track = this;
     args.on = isOn();
-    args.switchName = ((ofxTLSwitch*)key)->textField.text;
+    //args.switchName = ((ofxTLSwitch*)key)->textField.text;
     ofNotifyEvent(events().switched, args);
 }
 
@@ -173,13 +173,13 @@ void ofxTLSwitches::draw(){
 			
 			ofSetColor(timeline->getColors().backgroundColor);
 			int textHeight = bounds.y + 10 + ( (20*i) % int(MAX(bounds.height-15, 15)));
-			switchKey->textFieldDisplay = ofRectangle(MIN(screenX+3, bounds.getMaxX() - switchKey->textField.bounds.width),textHeight-10, 100, 15);
+            switchKey->textFieldDisplay = ofRectangle(MIN(screenX+3, bounds.getMaxX() - switchKey->textFieldDisplay.width),textHeight-10, 100, 15);
             //ofDrawRectangle(switchKey->textFieldDisplay);
 			
 			ofSetColor(timeline->getColors().textColor);
 			
-			switchKey->textField.bounds.x = switchKey->textFieldDisplay.x;
-			switchKey->textField.bounds.y = switchKey->textFieldDisplay.y;
+            //switchKey->textField.bounds.x = switchKey->textFieldDisplay.x;
+            //switchKey->textField.bounds.y = switchKey->textFieldDisplay.y;
             //switchKey->textField.draw();
 		}
 	}
@@ -367,7 +367,7 @@ void ofxTLSwitches::unselectAll(){
     for(int i = 0; i < keyframes.size(); i++){
         ofxTLSwitch* switchKey = (ofxTLSwitch*)keyframes[i];
         switchKey->startSelected = switchKey->endSelected = false;
-        switchKey->textField.disable();
+        //switchKey->textField.disable();
     }
 }
 
@@ -494,17 +494,17 @@ void ofxTLSwitches::mouseReleased(ofMouseEventArgs& args, long millis){
     if(enteringText){
 		//if we clicked outside of the rect, definitely deslect everything
         if(clickedTextField == NULL && !ofGetKeyPressed(OF_KEY_SHIFT)){
-			for(int i = 0; i < selectedKeyframes.size(); i++){
+            /*for(int i = 0; i < selectedKeyframes.size(); i++){
 				((ofxTLSwitch*)selectedKeyframes[i])->textField.endEditing();
-			}
+            }*/
 			enteringText = false;
 		}
 		//otherwise check if still have a selection
 		else{
 			enteringText = false;
-			for(int i = 0; i < selectedKeyframes.size(); i++){
+            /*for(int i = 0; i < selectedKeyframes.size(); i++){
                 enteringText = enteringText || ((ofxTLSwitch*)selectedKeyframes[i])->textField.getIsEditing();
-			}
+            }*/
 		}
         
 		if(!enteringText){
@@ -564,7 +564,7 @@ int ofxTLSwitches::getSelectedItemCount(){
 
 ofxTLKeyframe* ofxTLSwitches::newKeyframe(){
     ofxTLSwitch* switchKey = new ofxTLSwitch();
-    switchKey->textField.setFont(timeline->getFont());
+    //switchKey->textField.setFont(timeline->getFont());
 
     //in the case of a click, start at the mouse positiion
     //if this is being restored from XML, the next call to restore will override this with what is in the XML
@@ -581,7 +581,7 @@ ofxTLKeyframe* ofxTLSwitches::newKeyframe(){
 void ofxTLSwitches::restoreKeyframe(ofxTLKeyframe* key, ofxXmlSettings& xmlStore){
     //pull the saved time into min, and our custom max value
     ofxTLSwitch* switchKey = (ofxTLSwitch*)key;
-    switchKey->textField.text = xmlStore.getValue("switchName", "");
+    //switchKey->textField.text = xmlStore.getValue("switchName", "");
 
     switchKey->timeRange.min = switchKey->time;
     //
@@ -602,18 +602,18 @@ void ofxTLSwitches::restoreKeyframe(ofxTLKeyframe* key, ofxXmlSettings& xmlStore
 void ofxTLSwitches::storeKeyframe(ofxTLKeyframe* key, ofxXmlSettings& xmlStore){
     //push the time range into X/Y
     ofxTLSwitch* switchKey = (ofxTLSwitch* )key;
-    xmlStore.addValue("switchName", switchKey->textField.text);
+    //xmlStore.addValue("switchName", switchKey->textField.text);
     switchKey->time = switchKey->timeRange.min;
 	xmlStore.addValue("max", timeline->getTimecode().timecodeForMillis(switchKey->timeRange.max));
 }
 
 void ofxTLSwitches::willDeleteKeyframe(ofxTLKeyframe* keyframe){
-	ofxTLSwitch* switchKey = (ofxTLSwitch* )keyframe;
+    /*ofxTLSwitch* switchKey = (ofxTLSwitch* )keyframe;
     if(switchKey->textField.getIsEditing()){
 		timeline->dismissedModalContent();
 		timeline->flagTrackModified(this);
 	}
-	switchKey->textField.disable();
+    switchKey->textField.disable();*/
 }
 
 ofxTLKeyframe* ofxTLSwitches::keyframeAtScreenpoint(ofVec2f p){
