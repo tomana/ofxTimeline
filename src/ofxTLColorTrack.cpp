@@ -99,16 +99,20 @@ void ofxTLColorTrack::draw(){
 
 		if(keyframes[i] == hoverKeyframe){
 			ofSetColor(timeline->getColors().highlightColor);
-			ofSetLineWidth(3);
-		}
-		else if(isKeyframeSelected(keyframes[i])){
+		}else if(isKeyframeSelected(keyframes[i])){
 			ofSetColor(timeline->getColors().textColor);
-			ofSetLineWidth(2);
-		}
-		else{
+		}else{
 			ofSetColor(s->color.getInverted());
 		}
-        ofDrawLine(c, glm::vec3(screenX, bounds.getMaxY(),0));
+
+        ofFill();
+        if(getTimeline()->forceRetina){
+            ofDrawRectangle(c.x-4,c.y,8,bounds.height-10);
+        }else{
+            ofDrawRectangle(c.x-2,c.y,4,bounds.height-10);
+        }
+        //ofDrawLine(c, glm::vec3(screenX, bounds.getMaxY(),0));
+
 		ofPopStyle();
 	}
 }

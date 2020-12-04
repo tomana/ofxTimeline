@@ -100,7 +100,7 @@ void ofxTLLFO::drawModalContent(){
     
 	
 	ofSetColor(timeline->getColors().textColor, 200);
-    float lineHeight = timeline->getFont().getLineHeight()*12;
+    float lineHeight = timeline->getFont().getLineHeight();
     if(timeline->forceRetina){
         timeline->getFont().drawString("sine", sineTypeRect.x+10, sineTypeRect.y+lineHeight);
         timeline->getFont().drawString("noise", noiseTypeRect.x+10, noiseTypeRect.y+lineHeight);
@@ -157,22 +157,25 @@ void ofxTLLFO::draw(){
 		if(isKeyframeIsInBounds(keyframes[i])){
 			//we know the type because we created it in newKeyframe()
 			//so we can safely cast
-			ofxTLLFOKey* lfoKey = (ofxTLLFOKey*)keyframes[i];
+            //ofxTLLFOKey* lfoKey = (ofxTLLFOKey*)keyframes[i];
 
 			if(isKeyframeSelected(keyframes[i])){
-				ofSetLineWidth(2);
 				ofSetColor(timeline->getColors().textColor);
 			}
 			else if(keyframes[i] == hoverKeyframe){
-				ofSetLineWidth(4);
 				ofSetColor(timeline->getColors().highlightColor);
 			}
 			else{
-				ofSetLineWidth(4);
 				ofSetColor(timeline->getColors().keyColor);
 			}
 			float screenX = millisToScreenX(keyframes[i]->time);
-            ofDrawLine(screenX, bounds.y, screenX, bounds.y+bounds.height);
+
+            if(getTimeline()->forceRetina){
+                ofDrawRectangle(screenX, bounds.y,8,bounds.height);
+            }else{
+                ofDrawRectangle(screenX, bounds.y,4,bounds.height);
+            }
+            //ofDrawLine(screenX, bounds.y, screenX, bounds.y+bounds.height);
 		}
 	}
 	

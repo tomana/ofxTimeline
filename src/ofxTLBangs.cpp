@@ -65,7 +65,7 @@ void ofxTLBangs::draw(){
 	if(currentPercent > 0){
 		ofSetColor(timeline->getColors().disabledColor, 100*(currentPercent));
 		ofFill();
-		ofDrawRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+        ofDrawRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 	
     for(int i = keyframes.size()-1; i >= 0; i--){
@@ -75,19 +75,22 @@ void ofxTLBangs::draw(){
         //int screenX = normalizedXtoScreenX(keyframes[i]->position.x);
         int screenX = millisToScreenX(keyframes[i]->time);
         if(isKeyframeSelected(keyframes[i])){
-            ofSetLineWidth(2);
             ofSetColor(timeline->getColors().textColor);
         }
         else if(keyframes[i] == hoverKeyframe){
-            ofSetLineWidth(4);
             ofSetColor(timeline->getColors().highlightColor);
         }
         else{
-            ofSetLineWidth(4);
             ofSetColor(timeline->getColors().keyColor);
         }
         
-        ofDrawLine(screenX, bounds.y, screenX, bounds.y+bounds.height);
+        if(getTimeline()->forceRetina){
+            ofDrawRectangle(screenX, bounds.y,8,bounds.height);
+        }else{
+            ofDrawRectangle(screenX, bounds.y,4,bounds.height);
+        }
+
+        //ofDrawLine(screenX, bounds.y, screenX, bounds.y+bounds.height);
     }
     ofPopStyle();
 
