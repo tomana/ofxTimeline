@@ -278,7 +278,7 @@ void ofxTLPage::mouseDragged(ofMouseEventArgs& args, long millis){
 			//int closestSnapPoint;
 	//            for(int i = 0; i < snapPoints.size(); i++){
 			for(it = snapPoints.begin(); it != snapPoints.end(); it++){
-				long pointDifference = millis - *it;
+                long pointDifference = millis - millisecondDragOffset - *it;
 				long distanceToPoint = abs(pointDifference);
 				if(distanceToPoint < closestSnapDistance){
 	//                    closestSnapPoint = i;
