@@ -344,7 +344,7 @@ bool ofxTLSwitches::mousePressed(ofMouseEventArgs& args, long millis){
     	//normal selection from above
 	    ofxTLKeyframes::mousePressed(args, millis);
         if(isActive()){
-	        timeline->cancelSnapping(); //don't snap when dragging the whole switch
+            //timeline->cancelSnapping(); //don't snap when dragging the whole switch
         }
     }
     
