@@ -324,7 +324,12 @@ void ofxTLKeyframes::save(){
 		string xmlRep = getXMLStringForKeyframes(keyframes);
 		ofxXmlSettings savedkeyframes;
 		savedkeyframes.loadFromBuffer(xmlRep);
-		savedkeyframes.saveFile(xmlFileName);
+#if OF_VERSION_MAJOR == 0 && OF_VERSION_MINOR < 12
+            savedkeyframes.saveFile(xmlFileName);
+#else
+            savedkeyframes.save(xmlFileName);
+#endif
+
 	}
 }
 

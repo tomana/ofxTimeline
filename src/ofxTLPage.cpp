@@ -795,7 +795,12 @@ void ofxTLPage::saveTrackPositions(){
 	string xmlPageName = name;
 	ofStringReplace(xmlPageName," ", "_");
 	string trackPositionsFile = ofToDataPath(timeline->getWorkingFolder() + timeline->getName() + "_" +  xmlPageName + "_trackPositions.xml");
-	trackPositions.saveFile( trackPositionsFile );
+#if OF_VERSION_MAJOR == 0 && OF_VERSION_MINOR < 12
+            trackPositions.saveFile( trackPositionsFile );
+#else
+            trackPositions.save( trackPositionsFile );
+#endif
+
 }
 
 #pragma mark getters/setters

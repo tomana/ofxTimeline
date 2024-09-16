@@ -124,7 +124,12 @@ void ofxTLZoomer::save() {
 	savedSettings.addValue("min", currentViewRange.min);
 	savedSettings.addValue("max", currentViewRange.max);
 	savedSettings.popTag();//zoom
-	savedSettings.saveFile(xmlFileName);
+#if OF_VERSION_MAJOR == 0 && OF_VERSION_MINOR < 12
+            savedSettings.saveFile(xmlFileName);
+#else
+            savedSettings.save(xmlFileName);
+#endif
+
 }
 
 void ofxTLZoomer::mouseMoved(ofMouseEventArgs& args) {

@@ -182,6 +182,11 @@ void ofxTLInOut::save(){
 	savedSettings.addValue("in", timeline->getInOutRange().min);
 	savedSettings.addValue("out", timeline->getInOutRange().max);
 	savedSettings.popTag();//zoom
-	savedSettings.saveFile(xmlFileName);    
+#if OF_VERSION_MAJOR == 0 && OF_VERSION_MINOR < 12
+            savedSettings.saveFile(xmlFileName);
+#else
+            savedSettings.save(xmlFileName);
+#endif
+
 }
 
