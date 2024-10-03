@@ -251,7 +251,12 @@ void ofxTLKeyframes::load(){
 	}
 	else{
 		ofxXmlSettings savedkeyframes;
-		if(!savedkeyframes.loadFile(xmlFileName)){
+#if OF_VERSION_MAJOR == 0 && OF_VERSION_MINOR < 12
+        if(!savedkeyframes.loadFile(xmlFileName)){
+#else
+        if(!savedkeyframes.load(xmlFileName)){
+#endif
+
 //			ofLog(OF_LOG_NOTICE, "ofxTLKeyframes --- couldn't load xml file " + xmlFileName);
 			return;
 		}

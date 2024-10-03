@@ -38,8 +38,12 @@ void ofxTLColors::load() {
 
 void ofxTLColors::load(string colorFile) {
 	ofxXmlSettings settings;
-	if(!settings.loadFile( colorFile )){
-	//if(!settings.loadFile( ofToDataPath(colorFile, true) )){
+
+#if OF_VERSION_MAJOR == 0 && OF_VERSION_MINOR < 12
+    if(!settings.loadFile( colorFile )){
+#else
+    if(!settings.load( colorFile )){
+#endif
         ofLogWarning("ofxTLColors  -- Couldn't load color file " + colorFile );
     }
 		

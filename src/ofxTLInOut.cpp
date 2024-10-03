@@ -163,7 +163,12 @@ void ofxTLInOut::mouseReleased(ofMouseEventArgs& args){
 void ofxTLInOut::load(){
     
 	ofxXmlSettings settings;
-	if(!settings.loadFile(xmlFileName)){
+#if OF_VERSION_MAJOR == 0 && OF_VERSION_MINOR < 12
+    if(!settings.loadFile(xmlFileName)){
+#else
+    if(!settings.load(xmlFileName)){
+#endif
+
 		ofLog(OF_LOG_VERBOSE, "ofxTLInOut -- couldn't load in/out settings file " + xmlFileName);
         timeline->setInOutRange(ofRange(0,1.0));
 		return;

@@ -102,8 +102,14 @@ void ofxTLZoomer::load() {
 	notifyZoomStarted();
 	
 	ofxXmlSettings settings;
-	if(!settings.loadFile(xmlFileName)){
-		ofLog(OF_LOG_VERBOSE, "ofxTLZoomer -- couldn't load zoom settings file " + xmlFileName);
+#if OF_VERSION_MAJOR == 0 && OF_VERSION_MINOR < 12
+    if(!settings.loadFile(xmlFileName)){
+#else
+    if(!settings.load(xmlFileName)){
+#endif
+
+        string tmpstr = "ofxTLZoomer -- couldn't load zoom settings file";
+        ofLog(OF_LOG_VERBOSE,"%s %s", tmpstr.c_str(), xmlFileName.c_str());
         currentViewRange = ofRange(0., 1.0);
 		return;
 	}
