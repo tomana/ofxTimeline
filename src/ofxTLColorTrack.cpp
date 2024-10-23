@@ -106,11 +106,7 @@ void ofxTLColorTrack::draw(){
 		}
 
         ofFill();
-        if(getTimeline()->forceRetina){
-            ofDrawRectangle(c.x-4,c.y,8,bounds.height-10);
-        }else{
-            ofDrawRectangle(c.x-2,c.y,4,bounds.height-10);
-        }
+        ofDrawRectangle(c.x-(2*getTimeline()->retinaScale),c.y,4*getTimeline()->retinaScale,bounds.height-10);
         //ofDrawLine(c, glm::vec3(screenX, bounds.getMaxY(),0));
 
 		ofPopStyle();
@@ -147,11 +143,7 @@ void ofxTLColorTrack::drawModalContent(){
 		ofSetColor(255);
 
 		ofxTLColorSample* selectedSample = (ofxTLColorSample*)selectedKeyframe;
-        if(timeline->forceRetina){
-            colorWindow = ofRectangle( millisToScreenX(selectedKeyframe->time), bounds.y+bounds.height, 400, 400);
-        }else{
-            colorWindow = ofRectangle( millisToScreenX(selectedKeyframe->time), bounds.y+bounds.height, 200, 200);
-        }
+        colorWindow = ofRectangle( millisToScreenX(selectedKeyframe->time), bounds.y+bounds.height, 200*getTimeline()->retinaScale, 200*getTimeline()->retinaScale);
 
 		if(colorWindow.getMaxY()+25 > timeline->getBottomLeft().y){
             colorWindow.y = bounds.y - 25;

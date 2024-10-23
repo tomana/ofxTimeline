@@ -119,11 +119,7 @@ void ofxTLNotes::draw(){
         int whichRow = ofMap(i, 0, valueRange.span(), valueRange.max, valueRange.min);
         if(pitchIsOn(whichRow)){
             ofSetColor(245);
-            if(timeline->forceRetina){
-                timeline->getFont().drawString(_notesNotation[i],bounds.x, bounds.y + i * rowHeight);
-            }else{
-                timeline->getFont().drawString(_notesNotation[i],bounds.x, bounds.y + i * rowHeight);
-            }
+            timeline->getFont().drawString(_notesNotation[i],bounds.x, bounds.y + i * rowHeight);
             ofSetColor(0, 0, 0, 100);
         }
         ofDrawRectangle(bounds.x, bounds.y + i * rowHeight, bounds.width, rowHeight);

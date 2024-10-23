@@ -437,6 +437,7 @@ class ofxTimeline : ofThread {
 	bool curvesUseBinary;
 
     bool forceRetina;
+    int  retinaScale;
 	
   protected:
 

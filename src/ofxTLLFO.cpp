@@ -101,27 +101,15 @@ void ofxTLLFO::drawModalContent(){
 	
 	ofSetColor(timeline->getColors().textColor, 200);
     float lineHeight = timeline->getFont().getLineHeight();
-    if(timeline->forceRetina){
-        timeline->getFont().drawString("sine", sineTypeRect.x+10, sineTypeRect.y+lineHeight);
-        timeline->getFont().drawString("noise", noiseTypeRect.x+10, noiseTypeRect.y+lineHeight);
-        timeline->getFont().drawString("phase: " + ofToString(lfokey->phaseShift, 1), phaseShiftRect.x+10, phaseShiftRect.y+lineHeight);
-        timeline->getFont().drawString("amplitude: " + ofToString(lfokey->amplitude, 4), amplitudeRect.x+10, amplitudeRect.y+lineHeight);
-        timeline->getFont().drawString("frequency: " + ofToString(lfokey->frequency, 1), frequencyRect.x+10, frequencyRect.y+lineHeight);
-        timeline->getFont().drawString("seed: " + ofToString(lfokey->seed, 1), seedRect.x+10, seedRect.y+lineHeight);
-        timeline->getFont().drawString("center: " + ofToString(ofMap(lfokey->center, 0, 4, valueRange.min, valueRange.max), 4), centerRect.x+10, centerRect.y+lineHeight);
-        timeline->getFont().drawString("interpolate", interpolateRect.x+10, interpolateRect.y+lineHeight);
-        timeline->getFont().drawString("expinterpolate", expInterpolateRect.x+10, expInterpolateRect.y+lineHeight);
-    }else{
-        timeline->getFont().drawString("sine", sineTypeRect.x+10, sineTypeRect.y+lineHeight);
-        timeline->getFont().drawString("noise", noiseTypeRect.x+10, noiseTypeRect.y+lineHeight);
-        timeline->getFont().drawString("phase: " + ofToString(lfokey->phaseShift, 1), phaseShiftRect.x+10, phaseShiftRect.y+lineHeight);
-        timeline->getFont().drawString("amplitude: " + ofToString(lfokey->amplitude, 4), amplitudeRect.x+10, amplitudeRect.y+lineHeight);
-        timeline->getFont().drawString("frequency: " + ofToString(lfokey->frequency, 1), frequencyRect.x+10, frequencyRect.y+lineHeight);
-        timeline->getFont().drawString("seed: " + ofToString(lfokey->seed, 1), seedRect.x+10, seedRect.y+lineHeight);
-        timeline->getFont().drawString("center: " + ofToString(ofMap(lfokey->center, 0, 4, valueRange.min, valueRange.max), 4), centerRect.x+10, centerRect.y+lineHeight);
-        timeline->getFont().drawString("interpolate", interpolateRect.x+10, interpolateRect.y+lineHeight);
-        timeline->getFont().drawString("expinterpolate", expInterpolateRect.x+10, expInterpolateRect.y+lineHeight);
-    }
+    timeline->getFont().drawString("sine", sineTypeRect.x+10, sineTypeRect.y+lineHeight);
+    timeline->getFont().drawString("noise", noiseTypeRect.x+10, noiseTypeRect.y+lineHeight);
+    timeline->getFont().drawString("phase: " + ofToString(lfokey->phaseShift, 1), phaseShiftRect.x+10, phaseShiftRect.y+lineHeight);
+    timeline->getFont().drawString("amplitude: " + ofToString(lfokey->amplitude, 4), amplitudeRect.x+10, amplitudeRect.y+lineHeight);
+    timeline->getFont().drawString("frequency: " + ofToString(lfokey->frequency, 1), frequencyRect.x+10, frequencyRect.y+lineHeight);
+    timeline->getFont().drawString("seed: " + ofToString(lfokey->seed, 1), seedRect.x+10, seedRect.y+lineHeight);
+    timeline->getFont().drawString("center: " + ofToString(ofMap(lfokey->center, 0, 4, valueRange.min, valueRange.max), 4), centerRect.x+10, centerRect.y+lineHeight);
+    timeline->getFont().drawString("interpolate", interpolateRect.x+10, interpolateRect.y+lineHeight);
+    timeline->getFont().drawString("expinterpolate", expInterpolateRect.x+10, expInterpolateRect.y+lineHeight);
 
 	
 	ofPopStyle();
@@ -170,11 +158,7 @@ void ofxTLLFO::draw(){
 			}
 			float screenX = millisToScreenX(keyframes[i]->time);
 
-            if(getTimeline()->forceRetina){
-                ofDrawRectangle(screenX, bounds.y,8,bounds.height);
-            }else{
-                ofDrawRectangle(screenX, bounds.y,4,bounds.height);
-            }
+            ofDrawRectangle(screenX, bounds.y,4*getTimeline()->retinaScale,bounds.height);
             //ofDrawLine(screenX, bounds.y, screenX, bounds.y+bounds.height);
 		}
 	}

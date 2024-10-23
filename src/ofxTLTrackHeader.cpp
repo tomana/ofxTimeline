@@ -40,9 +40,6 @@ ofxTLTrackHeader::ofxTLTrackHeader(){
 
     footerHeight = FOOTER_HEIGHT;
 
-    nameField  = new ofTrueTypeFont();
-    nameField->load(ofToDataPath("timeline/NewMediaFett.ttf"),10);
-
 }
 
 //--------------------------------------------------------------
@@ -53,6 +50,8 @@ ofxTLTrackHeader::~ofxTLTrackHeader(){
 void ofxTLTrackHeader::enable(){
 	if(!isEnabled()){
 		ofxTLTrack::enable();
+        nameField  = new ofTrueTypeFont();
+        nameField->load(ofToDataPath("timeline/NewMediaFett.ttf"),10+(4*(getTimeline()->retinaScale-1)));
 	}
 }
 
@@ -123,17 +122,10 @@ void ofxTLTrackHeader::draw(){
 
 	if(getTrack()->getDrawRect().height > 0 || bounds.height > 0){
         ofFill();
-        if(getTimeline()->forceRetina){
-            ofSetColor(255,255,255);
-            nameField->drawString(trackName,bounds.x + 20, bounds.y+14);
-            ofSetColor(255,255,190);
-            nameField->drawString("X",bounds.width-15,bounds.y+14);
-        }else{
-            ofSetColor(255,255,255);
-            nameField->drawString(trackName,bounds.x + 10, bounds.y+14);
-            ofSetColor(255,255,190);
-            nameField->drawString("X",bounds.width-15,bounds.y+14);
-        }
+        ofSetColor(255,255,255);
+        nameField->drawString(trackName,bounds.x + 10*getTimeline()->retinaScale, bounds.y+14);
+        ofSetColor(255,255,190);
+        nameField->drawString("X",bounds.width-15,bounds.y+14);
 
 	}
     ofNoFill();

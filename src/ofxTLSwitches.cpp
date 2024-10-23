@@ -110,11 +110,7 @@ void ofxTLSwitches::draw(){
 	        ofSetColor(timeline->getColors().keyColor);    
         }
 
-        if(getTimeline()->forceRetina){
-            ofDrawRectangle(switchKey->display.x, bounds.y,8,bounds.height);
-        }else{
-            ofDrawRectangle(switchKey->display.x, bounds.y,4,bounds.height);
-        }
+        ofDrawRectangle(switchKey->display.x, bounds.y,4*getTimeline()->retinaScale,bounds.height);
         //ofDrawLine(switchKey->display.x, bounds.y,switchKey->display.x, bounds.y+bounds.height);
 
         if(keyIsSelected || switchKey->endSelected){
@@ -124,11 +120,7 @@ void ofxTLSwitches::draw(){
 	        ofSetColor(timeline->getColors().keyColor);    
         }
 
-        if(getTimeline()->forceRetina){
-            ofDrawRectangle(switchKey->display.x+switchKey->display.width, bounds.y,8,bounds.height);
-        }else{
-            ofDrawRectangle(switchKey->display.x+switchKey->display.width, bounds.y,4,bounds.height);
-        }
+        ofDrawRectangle(switchKey->display.x+switchKey->display.width, bounds.y,4*getTimeline()->retinaScale,bounds.height);
         //ofDrawLine(switchKey->display.x+switchKey->display.width, bounds.y,switchKey->display.x+switchKey->display.width, bounds.y+bounds.height);
 
         //draw region

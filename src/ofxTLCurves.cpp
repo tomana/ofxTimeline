@@ -87,15 +87,9 @@ void ofxTLCurves::drawModalContent(){
                easingTypes[i]->bounds.width, easingTypes[i]->bounds.height);
         ofSetColor(200, 200, 200);
 
-        if(timeline->forceRetina){
-            timeline->getFont().drawString(easingTypes[i]->name,
-                                           easingWindowPosition.x + easingTypes[i]->bounds.x+11,
-                                           easingWindowPosition.y + easingTypes[i]->bounds.y+10);
-        }else{
-            timeline->getFont().drawString(easingTypes[i]->name,
-                                           easingWindowPosition.x + easingTypes[i]->bounds.x+11,
-                                           easingWindowPosition.y + easingTypes[i]->bounds.y+10);
-        }
+        timeline->getFont().drawString(easingTypes[i]->name,
+                                       easingWindowPosition.x + easingTypes[i]->bounds.x+11,
+                                       easingWindowPosition.y + easingTypes[i]->bounds.y+10);
 
         ofNoFill();
         ofSetColor(40, 40, 40);

@@ -88,7 +88,8 @@ ofxTimeline::ofxTimeline()
 	//TODO: should be able to use bitmap font if need be
     fontPath(ofToDataPath("timeline/NewMediaFett.ttf")),
 	fontSize(9),
-	footersHidden(false)
+    footersHidden(false),
+    retinaScale(1)
 {
 }
 
@@ -115,7 +116,11 @@ void ofxTimeline::setup(){
 
     //TODO: error if isSetup...
 
-    forceRetina = false;
+    if(retinaScale > 1){
+        forceRetina = true;
+    }else{
+        forceRetina = false;
+    }
 
 	isSetup = true;
 
@@ -321,7 +326,7 @@ void ofxTimeline::setShowZoomer(bool shouldShowZoomer){
 }
 
 void ofxTimeline::setupFont(){
-    font.load(fontPath,fontSize);
+    font.load(fontPath,fontSize+(4*(retinaScale-1)));
 }
 
 void ofxTimeline::setupFont(string newFontPath, int newFontSize){

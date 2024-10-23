@@ -84,11 +84,7 @@ void ofxTLBangs::draw(){
             ofSetColor(timeline->getColors().keyColor);
         }
         
-        if(getTimeline()->forceRetina){
-            ofDrawRectangle(screenX, bounds.y,8,bounds.height);
-        }else{
-            ofDrawRectangle(screenX, bounds.y,4,bounds.height);
-        }
+        ofDrawRectangle(screenX, bounds.y,4*timeline->retinaScale,bounds.height);
 
         //ofDrawLine(screenX, bounds.y, screenX, bounds.y+bounds.height);
     }
