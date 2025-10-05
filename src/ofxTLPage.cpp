@@ -130,7 +130,7 @@ void ofxTLPage::draw(){
 	if(!headerHasFocus && !footerIsDragging && draggingInside && snapPoints.size() > 0){
 		ofPushStyle();
 		ofSetColor(255,255,255,100);
-		set<unsigned long long>::iterator it;
+		std::set<unsigned long long>::iterator it;
 //		for(int i = 0; i < snapPoints.size(); i++){
 		for(it = snapPoints.begin(); it != snapPoints.end(); it++){
             ofDrawLine(timeline->millisToScreenX(*it), trackContainerRect.y,timeline->millisToScreenX(*it), trackContainerRect.y+trackContainerRect.height);
@@ -271,7 +271,7 @@ void ofxTLPage::mouseDragged(ofMouseEventArgs& args, long millis){
 
 		if(snappingEnabled && snapPoints.size() > 0){
 			//hack to find snap distance in millseconds
-			set<unsigned long long>::iterator it;
+			std::set<unsigned long long>::iterator it;
 			long snappingToleranceMillis = timeline->screenXToMillis(snappingTolerance) - timeline->screenXToMillis(0);
 			long closestSnapDistance = snappingToleranceMillis;
 			long closestSnapPoint;
@@ -370,7 +370,7 @@ void ofxTLPage::refreshSnapPoints(){
 	
 	if(snapPoints.size() > 2){
 		long snappingToleranceMillis = timeline->screenXToMillis(snappingTolerance) - timeline->screenXToMillis(0);
-		set<unsigned long long>::iterator it = snapPoints.begin();
+		std::set<unsigned long long>::iterator it = snapPoints.begin();
 		vector<unsigned long long> toRemove;
 		while(true){
 			unsigned long long a = *it++;

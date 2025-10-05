@@ -502,7 +502,7 @@ void ofxTLNotes::regionSelected(ofLongRange timeRange, ofRange valueRange){
     }
 }
 
-void ofxTLNotes::getSnappingPoints(set<unsigned long>& points){
+void ofxTLNotes::getSnappingPoints(std::set<unsigned long>& points){
 	for(int i = 0; i < keyframes.size(); i++){
         ofxTLNote* switchKey = (ofxTLNote*)keyframes[i];
 		if (isKeyframeIsInBounds(switchKey) && !isKeyframeSelected(switchKey) &&
