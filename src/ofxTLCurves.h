@@ -106,6 +106,7 @@ class ofxTLCurves : public ofxTLKeyframes {
     virtual int getDefaultEasingFunction();
 
     virtual string getTrackType();
+    virtual void setTimeline(ofxTimeline* timeline);
 
   protected:
 

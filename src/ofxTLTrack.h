@@ -163,7 +163,7 @@ class ofxTLTrack
 
 	ofxTimeline* getTimeline();
 	//set by the timeline it's self, no need to call this yourself
-	void setTimeline(ofxTimeline* timeline);
+	virtual void setTimeline(ofxTimeline* timeline);
 	string getName();
 	void setName(string name);
 

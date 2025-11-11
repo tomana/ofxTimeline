@@ -51,6 +51,14 @@ string ofxTLCurves::getTrackType(){
 	return "Curves";
 }
 
+void ofxTLCurves::setTimeline(ofxTimeline* _timeline){
+	ofxTLKeyframes::setTimeline(_timeline);
+	// Reinitialize easings with proper retina scaling now that timeline is set
+	if(_timeline != nullptr){
+		initializeEasings();
+	}
+}
+
 ofxTLKeyframe* ofxTLCurves::newKeyframe(){
 	ofxTLTweenKeyframe* k = new ofxTLTweenKeyframe();
 	k->easeFunc = easingFunctions[defaultEasingFunction];
@@ -87,9 +95,11 @@ void ofxTLCurves::drawModalContent(){
                easingTypes[i]->bounds.width, easingTypes[i]->bounds.height);
         ofSetColor(200, 200, 200);
 
+        float textOffsetX = timeline->forceRetina ? 11 * timeline->retinaScale : 11;
+        float textOffsetY = timeline->forceRetina ? 10 * timeline->retinaScale : 10;
         timeline->getFont().drawString(easingTypes[i]->name,
-                                       easingWindowPosition.x + easingTypes[i]->bounds.x+11,
-                                       easingWindowPosition.y + easingTypes[i]->bounds.y+10);
+                                       easingWindowPosition.x + easingTypes[i]->bounds.x + textOffsetX,
+                                       easingWindowPosition.y + easingTypes[i]->bounds.y + textOffsetY);
 
         ofNoFill();
         ofSetColor(40, 40, 40);
@@ -225,14 +235,17 @@ int ofxTLCurves::getDefaultEasingFunction(){
 }
 
 void ofxTLCurves::selectedKeySecondaryClick(ofMouseEventArgs& args){
-	float easingBoxHeight = tweenBoxHeight*easingFunctions.size();
-    easingWindowPosition = ofVec2f(MIN(args.x, bounds.width - easingBoxWidth*2),
-                                   MIN(args.y, timeline->getBottomLeft().y - easingBoxHeight));
+	// Calculate total window dimensions (3 rows of tweenBoxHeight)
+	float totalWindowHeight = 3 * tweenBoxHeight;
+	float totalWindowWidth = easingBoxWidth + (tweenBoxWidth * 4); // types column + 4 columns of functions
+	
+    easingWindowPosition = ofVec2f(MIN(args.x, bounds.width - totalWindowWidth),
+                                   MIN(args.y, timeline->getBottomLeft().y - totalWindowHeight));
 
 	//keep on screen at all costs.
 
-	easingWindowPosition.x = ofClamp(easingWindowPosition.x, timeline->getDrawRect().x, ofGetWidth()-easingBoxWidth*2);
-	easingWindowPosition.y = ofClamp(easingWindowPosition.y, timeline->getDrawRect().y, ofGetHeight()-easingBoxHeight);
+	easingWindowPosition.x = ofClamp(easingWindowPosition.x, timeline->getDrawRect().x, ofGetWidth()-totalWindowWidth);
+	easingWindowPosition.y = ofClamp(easingWindowPosition.y, timeline->getDrawRect().y, ofGetHeight()-totalWindowHeight);
 
     drawingEasingWindow = true;
     timeline->presentedModalContent(this);
@@ -251,6 +264,17 @@ void ofxTLCurves::storeKeyframe(ofxTLKeyframe* key, ofxXmlSettings& xmlStore){
 }
 
 void ofxTLCurves::initializeEasings(){
+
+	// Clear existing easings if reinitializing
+	for(int i = 0; i < easingFunctions.size(); i++){
+		delete easingFunctions[i];
+	}
+	easingFunctions.clear();
+	
+	for(int i = 0; i < easingTypes.size(); i++){
+		delete easingTypes[i];
+	}
+	easingTypes.clear();
 
 	//FUNCTIONS ----
 	EasingFunction* ef;
@@ -349,10 +373,11 @@ void ofxTLCurves::initializeEasings(){
 	easingTypes.push_back(et);
 
 
-	tweenBoxWidth = 40;
-	tweenBoxHeight = 30;
-	easingBoxWidth  = 80;
-	easingBoxHeight = 15;
+	float scale = (timeline != nullptr && timeline->forceRetina) ? timeline->retinaScale : 1.0f;
+	tweenBoxWidth = 40 * scale;
+	tweenBoxHeight = 30 * scale;
+	easingBoxWidth  = 80 * scale;
+	easingBoxHeight = 15 * scale;
 
 //	easingWindowSeperatorHeight = 4;
 
