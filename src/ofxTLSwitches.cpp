@@ -275,6 +275,7 @@ bool ofxTLSwitches::mousePressed(ofMouseEventArgs& args, long millis){
 			// chroma fork: cap a newly-placed clip's end to the timeline duration.
 			placingSwitch->timeRange.max = MAX((long)0, MIN(timeline->getDurationInMilliseconds(), millis));
 			updateTimeRanges();
+			timeline->flagTrackModified(this);   // chroma fork: persist the placed clip (autosave)
 		}
 		else {
 			deleteKeyframe(placingSwitch);
@@ -521,7 +522,16 @@ void ofxTLSwitches::mouseReleased(ofMouseEventArgs& args, long millis){
 		}
 	} else {
         float clampedMillis = ofClamp(millis, 0.0, timeline->getDurationInMilliseconds());
+        // chroma fork: note whether an edge was being dragged BEFORE the base release clears it —
+        // edge-resizes don't set keysDidDrag, so the base wouldn't flag the track and the new clip
+        // width would never autosave (clips persisted at their pre-drag/zero width).
+        bool edgeDragged = false;
+        for(int i = 0; i < keyframes.size(); i++){
+            ofxTLSwitch* sw = (ofxTLSwitch*)keyframes[i];
+            if(sw->startSelected || sw->endSelected){ edgeDragged = true; break; }
+        }
         ofxTLKeyframes::mouseReleased(args, clampedMillis);
+        if(edgeDragged) timeline->flagTrackModified(this);   // persist the resized clip
     }
 }
 

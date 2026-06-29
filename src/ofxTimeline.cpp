@@ -246,6 +246,10 @@ string ofxTimeline::getWorkingFolder(){
 }
 
 void ofxTimeline::loadTracksFromFolder(string folderPath){
+    // chroma fork: match saveTracksToFolder, which adds the trailing slash. Without this, each
+    // track's xmlFileName becomes "<folder>chroma_rt_<id>.xml" (glued, missing the separator), so
+    // load + autosave land in the parent dir instead of the working folder and clips don't persist.
+    folderPath = ofFilePath::addTrailingSlash(folderPath);
     for(int i = 0; i < pages.size(); i++){
         pages[i]->loadTracksFromFolder(folderPath);
     }
