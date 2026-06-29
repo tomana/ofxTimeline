@@ -273,7 +273,18 @@ bool ofxTLSwitches::mousePressed(ofMouseEventArgs& args, long millis){
     if(placingSwitch != NULL){
 		if(isActive() && args.button == 0){
 			// chroma fork: cap a newly-placed clip's end to the timeline duration.
-			placingSwitch->timeRange.max = MAX((long)0, MIN(timeline->getDurationInMilliseconds(), millis));
+			long durMs = timeline->getDurationInMilliseconds();
+			placingSwitch->timeRange.max = MAX((long)0, MIN(durMs, millis));
+			// chroma fork (G1): a click without a real drag leaves a zero/near-zero-width clip —
+			// invisible and never active. Give any too-narrow placement a usable default width.
+			if(placingSwitch->timeRange.max - placingSwitch->timeRange.min < 150){
+				long newMax = MIN(durMs, placingSwitch->timeRange.min + 1500);
+				if(newMax - placingSwitch->timeRange.min < 1500){           // hit the right end → pull start back
+					placingSwitch->timeRange.min = MAX((long)0, newMax - 1500);
+					placingSwitch->time = placingSwitch->timeRange.min;
+				}
+				placingSwitch->timeRange.max = newMax;
+			}
 			updateTimeRanges();
 			timeline->flagTrackModified(this);   // chroma fork: persist the placed clip (autosave)
 		}
@@ -615,6 +626,11 @@ void ofxTLSwitches::restoreKeyframe(ofxTLKeyframe* key, ofxXmlSettings& xmlStore
     }
     else{
 		switchKey->timeRange.max = timeline->getTimecode().millisForTimecode(timecode);
+    }
+    // chroma fork (G1): repair legacy zero/near-zero-width clips saved before the min-width guard so
+    // they become visible + deletable instead of invisible stubs.
+    if(switchKey->timeRange.max - switchKey->timeRange.min < 150){
+        switchKey->timeRange.max = MIN(timeline->getDurationInMilliseconds(), switchKey->timeRange.min + 1500);
     }
     //this is so freshly restored keys won't have ends selected but click keys will
     switchKey->startSelected = switchKey->endSelected = false;
