@@ -2011,6 +2011,28 @@ void ofxTimeline::bringTrackToBottom(ofxTLTrack* track){
     }
 }
 
+// chroma fork: reorder a track up/down one row (swap with its neighbour).
+void ofxTimeline::moveTrackUp(string trackName){
+	moveTrackUp(getTrack(trackName));
+}
+void ofxTimeline::moveTrackUp(ofxTLTrack* track){
+    if(track != NULL){
+		trackNameToPage[track->getName()]->moveTrackUp(track);
+		ofEventArgs args;
+		ofNotifyEvent(events().viewWasResized, args);
+    }
+}
+void ofxTimeline::moveTrackDown(string trackName){
+	moveTrackDown(getTrack(trackName));
+}
+void ofxTimeline::moveTrackDown(ofxTLTrack* track){
+    if(track != NULL){
+		trackNameToPage[track->getName()]->moveTrackDown(track);
+		ofEventArgs args;
+		ofNotifyEvent(events().viewWasResized, args);
+    }
+}
+
 void ofxTimeline::removeTrack(string name){
     ofxTLTrack* track = getTrack(name);
     if(track == NULL){

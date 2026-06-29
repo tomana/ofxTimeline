@@ -637,6 +637,28 @@ void ofxTLPage::bringTrackToBottom(ofxTLTrack* track){
     ofLogError("ofxTLPage::bringTrackToBottom -- track " + track->getName() + " not found");
 }
 
+// chroma fork: swap a track with the one directly above it (no-op if already on top).
+void ofxTLPage::moveTrackUp(ofxTLTrack* track){
+    for(int i = 1; i < headers.size(); i++){
+        if(track == headers[i]->getTrack()){
+            std::swap(headers[i], headers[i-1]);
+            recalculateHeight();
+            return;
+        }
+    }
+}
+
+// chroma fork: swap a track with the one directly below it (no-op if already on bottom).
+void ofxTLPage::moveTrackDown(ofxTLTrack* track){
+    for(int i = 0; i + 1 < (int)headers.size(); i++){
+        if(track == headers[i]->getTrack()){
+            std::swap(headers[i], headers[i+1]);
+            recalculateHeight();
+            return;
+        }
+    }
+}
+
 void ofxTLPage::removeTrack(ofxTLTrack* track){
     if(track == nullptr){
         ofLogError() << "ofxTLPage::removeTrack -- removing null track!" << endl;

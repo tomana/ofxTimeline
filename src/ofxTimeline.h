@@ -389,6 +389,10 @@ class ofxTimeline : ofThread {
     void bringTrackToTop(ofxTLTrack* track);
     void bringTrackToBottom(string name);
     void bringTrackToBottom(ofxTLTrack* track);
+    void moveTrackUp(string name);            // chroma fork: reorder a track up one row
+    void moveTrackUp(ofxTLTrack* track);
+    void moveTrackDown(string name);          // chroma fork: reorder a track down one row
+    void moveTrackDown(ofxTLTrack* track);
 	
 	void setupFont();
 	void setupFont(string newFontPath, int newFontSize);

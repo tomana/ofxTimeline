@@ -122,6 +122,8 @@ class ofxTLPage {
     
     void bringTrackToTop(ofxTLTrack* track);
     void bringTrackToBottom(ofxTLTrack* track);
+    void moveTrackUp(ofxTLTrack* track);     // chroma fork: swap with the row above
+    void moveTrackDown(ofxTLTrack* track);   // chroma fork: swap with the row below
 
 	//copy paste
 	virtual void copyRequest(vector<string>& bufs);
