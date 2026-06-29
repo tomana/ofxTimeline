@@ -148,7 +148,9 @@ class ofxTimeline : ofThread {
     void setFrameRate(float fps);    
     void setDurationInFrames(int frames);
 	void setDurationInSeconds(float seconds);
+	void setDurationInSeconds(float seconds, bool allowShrinkBelowContent);   // chroma fork: bypass the latest-keyframe clamp
 	void setDurationInMillis(unsigned long long millis);
+	void forceDurationInMillis(unsigned long long millis);                    // chroma fork: set EXACTLY, even below content
     void setDurationInTimecode(string timecode);
 
 	int getDurationInFrames();
@@ -220,6 +222,11 @@ class ofxTimeline : ofThread {
 	virtual bool toggleShowFooters();
 	virtual void setFootersHidden(bool footersHidden);
 	virtual bool areFootersHidden();
+
+	// chroma fork: the per-track "X" remove button (drawn in the track header). Hidden when tracks
+	// are managed elsewhere (e.g. chroma_rt's mode-list toggle / auto sub-timelines).
+	virtual void setRemoveButtonsHidden(bool hidden);
+	virtual bool areRemoveButtonsHidden();
 	
 	virtual void setInOutRange(ofRange inoutPercentRange);
 	virtual void setInOutRangeMillis(unsigned long long min, unsigned long long max);
@@ -550,7 +557,8 @@ class ofxTimeline : ofThread {
 	bool headersAreEditable;
 	bool minimalHeaders;
 	bool footersHidden;
-	
+	bool removeButtonsHidden;   // chroma fork: suppress the per-track "X" remove button
+
 	bool isFrameBased;
 	float durationInSeconds;
 };

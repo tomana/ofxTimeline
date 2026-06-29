@@ -124,9 +124,12 @@ void ofxTLTrackHeader::draw(){
         ofFill();
         ofSetColor(255,255,255);
         nameField->drawString(trackName,bounds.x + 10*getTimeline()->retinaScale, bounds.y+14);
-        ofSetColor(255,255,190);
-        nameField->drawString("X",bounds.width-15,bounds.y+14);
-
+        // chroma fork: the "X" track-remove button is suppressed when tracks are managed elsewhere
+        // (chroma_rt drives add/remove from the mode list, and sub-timelines are auto-managed).
+        if(!getTimeline()->areRemoveButtonsHidden()){
+            ofSetColor(255,255,190);
+            nameField->drawString("X",bounds.width-15,bounds.y+14);
+        }
 	}
     ofNoFill();
 	ofSetColor(track->getTimeline()->getColors().outlineColor);
@@ -169,13 +172,16 @@ void ofxTLTrackHeader::mousePressed(ofMouseEventArgs& args){
 		draggingSize = true;
 	}
 
-    if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
-        if(args.x >= bounds.width-30 && args.y >= bounds.y && args.x < bounds.width-30+20 && args.y < bounds.y+28){
-            ofNotifyEvent(removeTrackEvent, trackName);
-        }
-    }else{
-        if(args.x >= bounds.width-15 && args.y >= bounds.y && args.x < bounds.width-15+10 && args.y < bounds.y+14){
-            ofNotifyEvent(removeTrackEvent, trackName);
+    // chroma fork: only honor the "X" remove hit-box when the button is actually shown.
+    if(!getTimeline()->areRemoveButtonsHidden()){
+        if(ofGetScreenWidth() >= 2560 && ofGetScreenHeight() >= 1600){
+            if(args.x >= bounds.width-30 && args.y >= bounds.y && args.x < bounds.width-30+20 && args.y < bounds.y+28){
+                ofNotifyEvent(removeTrackEvent, trackName);
+            }
+        }else{
+            if(args.x >= bounds.width-15 && args.y >= bounds.y && args.x < bounds.width-15+10 && args.y < bounds.y+14){
+                ofNotifyEvent(removeTrackEvent, trackName);
+            }
         }
     }
 

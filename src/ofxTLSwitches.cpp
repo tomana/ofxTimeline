@@ -272,7 +272,8 @@ bool ofxTLSwitches::mousePressed(ofMouseEventArgs& args, long millis){
     // ---
     if(placingSwitch != NULL){
 		if(isActive() && args.button == 0){
-			placingSwitch->timeRange.max = millis;
+			// chroma fork: cap a newly-placed clip's end to the timeline duration.
+			placingSwitch->timeRange.max = MAX((long)0, MIN(timeline->getDurationInMilliseconds(), millis));
 			updateTimeRanges();
 		}
 		else {
@@ -397,12 +398,17 @@ void ofxTLSwitches::mouseDragged(ofMouseEventArgs& args, long millis){
 		//be a selected keyframe with an end selected
 		for(int i = 0; i < keyframes.size(); i++){
 			ofxTLSwitch* switchKey = (ofxTLSwitch*)keyframes[i];
+			// chroma fork: cap clip edges to the timeline bounds [0, duration] so a clip can't be
+			// dragged off either end of the main timeline.
+			long durationMillis = timeline->getDurationInMilliseconds();
 			if(switchKey->startSelected){
-				switchKey->timeRange.min = millis - switchKey->edgeDragOffset;
+				long m = MAX((long)0, MIN(durationMillis, millis - switchKey->edgeDragOffset));
+				switchKey->timeRange.min = m;
 				switchKey->time = switchKey->timeRange.min;
 			}
 			else if(switchKey->endSelected){
-				switchKey->timeRange.max = millis - switchKey->edgeDragOffset;
+				long m = MAX((long)0, MIN(durationMillis, millis - switchKey->edgeDragOffset));
+				switchKey->timeRange.max = m;
 			}
 		}
 		
@@ -413,7 +419,8 @@ void ofxTLSwitches::mouseDragged(ofMouseEventArgs& args, long millis){
 void ofxTLSwitches::mouseMoved(ofMouseEventArgs& args, long millis){
     endHover = startHover = false;
     if(hover && placingSwitch != NULL){
-		placingSwitch->timeRange.max = millis;
+		// chroma fork: cap the live placing preview to the timeline duration.
+		placingSwitch->timeRange.max = MAX((long)0, MIN(timeline->getDurationInMilliseconds(), millis));
 		return;
 	}
 	

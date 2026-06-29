@@ -89,6 +89,7 @@ ofxTimeline::ofxTimeline()
     fontPath(ofToDataPath("timeline/NewMediaFett.ttf")),
 	fontSize(9),
     footersHidden(false),
+    removeButtonsHidden(false),
     retinaScale(1)
 {
 }
@@ -869,6 +870,14 @@ void ofxTimeline::setDurationInFrames(int frames){
 }
 
 void ofxTimeline::setDurationInSeconds(float seconds){
+	setDurationInSeconds(seconds, false);
+}
+// chroma fork: when allowShrinkBelowContent is true, the duration is set EXACTLY to `seconds`
+// instead of being clamped up to the latest keyframe. The sub-timelines in chroma_rt need this:
+// they are reused across clips of different lengths, so a leftover keyframe from a longer clip must
+// not pin a shorter clip's sub to a longer duration (which stretches its time axis and breaks
+// alignment with the clip footprint). Orphaned keyframes past the new end simply don't draw.
+void ofxTimeline::setDurationInSeconds(float seconds, bool allowShrinkBelowContent){
 
 	bool updateInTime = inoutRange.min > 0.;
 	bool updateOutTime = inoutRange.max < 1.;
@@ -880,8 +889,8 @@ void ofxTimeline::setDurationInSeconds(float seconds){
     	ofLogError("ofxTimeline::setDurationInSeconds") << " Duration must set a positive number";
         return;
     }
-	//verify no elements are being truncated
-	durationInSeconds = MAX(seconds, getLatestTime()/1000.0);
+	//verify no elements are being truncated (unless the caller explicitly allows it)
+	durationInSeconds = allowShrinkBelowContent ? seconds : MAX(seconds, getLatestTime()/1000.0);
 
 
 	if(updateInTime){
@@ -896,6 +905,10 @@ void ofxTimeline::setDurationInSeconds(float seconds){
 
 void ofxTimeline::setDurationInMillis(unsigned long long millis){
     setDurationInSeconds(millis/1000.);
+}
+
+void ofxTimeline::forceDurationInMillis(unsigned long long millis){
+    setDurationInSeconds(millis/1000., true);
 }
 
 void ofxTimeline::setDurationInTimecode(string timecodeString){
@@ -973,6 +986,15 @@ void ofxTimeline::setFootersHidden(bool hidden){
 
 bool ofxTimeline::areFootersHidden(){
 	return footersHidden;
+}
+
+// chroma fork: the per-track "X" remove button. Track headers consult this each draw/click.
+void ofxTimeline::setRemoveButtonsHidden(bool hidden){
+	removeButtonsHidden = hidden;
+}
+
+bool ofxTimeline::areRemoveButtonsHidden(){
+	return removeButtonsHidden;
 }
 
 void ofxTimeline::setEditableHeaders(bool headersEditable){
