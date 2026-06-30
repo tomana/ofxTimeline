@@ -1547,13 +1547,11 @@ void ofxTimeline::draw(){
 		ofPushStyle();
 
 		glDisable(GL_DEPTH_TEST);
-		glEnable(GL_SCISSOR_TEST);
-		// +1: the track outline's RIGHT edge is drawn at bounds.x+bounds.width, i.e. exactly on the
-		// scissor's exclusive right boundary, so without this the right border line is clipped away
-		// (the timeline box looks "open" on the right — visible when the timeline is narrower than the
-		// window, e.g. chroma_rt's per-clip sub-timelines). chroma fork patch.
-		glScissor(totalDrawRect.x, 0, totalDrawRect.width + 1, ofGetHeight());
-
+		// chroma fork: the draw scissor is REMOVED. It clipped the track outline's right border (drawn
+		// at the scissor's exclusive right edge) and the keyframe handles at the track ends — both
+		// undesirable for narrow timelines (chroma_rt's per-clip sub-timelines). Tracks are sized to
+		// the timeline width, so they stay in their box without it; the host positions timelines so
+		// they don't overlap other UI.
         ofDisableLighting();
 		ofEnableAlphaBlending();
 
@@ -1579,7 +1577,6 @@ void ofxTimeline::draw(){
 			modalTrack->drawModalContent();
 		}
 
-		glDisable(GL_SCISSOR_TEST);
 		ofPopStyle();
 	}
 
