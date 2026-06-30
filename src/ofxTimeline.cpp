@@ -1548,7 +1548,11 @@ void ofxTimeline::draw(){
 
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_SCISSOR_TEST);
-		glScissor(totalDrawRect.x, 0, totalDrawRect.width, ofGetHeight());
+		// +1: the track outline's RIGHT edge is drawn at bounds.x+bounds.width, i.e. exactly on the
+		// scissor's exclusive right boundary, so without this the right border line is clipped away
+		// (the timeline box looks "open" on the right — visible when the timeline is narrower than the
+		// window, e.g. chroma_rt's per-clip sub-timelines). chroma fork patch.
+		glScissor(totalDrawRect.x, 0, totalDrawRect.width + 1, ofGetHeight());
 
         ofDisableLighting();
 		ofEnableAlphaBlending();
