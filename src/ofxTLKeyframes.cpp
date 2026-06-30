@@ -849,7 +849,8 @@ ofxTLKeyframe* ofxTLKeyframes::keyframeAtScreenpoint(ofVec2f p){
 	if(!bounds.inside(p)){
         return nullptr;
 	}
-	float minDistanceSquared = 15*15;
+	float minDistanceSquared = 22*22;   // chroma fork: bumped from 15 — the keyframe dots were a bit
+	                                    // hard to grab/move; ~22px catch radius makes them easier
 	for(int i = 0; i < keyframes.size(); i++){
 		if(isKeyframeIsInBounds(keyframes[i]) &&
 		   p.squareDistance(screenPositionForKeyframe(keyframes[i])) < minDistanceSquared)
