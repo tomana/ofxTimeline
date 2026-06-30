@@ -272,9 +272,13 @@ bool ofxTLSwitches::mousePressed(ofMouseEventArgs& args, long millis){
     // ---
     if(placingSwitch != NULL){
 		if(isActive() && args.button == 0){
-			// chroma fork: cap a newly-placed clip's end to the timeline duration.
+			// chroma fork: cap to the timeline duration, and normalize around the anchor so the clip
+			// can be dragged out in EITHER x direction (backwards works too).
 			long durMs = timeline->getDurationInMilliseconds();
-			placingSwitch->timeRange.max = MAX((long)0, MIN(durMs, millis));
+			long cur = MAX((long)0, MIN(durMs, millis));
+			placingSwitch->timeRange.min = MIN(placingAnchorMs, cur);
+			placingSwitch->timeRange.max = MAX(placingAnchorMs, cur);
+			placingSwitch->time = placingSwitch->timeRange.min;
 			// chroma fork (G1): a click without a real drag leaves a zero/near-zero-width clip —
 			// invisible and never active. Give any too-narrow placement a usable default width.
 			if(placingSwitch->timeRange.max - placingSwitch->timeRange.min < 150){
@@ -431,8 +435,12 @@ void ofxTLSwitches::mouseDragged(ofMouseEventArgs& args, long millis){
 void ofxTLSwitches::mouseMoved(ofMouseEventArgs& args, long millis){
     endHover = startHover = false;
     if(hover && placingSwitch != NULL){
-		// chroma fork: cap the live placing preview to the timeline duration.
-		placingSwitch->timeRange.max = MAX((long)0, MIN(timeline->getDurationInMilliseconds(), millis));
+		// chroma fork: live placing preview — cap to duration + normalize around the anchor so the
+		// preview grows correctly whether the mouse is to the right OR left of the first click.
+		long cur = MAX((long)0, MIN(timeline->getDurationInMilliseconds(), millis));
+		placingSwitch->timeRange.min = MIN(placingAnchorMs, cur);
+		placingSwitch->timeRange.max = MAX(placingAnchorMs, cur);
+		placingSwitch->time = placingSwitch->timeRange.min;
 		return;
 	}
 	
@@ -603,6 +611,7 @@ ofxTLKeyframe* ofxTLSwitches::newKeyframe(){
     if (x< 0.0){x=0;}
     switchKey->timeRange.max = screenXToMillis(x);
     switchKey->timeRange.min = switchKey->timeRange.max;
+    placingAnchorMs = switchKey->timeRange.min;   // chroma fork: remember the down-point so we can grow either way
 
     switchKey->startSelected = false;
     switchKey->endSelected   = true; //true so you can drag the range to start with

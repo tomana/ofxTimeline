@@ -120,21 +120,31 @@ void ofxTLKeyframes::draw(){
 	preview.draw();
 
 	//**** DRAW KEYFRAME DOTS
+	// chroma fork: with the draw scissor removed, a keyframe whose TIME falls outside the track's
+	// x-footprint (e.g. after the operator SHRINKS a clip, leaving keyframes past the new end) would
+	// draw its dot floating outside the box. Gate every dot on its screen-x being within the track
+	// bounds (± a small epsilon so an on-edge dot still shows fully). The curve line stays clipped to
+	// its own sampling, so this only suppresses the stray markers.
+	const float edgeEps = 6.0f;
+	auto inBoundsX = [&](float x){ return x >= bounds.x - edgeEps && x <= bounds.x + bounds.width + edgeEps; };
 
 	//**** HOVER FRAME
     if(hoverKeyframe != nullptr){
-		ofPushStyle();
-		ofFill();
-		ofSetColor(timeline->getColors().highlightColor);
 		ofVec2f hoverKeyPoint = screenPositionForKeyframe( hoverKeyframe );
-        ofDrawCircle(hoverKeyPoint.x, hoverKeyPoint.y, 6);
-		ofPopStyle();
+		if(inBoundsX(hoverKeyPoint.x)){
+			ofPushStyle();
+			ofFill();
+			ofSetColor(timeline->getColors().highlightColor);
+			ofDrawCircle(hoverKeyPoint.x, hoverKeyPoint.y, 6);
+			ofPopStyle();
+		}
 	}
 
 	//**** ALL CACHED VISIBLE KEYS
 	ofSetColor(timeline->getColors().textColor);
 	ofNoFill();
 	for(int i = 0; i < keyPoints.size(); i++){
+        if(!inBoundsX(keyPoints[i].x)) continue;
         ofSetLineWidth(1);
         ofDrawCircle(keyPoints[i].x, keyPoints[i].y, 4);
 	}
@@ -145,6 +155,7 @@ void ofxTLKeyframes::draw(){
 	for(int i = 0; i < selectedKeyframes.size(); i++){
 		if(isKeyframeIsInBounds(selectedKeyframes[i])){
 			ofVec2f screenpoint = screenPositionForKeyframe(selectedKeyframes[i]);
+			if(!inBoundsX(screenpoint.x)) continue;
 			float keysValue = ofMap(selectedKeyframes[i]->value, 0, 1.0, valueRange.min, valueRange.max, true);
 			if(keysAreDraggable){
 				string frameString = timeline->formatTime(selectedKeyframes[i]->time);

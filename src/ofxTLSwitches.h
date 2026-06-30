@@ -96,7 +96,8 @@ class ofxTLSwitches : public ofxTLKeyframes {
     bool startHover;
     bool endHover;
     ofxTLSwitch* placingSwitch;
-    
+    long placingAnchorMs = 0;   // chroma fork: the first-click time, so a clip can be dragged out in EITHER x direction
+
     ofxTLSwitch* clickedTextField;
     bool enteringText;
     
