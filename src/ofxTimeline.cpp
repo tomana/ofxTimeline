@@ -509,6 +509,13 @@ bool ofxTimeline::hasUnsavedChanges(){
 	return unsavedChanges;
 }
 
+// chroma fork: clear the dirty flag WITHOUT writing XML (autosave is off; the host snapshots curves
+// to its own store and uses hasUnsavedChanges() to detect live edits, so it needs to reset the flag
+// after it has captured them without triggering ofxTimeline's per-track file persistence).
+void ofxTimeline::markSaved(){
+	unsavedChanges = false;
+}
+
 void ofxTimeline::save(){
 	for(int i = 0; i < pages.size(); i++){
         pages[i]->save();

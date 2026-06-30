@@ -170,6 +170,7 @@ class ofxTimeline : ofThread {
 	//if there have been changes without a save.
 	//if autosave is on this will always return false
 	bool hasUnsavedChanges();
+	void markSaved();   // chroma fork: clear the dirty flag without writing XML (host owns persistence)
 	
 	virtual void setCurrentFrame(int currentFrame);
 	virtual void setCurrentTimeSeconds(float time);
