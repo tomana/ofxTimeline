@@ -31,6 +31,7 @@
  */
 
 #include "ofxTimeline.h"
+#include <cfloat>   // FLT_MAX — chroma fork: nameLabelXFloor "no clamp" sentinel
 
 //increments to keep auto generated names unique
 static int timelineNumber = 0;
@@ -90,6 +91,7 @@ ofxTimeline::ofxTimeline()
 	fontSize(9),
     footersHidden(false),
     removeButtonsHidden(false),
+    nameLabelXFloor(-FLT_MAX),
     retinaScale(1)
 {
 }
@@ -1008,6 +1010,15 @@ bool ofxTimeline::areRemoveButtonsHidden(){
 	return removeButtonsHidden;
 }
 
+// chroma fork: in-lane track-name x floor. Track headers clamp their name-draw x to this each frame.
+void ofxTimeline::setNameLabelXFloor(float x){
+	nameLabelXFloor = x;
+}
+
+float ofxTimeline::getNameLabelXFloor(){
+	return nameLabelXFloor;
+}
+
 void ofxTimeline::setEditableHeaders(bool headersEditable){
 	headersAreEditable = headersEditable;
 }
@@ -1577,7 +1588,11 @@ void ofxTimeline::draw(){
 
 		//draw these because they overlay the rest of the timeline with info
         ticker->_draw();
-		inoutTrack->_draw();
+		// chroma fork: honor setShowInoutControl(false). The in/out track paints a dimmed "disabled"
+		// overlay outside [in,out] using FULL-width normalized coords (ignores the zoomer), so with an
+		// in/out set AND the view zoomed it dims the wrong screen region. chroma_rt hides the in/out and
+		// drives the loop range itself, so suppress the whole draw when the control is hidden.
+		if(showInoutControl) inoutTrack->_draw();
         ofPopStyle();
 
         if(modalTrack != nullptr){

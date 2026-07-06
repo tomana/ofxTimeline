@@ -228,6 +228,13 @@ class ofxTimeline : ofThread {
 	// are managed elsewhere (e.g. chroma_rt's mode-list toggle / auto sub-timelines).
 	virtual void setRemoveButtonsHidden(bool hidden);
 	virtual bool areRemoveButtonsHidden();
+
+	// chroma fork: minimum screen-x for the in-lane track-NAME label. When a timeline is offset off the
+	// left edge (chroma_rt zooms a sub-timeline's clip past the window), the track names would scroll out
+	// with it; this floor pins each name at the visible edge while the curves themselves still overrun.
+	// Default -FLT_MAX = no clamp (unchanged for the master + the sibling apps).
+	virtual void  setNameLabelXFloor(float x);
+	virtual float getNameLabelXFloor();
 	
 	virtual void setInOutRange(ofRange inoutPercentRange);
 	virtual void setInOutRangeMillis(unsigned long long min, unsigned long long max);
@@ -563,6 +570,7 @@ class ofxTimeline : ofThread {
 	bool minimalHeaders;
 	bool footersHidden;
 	bool removeButtonsHidden;   // chroma fork: suppress the per-track "X" remove button
+	float nameLabelXFloor;      // chroma fork: min screen-x for in-lane track-name labels (-FLT_MAX = off)
 
 	bool isFrameBased;
 	float durationInSeconds;

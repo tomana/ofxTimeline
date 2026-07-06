@@ -123,7 +123,11 @@ void ofxTLTrackHeader::draw(){
 	if(getTrack()->getDrawRect().height > 0 || bounds.height > 0){
         ofFill();
         ofSetColor(255,255,255);
-        nameField->drawString(trackName,bounds.x + 10*getTimeline()->retinaScale, bounds.y+14);
+        // chroma fork: pin the name at the visible edge when this timeline is offset off-screen (a
+        // zoomed sub-timeline whose clip overruns the window) — the curves still overrun, the name doesn't.
+        float nameX = bounds.x + 10*getTimeline()->retinaScale;
+        nameX = MAX(nameX, getTimeline()->getNameLabelXFloor());
+        nameField->drawString(trackName,nameX, bounds.y+14);
         // chroma fork: the "X" track-remove button is suppressed when tracks are managed elsewhere
         // (chroma_rt drives add/remove from the mode list, and sub-timelines are auto-managed).
         if(!getTimeline()->areRemoveButtonsHidden()){
