@@ -44,7 +44,13 @@ ofxTLCurves::ofxTLCurves(){
 float ofxTLCurves::interpolateValueForKeys(ofxTLKeyframe* start,ofxTLKeyframe* end, unsigned long long sampleTime){
 	ofxTLTweenKeyframe* tweenKeyStart = (ofxTLTweenKeyframe*)start;
 	ofxTLTweenKeyframe* tweenKeyEnd = (ofxTLTweenKeyframe*)end;
-    return ofxeasing::map(sampleTime, tweenKeyStart->time, tweenKeyEnd->time,tweenKeyStart->value, tweenKeyEnd->value, tweenKeyStart->easeFunc->funcIN);
+    // Honor the keyframe's ease TYPE (In/Out/InOut), not just the ease function. This used to
+    // hardcode funcIN, so Out and InOut rendered identically to In even though the menu, the XML
+    // (easetype), and the preview thumbnails all tracked the type correctly. (fork fix 2026-08-17)
+    ofxeasing::function fn = tweenKeyStart->easeFunc->funcIN;
+    if      (tweenKeyStart->easeType->type == ofxeasing::Type::Out)   fn = tweenKeyStart->easeFunc->funcOUT;
+    else if (tweenKeyStart->easeType->type == ofxeasing::Type::InOut) fn = tweenKeyStart->easeFunc->funcINOUT;
+    return ofxeasing::map(sampleTime, tweenKeyStart->time, tweenKeyEnd->time,tweenKeyStart->value, tweenKeyEnd->value, fn);
 }
 
 string ofxTLCurves::getTrackType(){
