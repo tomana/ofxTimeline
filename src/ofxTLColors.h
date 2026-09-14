@@ -50,4 +50,7 @@ class ofxTLColors
 	ofColor disabledColor;
 	ofColor modalBackgroundColor;
 	ofColor outlineColor;
+	ofColor tickColor;   // ruler tick marks + ticker outline (default yellow)
+	ofColor playheadColor;   // fixed playhead-pin colour; alpha 0 = fall back to the
+	                         // old keyColor(playing)/outlineColor(paused) switch (default)
 };

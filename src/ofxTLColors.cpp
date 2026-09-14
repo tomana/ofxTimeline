@@ -88,4 +88,12 @@ void ofxTLColors::load(string colorFile) {
                            settings.getValue("colors:outline:b", 103),
                            settings.getValue("colors:outline:a", 255));
 
+    tickColor = ofColor(settings.getValue("colors:tick:r", 200),
+                        settings.getValue("colors:tick:g", 180),
+                        settings.getValue("colors:tick:b", 40),
+                        settings.getValue("colors:tick:a", 255));
+
+    // Fixed playhead-pin colour. Default alpha 0 = "unset" → the ticker keeps the old
+    // keyColor(playing)/outlineColor(paused) switch. A host sets this (alpha>0) to pin one colour.
+    playheadColor = ofColor(0, 0, 0, 0);
 }

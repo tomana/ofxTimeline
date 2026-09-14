@@ -53,6 +53,8 @@ ofxTimeline::ofxTimeline()
 	timelineHasFocus(false),
 	showTicker(true),
 	showInoutControl(true),
+	inoutGap(0.0f),
+	tickerHeight(TICKER_HEIGHT),
 	showZoomer(true),
 	durationInSeconds(100.0f/30.0f),
 	isShowing(true),
@@ -318,6 +320,16 @@ void ofxTimeline::setShowTicker(bool shouldShowTicker){
 
 void ofxTimeline::setShowInoutControl(bool shouldShowInoutControl){
     showInoutControl = shouldShowInoutControl;
+    recalculateBoundingRects();
+}
+
+void ofxTimeline::setInoutGap(float gap){
+    inoutGap = gap;
+    recalculateBoundingRects();
+}
+
+void ofxTimeline::setTickerHeight(float h){
+    tickerHeight = h;
     recalculateBoundingRects();
 }
 
@@ -1462,7 +1474,10 @@ void ofxTimeline::recalculateBoundingRects(){
 	}
 
     inoutTrack->setDrawRect( ofRectangle(offset.x, tabs->getBottomEdge(), width, showInoutControl ? INOUT_HEIGHT : 0) );
-    ticker->setDrawRect( ofRectangle(offset.x, inoutTrack->getBottomEdge(), width, showTicker ? TICKER_HEIGHT : 0) );
+    // inoutGap (default 0 — no change for existing hosts): extra vertical space between the in/out
+    // range strip and the ticker/tracks below it. Applied only when the in/out control is shown.
+    const float gapBelowInout = showInoutControl ? inoutGap : 0.0f;
+    ticker->setDrawRect( ofRectangle(offset.x, inoutTrack->getBottomEdge() + gapBelowInout, width, showTicker ? tickerHeight : 0) );
     updatePagePositions();
     zoomer->setDrawRect(ofRectangle(offset.x, currentPage->getBottomEdge(), width, showZoomer ? ZOOMER_HEIGHT : 0));
     inoutTrack->setPageRectangle(currentPage->getDrawRect());

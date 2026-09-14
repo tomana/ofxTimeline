@@ -131,6 +131,11 @@ class ofxTimeline : ofThread {
     virtual void setShowTimeControls(bool shouldShowTimeControls);
     virtual void setShowTicker(bool shouldShowTicker);
     virtual void setShowInoutControl(bool shouldShowInoutControl);
+    // Extra vertical gap (px) between the in/out range strip and the ticker/tracks below it.
+    // Default 0 = flush (unchanged for existing hosts). Opt-in per timeline.
+    virtual void setInoutGap(float gap);
+    // Height (px) of the ticker/ruler row. Default TICKER_HEIGHT (unchanged for existing hosts).
+    virtual void setTickerHeight(float h);
     virtual void setShowZoomer(bool shouldShowZoomer);
 
     //sets where to save all timeline-related meta data xml files
@@ -545,8 +550,10 @@ class ofxTimeline : ofThread {
     
     bool timelineHasFocus;
     
-    bool showTicker; 
-    bool showInoutControl; 
+    bool showTicker;
+    bool showInoutControl;
+    float inoutGap;      // extra px between the in/out strip and the ticker below (default 0)
+    float tickerHeight;  // ruler row height in px (default TICKER_HEIGHT)
     bool showZoomer;
     
     ofxXmlSettings settings;

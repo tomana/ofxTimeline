@@ -643,8 +643,7 @@ void ofxTLSwitches::restoreKeyframe(ofxTLKeyframe* key, ofxXmlSettings& xmlStore
     }
     //this is so freshly restored keys won't have ends selected but click keys will
     switchKey->startSelected = switchKey->endSelected = false;
-	
-	//a bit of a hack, but if 
+	//a bit of a hack, but if
 	placingSwitch = NULL;
 }
 

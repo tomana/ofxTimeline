@@ -65,7 +65,7 @@ void ofxTLTicker::draw(){
 		refreshTickMarks();
 	}
 	
-	tickerMarks.setStrokeColor( ofColor(200, 180, 40) );
+	tickerMarks.setStrokeColor( timeline->getColors().tickColor );
 	tickerMarks.setStrokeWidth(1);
     tickerMarks.draw(0, bounds.y);
 
@@ -147,19 +147,22 @@ void ofxTLTicker::draw(){
 
     }
 	
-    if(timeline->getIsPlaying()){
+    if(timeline->getColors().playheadColor.a > 0){
+        ofSetColor(timeline->getColors().playheadColor);   // host-pinned constant colour
+    }
+    else if(timeline->getIsPlaying()){
         ofSetColor(timeline->getColors().keyColor);
     }
     else{
         ofSetColor(timeline->getColors().outlineColor);
     }
-	
+
 	//draw playhead line
 	ofSetLineWidth(1);
     ofDrawLine(currentFrameX, totalDrawRect.y, currentFrameX, totalDrawRect.y+totalDrawRect.height);
 	//draw bounds 
 	ofNoFill();
-	ofSetColor(200, 180, 40);
+	ofSetColor(timeline->getColors().tickColor);
 	ofDrawRectangle(bounds);
 		
 	ofPopStyle();
