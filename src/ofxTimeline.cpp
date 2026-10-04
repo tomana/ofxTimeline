@@ -1205,6 +1205,7 @@ void ofxTimeline::disableEvents() {
 }
 
 void ofxTimeline::mousePressed(ofMouseEventArgs& args){
+	eventMouseX = args.x; eventMouseY = args.y;   // chroma fork: scaled event coords (see getEventMouseX)
 	if(!isShowing){
 		return;
 	}
@@ -1243,6 +1244,7 @@ void ofxTimeline::mousePressed(ofMouseEventArgs& args){
 }
 
 void ofxTimeline::mouseMoved(ofMouseEventArgs& args){
+	eventMouseX = args.x; eventMouseY = args.y;   // chroma fork: scaled event coords (see getEventMouseX)
 	if(!isShowing){
 		return;
 	}
@@ -1261,6 +1263,7 @@ void ofxTimeline::mouseMoved(ofMouseEventArgs& args){
 }
 
 void ofxTimeline::mouseDragged(ofMouseEventArgs& args){
+	eventMouseX = args.x; eventMouseY = args.y;   // chroma fork: scaled event coords (see getEventMouseX)
 	if(!isShowing){
 		return;
 	}
@@ -1279,6 +1282,7 @@ void ofxTimeline::mouseDragged(ofMouseEventArgs& args){
 }
 
 void ofxTimeline::mouseReleased(ofMouseEventArgs& args){
+	eventMouseX = args.x; eventMouseY = args.y;   // chroma fork: scaled event coords (see getEventMouseX)
 	if(!isShowing){
 		return;
 	}

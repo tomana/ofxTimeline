@@ -372,7 +372,7 @@ void ofxTLTicker::mousePressed(ofMouseEventArgs& args){
             playOnMouseReleased = true;
             timeline->stop();
         }
-		updateTimelinePosition();
+		updateTimelinePosition(args.x);
         ofxTLPlaybackEventArgs args = timeline->createPlaybackEvent();
 		ofNotifyEvent(events().playheadScrubbed, args);		
 	}
@@ -380,7 +380,7 @@ void ofxTLTicker::mousePressed(ofMouseEventArgs& args){
 
 void ofxTLTicker::mouseDragged(ofMouseEventArgs& args){
 	if(dragging){
-		updateTimelinePosition();
+		updateTimelinePosition(args.x);
         ofxTLPlaybackEventArgs args = timeline->createPlaybackEvent();
 		ofNotifyEvent(events().playheadScrubbed, args);
 	}	
@@ -403,6 +403,6 @@ void ofxTLTicker::setTotalDrawRect(ofRectangle drawRect){
 	totalDrawRect = drawRect;
 }
 
-void ofxTLTicker::updateTimelinePosition(){
-	timeline->setCurrentTimeSeconds(timeForScreenX(ofGetMouseX()));
+void ofxTLTicker::updateTimelinePosition(float screenX){
+	timeline->setCurrentTimeSeconds(timeForScreenX(screenX));
 }

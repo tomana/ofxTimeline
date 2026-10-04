@@ -607,7 +607,7 @@ ofxTLKeyframe* ofxTLSwitches::newKeyframe(){
     //in the case of a click, start at the mouse positiion
     //if this is being restored from XML, the next call to restore will override this with what is in the XML
     //switchKey->timeRange.min = switchKey->timeRange.max = screenXToMillis(ofGetMouseX());
-    float x = MIN(ofGetMouseX(), bounds.getMaxX());
+    float x = MIN(timeline->getEventMouseX(), bounds.getMaxX());   // chroma fork: scaled event x
     if (x< 0.0){x=0;}
     switchKey->timeRange.max = screenXToMillis(x);
     switchKey->timeRange.min = switchKey->timeRange.max;

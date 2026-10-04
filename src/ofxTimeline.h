@@ -413,6 +413,12 @@ class ofxTimeline : ofThread {
 	
 	ofxTLColors& getColors();
 	ofxTimecode& getTimecode();
+	// chroma fork: mouse position from the LAST EVENT ARGS this timeline received. Tracks must use
+	// this, not ofGetMouseX()/Y(): an app may rescale event coords (high-DPI ui_scale divides the args
+	// before the timeline sees them), but oF sets its internal currentMouseX BEFORE listeners run and
+	// never rescales it — so ofGetMouseX() returns raw pixels and lands at the wrong time/value.
+	float getEventMouseX() const { return eventMouseX; }
+	float getEventMouseY() const { return eventMouseY; }
 	ofxMSATimer& getTimer();
 	ofxTLZoomer* getZoomer();
 	
@@ -465,6 +471,7 @@ class ofxTimeline : ofThread {
 	
   protected:
 
+    float eventMouseX = 0.0f, eventMouseY = 0.0f;   // chroma fork: see getEventMouseX()
     ofxTimecode timecode;
 	ofxMSATimer timer;
     ofxTLEvents timelineEvents;

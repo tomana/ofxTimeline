@@ -528,7 +528,7 @@ ofxTLKeyframe* ofxTLNotes::newKeyframe(){
     ofxTLNote* switchKey = new ofxTLNote();
     //in the case of a click, start at the mouse positiion
     //if this is being restored from XML, the next call to restore will override this with what is in the XML
-    switchKey->timeRange.min = switchKey->timeRange.max = screenXToMillis(ofGetMouseX());
+    switchKey->timeRange.min = switchKey->timeRange.max = screenXToMillis(timeline->getEventMouseX());
     switchKey->startSelected = false;
     switchKey->endSelected   = true; //true so you can drag the range to start with
 	
@@ -537,7 +537,7 @@ ofxTLKeyframe* ofxTLNotes::newKeyframe(){
     
     // add pitch based on mouseY if that's the input device
     if(createNewOnMouseup){
-        switchKey->pitch = pitchForScreenY(ofGetMouseY());
+        switchKey->pitch = pitchForScreenY(timeline->getEventMouseY());
     }
 	
     return switchKey;

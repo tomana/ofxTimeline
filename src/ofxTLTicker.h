@@ -68,7 +68,7 @@ class ofxTLTicker : public ofxTLTrack
 	bool getIsScrubbing();
 	
   protected:
-	void updateTimelinePosition();
+	void updateTimelinePosition(float screenX);   // chroma fork: event x, not ofGetMouseX() (raw px)
 	void updateBPMPoints();
 
 	ofRectangle totalDrawRect;
